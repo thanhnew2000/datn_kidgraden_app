@@ -56,14 +56,14 @@ const DanhBaScreen = () => (
   </DanhBaStack.Navigator>
 )
 
-const LoginScreen = () => (
-  <LoginStack.Navigator>
-     <DanhBaStack.Screen name="Login" component={Login}  options={{title : "Login"}} />
-  </LoginStack.Navigator>
-)
+// const LoginScreen = () => (
+//   <LoginStack.Navigator>
+//      <DanhBaStack.Screen name="Login" component={Login}  options={{title : "Login"}} />
+//   </LoginStack.Navigator>
+// )
 
 const Index = () => (
-  <Tabs.Navigator  style={styles.tabbutton}  initialRouteName="Login"  screenOptions={({ route }) => ({
+  <Tabs.Navigator  style={styles.tabbutton}  initialRouteName="Kids"  screenOptions={({ route }) => ({
     tabBarIcon: ({ focused, color, size }) => {
       let iconName;
       let iconColor;
@@ -90,8 +90,7 @@ const Index = () => (
     }
   }}
 >
-      <Tabs.Screen name="Login" component={HomeStackScreen}   options={{title : "Home"}}  />
-      <Tabs.Screen name="Kids" component={LoginScreen}   options={{title : "Login"}}  />
+      <Tabs.Screen name="Kids" component={HomeStackScreen}   options={{title : "Home"}}  />
       <Tabs.Screen name="Crud" component={AccountScreen}  />
       <Tabs.Screen name="DanhBa" component={DanhBaScreen}   options={{title : "Danh bạ"}} />
       <Tabs.Screen name="Thông báo" component={HomeStackScreen}   options={{title : "Thông báo"}}  options={{ tabBarBadge: 3 }}  />

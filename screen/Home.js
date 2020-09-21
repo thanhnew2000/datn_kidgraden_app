@@ -34,7 +34,6 @@ const Home = ({ navigation }) =>
        <View style={styles.titleTinTuc}>
          <Text style={styles.textTitleTinTuc}>Tin tức</Text>
        </View>
-       
        <View  style={styles.titleXemThem}>
          <TouchableOpacity>
                  <Text style={styles.textTitleTinTuc}>Xem Thêm</Text>
@@ -42,10 +41,8 @@ const Home = ({ navigation }) =>
 
        </View>
    </View>
-    
 
    <View>
-
        <FlatList
          data={News}
          renderItem={({item})=>
@@ -58,14 +55,16 @@ const Home = ({ navigation }) =>
          } 
          keyExtractor={(item,index) => `${index}`}
        />
-     
-    
    </View>
 
-   <View>
-          <ImageBackground  style={{width: '100%' , height:170 }}  source={require('../android/app/src/funny.png')}>
-              <Text>Inside</Text>
-            </ImageBackground>
+      <View style={{  flexDirection: 'row', backgroundColor:'#81F79F'}}>
+         <View style={styles.cotnho}>
+            <Image style={{width: 150 , height:120 }}  source={require('../android/app/src/kids.jpg')}/>
+         </View>
+         <View style={styles.infoText}>
+            <Text style={{fontSize:18}}>Tran Thanh Tuyet</Text>
+            <Text>Lop Mam 1</Text>
+         </View>
       </View>
 
  </View>
@@ -95,11 +94,20 @@ const styles = StyleSheet.create({
         paddingVertical:5,
         color:'white'
       },
-    
       titleXemThem: {
         backgroundColor:'#3c8873',
         marginLeft:5
       },
+      cotnho:{
+        width: (Dimensions.get('screen').width - 60) / 1.8,
+      },
+      infoText:{
+        alignItems:'center',
+        paddingVertical:20,
+        paddingRight:70,
+        width: (Dimensions.get('screen').width - 60) / 1.2,
+      },
+   
     
 });
 
