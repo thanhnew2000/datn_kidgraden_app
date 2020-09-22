@@ -5,7 +5,7 @@ import {Button, View, Text, StyleSheet,} from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Home from './screen/Home';
+import Home from './screen/Home2';
 import ListDanhBa from './screen/ListDanhBa';
 import Header from './screen/Header';
 import Login from './screen/Login';
@@ -22,9 +22,8 @@ const Tabs = createBottomTabNavigator();
 
 
 const HomeStackScreen = () => (
-
-  <HomeStack.Navigator initialRouteName="Home">
-      <HomeStack.Screen name="Home" component={Home}  
+  <HomeStack.Navigator initialRouteName="Homes">
+      <HomeStack.Screen name="Homes" component={Home}  
       options={{
         headerStyle : {
           backgroundColor: '#f4511e',
@@ -103,7 +102,7 @@ function App() {
     <NavigationContainer>
         <Stack.Navigator>
             <Stack.Screen name="Login" component={Login} />
-            <Stack.Screen name="Home2" component={Index} />
+            <Stack.Screen name="Home2" component={Index}  />
         </Stack.Navigator>
     </NavigationContainer>
   );
