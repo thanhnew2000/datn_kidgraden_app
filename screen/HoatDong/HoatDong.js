@@ -78,7 +78,7 @@ const HoatDong =  ({ navigation }) => {
                             renderItem={({ item }) => (
                               item == 5 ? <Text>data</Text> : renderItem(item)
                             )}
-                            keyExtractor={item => item}
+                            keyExtractor={(item,index) => index.toString()}
                             // initialScrollIndex={10}
                           />
                         </View>

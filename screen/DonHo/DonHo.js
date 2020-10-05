@@ -1,15 +1,26 @@
 
 import React ,{ useState, useEffect }from 'react';
 import axios from 'axios';
-import { View, Text, Image, TouchableOpacity, FlatList, StyleSheet,Button } from 'react-native'
+import { View, Text, Image, TouchableOpacity, FlatList, StyleSheet,Button,Modal } from 'react-native'
 import IconNews from '../../android/app/src/asset/img/icon-news.png';
 import IconKidsExercise from '../../android/app/src/asset/img/icon-kids-exercise.jpg';
 import IconKidsStudy from '../../android/app/src/asset/img/icon-kids-study.jpg';
 import IconKidsOutSide from '../../android/app/src/asset/img/icon-kids-outside.jpg';
 import { ScrollView } from 'react-native-gesture-handler';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 const DonHo =  ({ navigation }) => {
+
+  const [viewModel, setViewModel] = useState(false);
+  
+
+
+  function modelDetailShow(value){
+    setViewModel(value)
+  }
+
 
   
   const ListDonHo = () => (
@@ -28,7 +39,7 @@ const DonHo =  ({ navigation }) => {
         <TouchableOpacity onPress={()=>{
               navigation.navigate('detail_medicine')
           }} >
-            <Button title="Chi Tiết" />
+            <Button title="Chi Tiết" onPress={()=>modelDetailShow(true)} />
         </TouchableOpacity>
       </View>
     </View>
@@ -46,12 +57,71 @@ const DonHo =  ({ navigation }) => {
                         <TouchableOpacity onPress={()=>{
                                 navigation.navigate('add_donho')
                             }} >
-                              <AntDesign name="pluscircleo" size={35} color="green" />
+                              <FontAwesome5 name="user-plus" size={35} color="green" />
                         </TouchableOpacity>
                    </View>
                
                     <ListDonHo />
                     <ListDonHo />
+
+
+                    <Modal
+                      animationType="slide"
+                      transparent={true}
+                      visible={viewModel}
+                      onRequestClose={() => {
+                      Alert.alert("Modal has been closed.");
+                      }}
+                     >
+                    <View style={{backgroundColor:'#000000aa',flex:1,justifyContent:'center'}}>
+                        <View style={{backgroundColor:'#ffffff',margin:20,padding:10,borderRadius:10}}>
+                        <View style={{flexDirection:'row',padding:10,borderBottomWidth:1}}>
+                          <View style={{width:'80%'}}>
+                             <Text style={{fontWeight:'bold',fontSize:16}}>Thông tin người đón hộ : </Text>
+                          </View>
+                          <View style={{width:'20%',paddingLeft:10}}>
+                            <TouchableOpacity onPress={()=>modelDetailShow(false)}>
+                                <FontAwesome name="window-close" size={35} color="#dddd" />
+                            </TouchableOpacity>
+                          </View>
+
+                        </View>
+
+                        <View style={{alignItems:'center',paddingTop:10}}>
+                          <Image source={IconKidsStudy} style={{width:150,height:140}} />
+                        </View>
+                        <View style={{flexDirection:'row',padding:10}}>
+                          <View style={{width:'50%'}}>
+                              <Text style={{fontWeight:'bold',fontSize:15}}>Tên : </Text>
+                              <Text>Lê Ngọc Tân</Text>
+                          </View>
+                          <View style={{width:'50%'}}>
+                              <Text  style={{fontWeight:'bold',fontSize:15}}>Số CMND :</Text>
+                              <Text>54893649836</Text>
+                          </View>
+                        </View>
+                        <View style={{flexDirection:'row',padding:10}}>
+                          <View style={{width:'50%'}}>
+                                <Text style={{fontWeight:'bold',fontSize:15}}>Số điện thoại : </Text>
+                                <Text>03924838675</Text>
+                          </View>
+
+                          <View style={{width:'50%'}}>
+                                <Text style={{fontWeight:'bold',fontSize:15}}>Đón bé : </Text>
+                                <Text>Phạm Trung Hiếu</Text>
+                          </View>
+                         </View>
+
+                         <View style={{width:'50%',padding:10,flexDirection:'row'}}>
+                                <Text style={{fontWeight:'bold',fontSize:15}}>Ngày đón: </Text>
+                                <Text> 10/7/2019</Text>
+                          </View>
+
+                        </View>
+                    </View>
+                </Modal>
+
+
 
 
             </View>

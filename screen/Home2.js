@@ -35,9 +35,9 @@ const Home2 = ({ navigation }) =>
     {id: 2, name : 'Xin nghỉ',image :IconXinNghi },
     {id: 3, name : 'Dặn thuốc',image :IconMedicine },
     {id: 4, name : 'Bản tin',image :IconNews },
-    {id: 5, name : 'Sức khỏe',image :IconNatri },
+    {id: 5, name : 'Biểu đồ',image :IconNatri },
     {id: 6, name : 'Hoạt động',image :IconCalender },
-    {id: 7, name : 'Feedback GV',image :IconFeedBack },
+    {id: 7, name : 'Đánh giá GV',image :IconFeedBack },
     {id: 8, name : 'Đón hộ',image :IconDonHo },
     {id: 9, name : 'Học phí',image :IconMoney },
   ])

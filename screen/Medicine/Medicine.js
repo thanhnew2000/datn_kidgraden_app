@@ -17,7 +17,7 @@ const Medicine =  ({ navigation }) => {
                         <TouchableOpacity onPress={()=>{
                                 navigation.navigate('add_medicine')
                             }} >
-                              <AntDesign name="pluscircleo" size={35} color="green" />
+                              <AntDesign name="medicinebox" size={35} color="green" />
                         </TouchableOpacity>
                    </View>
 

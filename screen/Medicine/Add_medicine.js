@@ -214,7 +214,7 @@ const Add_medicine =  ({ navigation }) => {
                             </View>
                             <View style={{width:'10%'}}>
                                 <TouchableOpacity onPress={() =>modelShow(false)} >
-                                     <AntDesign name="closesquareo" size={30} color="" style={{paddingTop:5}} />
+                                     <AntDesign name="closesquareo" size={30}  style={{paddingTop:5}} />
                                 </TouchableOpacity>
                                 
                             </View>

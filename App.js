@@ -31,11 +31,25 @@ import DiemDanh from './screen/DiemDanh/DiemDanh';
 import DonHo from './screen/DonHo/DonHo';
 import ThemDonHo from './screen/DonHo/ThemDonHo';
 
+import BieuDo from './screen/BieuDo/BieuDo';
+
+import Account from './screen/Account/Account';
+import ChangePass from './screen/Account/ChangePass';
+import CapNhapThongTin from './screen/Account/CapNhapThongTin';
+
+import Notification from './screen/Notification/Notification';
+
+import HocPhi from './screen/HocPhi/HocPhi';
+import ChiTietHocPhi from './screen/HocPhi/ChiTietHocPhi';
+
+
+import Feedback from './screen/Feedback/Feedback';
 
 
 const Stack = createStackNavigator();
 const HomeStack = createStackNavigator();
 const AccountStack = createStackNavigator();
+const NotificationStack = createStackNavigator();
 const DanhBaStack = createStackNavigator();
 const LoginStack = createStackNavigator();
 const Tabs = createBottomTabNavigator();
@@ -123,15 +137,49 @@ const HomeStackScreen = () => (
             title : "Thêm đón họ"
         }} />
 
+      <HomeStack.Screen name="Biểu đồ" component={BieuDo}  
+                options={{
+                  headerStyle : { backgroundColor: 'rgba(11, 75, 120, 0.82)' },
+                  headerTintColor: '#fff',
+                  title : "Biểu đồ tăng trưởng của bé"
+              }} />
 
+      <HomeStack.Screen name="Học phí" component={HocPhi}  
+                options={{
+                  headerStyle : { backgroundColor: 'rgba(11, 75, 120, 0.82)' },
+                  headerTintColor: '#fff',
+                  title : "Học phí"
+              }} />
+
+      <HomeStack.Screen name="ChiTietHocPhi" component={ChiTietHocPhi}  
+                options={{
+                  headerStyle : { backgroundColor: 'rgba(11, 75, 120, 0.82)' },
+                  headerTintColor: '#fff',
+                  title : "Chi tiết học phí"
+              }} />     
+
+      <HomeStack.Screen name="Đánh giá GV" component={Feedback}  
+          options={{
+            headerStyle : { backgroundColor: 'rgba(11, 75, 120, 0.82)' },
+            headerTintColor: '#fff',
+            title : "Đánh giá giáo viên"
+        }} />           
 
   </HomeStack.Navigator>
 )
 
 const AccountScreen = () => (
-  <AccountStack.Navigator initialRouteName="ListCrud">
-     <AccountStack.Screen name="ListCrud" component={ListDanhBa}  options={{title : "Crud danh ba"}} />
+  <AccountStack.Navigator initialRouteName="Account">
+     <AccountStack.Screen name="Account" component={Account}  options={{ headerShown: false}} />
+     <AccountStack.Screen name="ChangePass" component={ChangePass}  options={{ title:' Đổi mật khẩu'}} />
+     <AccountStack.Screen name="CapNhapThongTin" component={CapNhapThongTin}  options={{ title:'Cập nhập thông tin'}} />
   </AccountStack.Navigator>
+)
+
+const NotificationScreen = () => (
+  <NotificationStack.Navigator initialRouteName="Notification">
+     <NotificationStack.Screen name="Notification" component={Notification}  options={{ title:'Thông báo'}} />
+  </NotificationStack.Navigator>
 )
 
 const DanhBaScreen = () => (
@@ -159,7 +207,7 @@ const UserGreeting = () => (
             if (route.name === 'Kids') {
               iconName = 'home';
               // iconColor = focused ? 'blue' : 'gray';
-            } else if (route.name === 'Crud') {
+            } else if (route.name === 'Account') {
               iconName ='perm-contact-calendar';
               // iconColor = focused ? 'blue' : 'gray';
             }else if (route.name === 'Thông báo') {
@@ -184,9 +232,9 @@ const UserGreeting = () => (
         }}
       >
       <Tabs.Screen name="Kids" component={HomeStackScreen}   options={{title : "Home" }}   />
-      <Tabs.Screen name="Crud" component={AccountScreen}  />
+      <Tabs.Screen name="Account" component={AccountScreen}  />
       <Tabs.Screen name="DanhBa" component={DanhBaScreen}   options={{title : "Danh bạ"}} />
-      <Tabs.Screen name="Thông báo" component={HomeStackScreen}   options={{title : "Thông báo"}}  options={{ tabBarBadge: 3 }}  />
+      <Tabs.Screen name="Thông báo" component={NotificationScreen}   options={{title : "Thông báo" , tabBarBadge:'3'}}   />
 </Tabs.Navigator>
 )
 
@@ -280,7 +328,7 @@ function App() {
                     if (route.name === 'Kids') {
                       iconName = 'home';
                       // iconColor = focused ? 'blue' : 'gray';
-                    } else if (route.name === 'Crud') {
+                    } else if (route.name === 'Account') {
                       iconName ='perm-contact-calendar';
                       // iconColor = focused ? 'blue' : 'gray';
                     }else if (route.name === 'Thông báo') {
@@ -304,7 +352,7 @@ function App() {
               >
 
             <Tabs.Screen name="Kids" component={HomeStackScreen}   options={{title : "Home" }}   />
-            <Tabs.Screen name="Crud" component={AccountScreen}  />
+            <Tabs.Screen name="Account" component={AccountScreen}  />
             <Tabs.Screen name="DanhBa" component={DanhBaScreen}   options={{title : "Danh bạ"}} />
             <Tabs.Screen name="Thông báo" component={HomeStackScreen}   options={{title : "Thông báo"}}  options={{ tabBarBadge: 3 }}  />
         </Tabs.Navigator> */}
