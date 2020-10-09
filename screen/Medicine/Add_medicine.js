@@ -1,21 +1,48 @@
 
-import React ,{ useState }from 'react';
+import React ,{ useState,useEffect }from 'react';
 import { View, Text, Image,
-    TouchableOpacity, ScrollView,StyleSheet,TextInput,  Modal, Button,FlatList, Alert
+    TouchableOpacity, ScrollView,StyleSheet,TextInput,  Modal, Button,FlatList, Alert,AsyncStorage
  } from 'react-native'
  import HTMLView from 'react-native-htmlview';
  import DateTimePicker from '@react-native-community/datetimepicker';
  import AntDesign from 'react-native-vector-icons/AntDesign';
 import Entypo from 'react-native-vector-icons/Entypo';
-const Add_medicine =  ({ navigation }) => {
+import IconKidsStudy from '../../android/app/src/asset/img/icon-kids-study.jpg';
+import ImagePicker from 'react-native-image-picker';
+
+import { Input } from 'react-native-elements';
+import axios from "axios";
+
+const Add_medicine =  ({ navigation , route }) => {
+  const { reloadAgain } = route.params;
+
+    const [userToken, setUserToken] = useState(null)
+    useEffect(() => {
+        async function fetchData() {
+          try{
+            var v = await AsyncStorage.getItem('user_token');
+            if(v !== null){
+              setUserToken(v)
+            }
+            console.log(v)
+          }catch (e){
+            console.log(e);
+          }
+      }
+      fetchData();
+    },[]);
+
 
     const [viewModel, setViewModel] = useState(false);
+
+    const [loiNhan, setLoiNhan] = useState(null)
 
     const [oneMedicineAdd, setOneMedicineAdd] = useState({
         name: '',
         lieu: '',
         donvi:'',
         note: '',
+        image:''
   });
 
     const [listAddMedicine, setListAddMedicine] = useState([
@@ -23,19 +50,24 @@ const Add_medicine =  ({ navigation }) => {
             name:'Sino',
             lieu:'300',
             donvi:'ml',
-            note:'Uống sau bữa ăn'
+            note:'Uống sau bữa ăn',
+            image:''
         },
         {
             name:'Sino 1',
             lieu:'300',
             donvi:'ml',
-            note:'Uống sau bữa ăn'
+            note:'Uống sau bữa ăn',
+            image:''
+
         },
         {
             name:'Sino 2',
             lieu:'300',
             donvi:'ml',
-            note:'Uống sau bữa ăn'
+            note:'Uống sau bữa ăn',
+            image:''
+
         },
     ]);
 
@@ -58,6 +90,7 @@ const Add_medicine =  ({ navigation }) => {
         const currentDate = selectedDate || dateTo;
         setShowDateTo(Platform.OS === 'ios');
         setDateTo(currentDate);
+
      };
 
       const showModeFrom = (currentMode) => {
@@ -89,25 +122,25 @@ const Add_medicine =  ({ navigation }) => {
         console.log(indexR)
       }
 
+
+    //   NÚT THÊM THUỐC VÀO ĐƠN
       function addMedicinetoList(){
-          if(oneMedicineAdd.name == '' || oneMedicineAdd.donvi == '' || oneMedicineAdd.lieu == '' ){
-              Alert.alert('Hay nhập đủ tên , liều, đơn vị')
-          }else{
-                 setListAddMedicine([...listAddMedicine,oneMedicineAdd])
-                 setViewModel(false);
-                 setOneMedicineAdd({ name: '', lieu: '', donvi:'',note: '' })
-          }
+            setListAddMedicine([...listAddMedicine,oneMedicineAdd])
+            setImageThuoc(null);
+            modelShow(false);
+            setOneMedicineAdd({ name: '',lieu: '',   donvi:'',note: '', image:'' })
       }
 
 
-      const UserGreeting = ({item,index}) => (
-            <View style={styles.listMedicine}>
+    const BoxThuoc = ({item,index}) => (
+        <View style={styles.listMedicine}>
             <View style={{flexDirection:'row'}}> 
                     <View style={{width:'60%'}}>
                         <Text style={{fontWeight:'bold',fontSize:15}}> {item.name} </Text>
+                        <Text style={{fontSize:15}}> Liều : ({item.lieu} {item.donvi})</Text>
                     </View>
                     <View style={{width:'25%'}}>
-                        <Text>Liều : ({item.lieu} {item.donvi})</Text>
+                        <Image style={{width:50,height:50}} source={item.image} />
                     </View>
 
                     <View style={{width:'20%'}}>
@@ -123,7 +156,88 @@ const Add_medicine =  ({ navigation }) => {
                     </View>
             </View>
         </View>
-      );
+  );
+
+// Chọn ảnh
+
+    const [imageThuoc , setImageThuoc] =  useState(null)
+
+    const options = {
+        title: 'Select Avatar', 
+        cameraType: 'front',
+        mediaType: 'photo' ,
+        storageOptions: {
+        skipBackup: true,
+        path: 'images',
+        },
+    };
+
+
+  function chosePickImage(){
+    ImagePicker.showImagePicker(options, (response) => {
+      console.log('Response = ', response);
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.error) {
+        console.log('ImagePicker Error: ', response.error);
+      } else if (response.customButton) {
+        console.log('User tapped custom button: ', response.customButton);
+      } else {
+        const source = { uri: response.uri , data : response.data };
+        // const  uploadPictureVar = 'data:image/jpeg;base64,' + response.data;
+        // window.picture = uploadPictureVar;
+        setOneMedicineAdd({...oneMedicineAdd,image:response})
+        setImageThuoc(response);
+      }
+    });
+}
+
+function submitAdd(){
+        const formData = new FormData();
+            // formData.append("dateFrom",dateTo.getDate() dateTo.getMonth() + 1}dateTo.getFullYear());
+            // formData.append("dateTo",dateTo);
+            formData.append("loinhan",loiNhan);
+
+            for (var i = 0; i < listAddMedicine.length; i++) {
+                if(listAddMedicine[i].image.uri){
+                    formData.append("donthuoc["+i+"][anhImage]", {type: 'image/jpg', uri:listAddMedicine[i].image.uri, name:'uploaded.jpg'});
+                }
+                   formData.append("donthuoc["+i+"][name]",listAddMedicine[i].name);
+                    formData.append("donthuoc["+i+"][lieu]",listAddMedicine[i].lieu);
+                    formData.append("donthuoc["+i+"][donvi]",listAddMedicine[i].donvi);
+                    formData.append("donthuoc["+i+"][note]",listAddMedicine[i].note);
+            }
+            const heads = 
+            {
+            //     headers: {
+            //         "Content-type": "application/json",
+            //         'Authorization': "Bearer "+userToken
+            // }
+        }
+
+        axios
+        .post(
+            "http://10.24.11.114:8080/api/dan-thuoc",
+            formData,
+            heads
+        )
+        .then(res => {
+            console.log(res.data);
+            reloadAgain();
+            navigation.navigate('Dặn thuốc');
+        })
+        .catch(err => {
+
+            console.log(err);
+        });
+
+
+
+ 
+}
+
+
+
   return (
             <View style={styles.containers}>
                 <View>
@@ -174,16 +288,18 @@ const Add_medicine =  ({ navigation }) => {
                                         </View>
                                 </View>
 
-                        </View>   
+                        </View>  
 
-                  
-                                     <Text style={styles.fontTitleHeader}>Lời nhắn : </Text>
-                                     <TextInput   style={{ width:'100%', borderColor: 'gray', borderWidth: 1,backgroundColor:'white' }} 
-                                        placeholder="Lời nhắn tới giáo viên"
-                                        multiline={true}
-                                        numberOfLines={4}
-                                        textAlignVertical = "top"
-                                        />
+
+                        <Text style={styles.fontTitleHeader}>Lời nhắn : </Text>
+                        <TextInput   style={{ width:'100%', borderColor: 'gray', backgroundColor:'white' }} 
+                            onChangeText={text  => {setLoiNhan(text)}}
+                            placeholder="Lời nhắn tới giáo viên"
+                            multiline={true}
+                            numberOfLines={4}
+                            textAlignVertical = "top"
+                        />
+
                 </View>
 
 
@@ -193,9 +309,6 @@ const Add_medicine =  ({ navigation }) => {
                     <AntDesign name="pluscircleo" size={30} color="green" style={{paddingTop:12}} />
                     </TouchableOpacity>
                 </View>
-                
-
-
 
                 <Modal
                     animationType="slide"
@@ -203,43 +316,47 @@ const Add_medicine =  ({ navigation }) => {
                     visible={viewModel}
                     onRequestClose={() => {
                     Alert.alert("Modal has been closed.");
-                    }}
-                >
+                    }} >
+
                     <View style={{backgroundColor:'#000000aa',flex:1}}>
                         <View style={{backgroundColor:'#ffffff',margin:20,padding:10,borderRadius:10}}>
 
                         <View style={styles.headerModel}>
-                            <View style={{width:'90%'}}>
+                            <View style={{width:'90%',alignSelf:'center',padding:5}}>
                                  <Text style={{fontWeight:'bold',fontSize:17}}>Thêm thuốc</Text>
                             </View>
                             <View style={{width:'10%'}}>
                                 <TouchableOpacity onPress={() =>modelShow(false)} >
-                                     <AntDesign name="closesquareo" size={30}  style={{paddingTop:5}} />
+                                     <AntDesign name="closesquare" size={30}  style={{paddingTop:5,color:'#ECF0F2'}} />
                                 </TouchableOpacity>
                                 
                             </View>
                         </View>
 
                           <View style={{paddingVertical:5}}>
-                              <Text style={styles.nameTitleModel}>Tên thuốc:</Text>
+                              {/* <Text style={styles.nameTitleModel}>Tên thuốc :</Text> */}
 
-                              <TextInput 
+                              <Input 
+                                label="Tên thuốc :"
                                 onChangeText={text  => {setOneMedicineAdd({...oneMedicineAdd,name:text})}}
                                 style={styles.inputModel}   />
                           </View>
 
                         <View style={{flexDirection:'row'}}>
                             <View style={{width:'45%'}}>
-                                <Text style={styles.nameTitleModel}>Liều dùng:</Text>
+                                {/* <Text style={styles.nameTitleModel}>Liều dùng:</Text> */}
 
-                                <TextInput  style={styles.inputModel} 
+                                <Input  style={styles.inputModel} 
+                                label="Liều dùng: "
                                  onChangeText={text  => {setOneMedicineAdd({...oneMedicineAdd,lieu:text})}}
                                 />
                             </View>
                             <View style={{width:'10%'}}></View>
                             <View style={{width:'45%'}}>
-                                <Text style={styles.nameTitleModel}>Đơn vị tính:</Text>
-                                <TextInput   style={styles.inputModel}
+                                {/* <Text style={styles.nameTitleModel}>Đơn vị tính:</Text> */}
+                                <Input
+                                label="Đơn vị tính: "
+                                style={styles.inputModel}
                                  onChangeText={text  => {setOneMedicineAdd({...oneMedicineAdd,donvi:text})}}
                                    />
                             </View>
@@ -247,33 +364,46 @@ const Add_medicine =  ({ navigation }) => {
                         </View>
 
                             <View>
-                                <Text style={styles.nameTitleModel}>Chỉ dẫn:</Text>
-                                <TextInput  style={styles.inputModel}  
+                                {/* <Text style={styles.nameTitleModel}>Chỉ dẫn:</Text> */}
+                                <Input  style={styles.inputModel}  
+                                label="Chỉ dẫn:"
                                  onChangeText={text  => {setOneMedicineAdd({...oneMedicineAdd,note:text})}}
                                  />
 
                             </View>
 
+
+                            <View style={{flexDirection:'row',paddingVertical:10}}>
+                                <View style={{width:'50%',alignItems:'center'}}>
+                                    <Button title="Chọn ảnh thuốc" type="outline" onPress={chosePickImage}  />
+                                </View>
+                                <View style={{width:'50%',alignItems:'center'}}>
+                                    <Image style={{width: 100 , height:100  }}  source={imageThuoc}/>
+                                </View>
+                            </View>
+
                         <View style={{width:'30%',paddingTop:10,marginLeft:'60%'}}>
                         <Button title="Thêm" onPress={()=> addMedicinetoList() }/>
                         </View>
-
                         </View>
                     </View>
+
                 </Modal>
 
 
                 <FlatList
                     data={listAddMedicine}
                     renderItem={({item,index})=>
-                    <UserGreeting item={item} index={index} />
+                    <BoxThuoc item={item} index={index} />
                     } 
-                    keyExtractor={(item,index) => `${index}`}
-                />
+                    keyExtractor={(item,index) => `${index}`}  />
 
 
-          
+                    <View style={{width:'100%',alignItems:'flex-end'}}>
+                          <Button title="Tạo đơn" onPress={submitAdd}/>
+                    </View>
                  </View>
+               
   
   );
 };
@@ -283,6 +413,7 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         paddingLeft:5,
         paddingRight:5,
+        paddingVertical:10,
         backgroundColor:'#fff',
     },
     containersModel:{ 
@@ -297,6 +428,8 @@ const styles = StyleSheet.create({
         marginTop:10,
         width:'100%',
         borderWidth:1,
+        borderColor:'#A6A8AA',
+        borderRadius:5
     },
     listMedicine:{
         marginVertical:5,
@@ -305,19 +438,17 @@ const styles = StyleSheet.create({
         paddingVertical:5,
         backgroundColor:'#fff',
         borderWidth:0.5
-        
     },
     nameTitleModel:{
         paddingVertical:7,
         fontSize:16
     },
     inputModel:{
-        width:'100%',height: 35, borderColor: 'gray', borderWidth: 1,backgroundColor:'white',borderRadius:3
+     
     },
     headerModel:{
         flexDirection:'row',
-        paddingBottom:5,
-        borderBottomWidth:1
+        paddingBottom:10,
     },
     fontTitleHeader:{
         fontWeight:'bold',fontSize:15,paddingVertical:5

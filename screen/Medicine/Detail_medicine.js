@@ -35,17 +35,15 @@ const Detail_medicine =  ({ route,navigation }) => {
                             <View style={{flexDirection:'row'}}> 
                                     <View style={{width:'70%'}}>
                                         <Text style={{fontWeight:'bold',fontSize:15}}> Sino </Text>
+                                        <View style={{flexDirection:'row'}}>
+                                               <Text style={{fontWeight:'bold',fontSize:15}}> Liều : </Text>
+                                               <Text>(300ml)</Text>
+                                        </View>
+                                        <Text style={{fontWeight:'bold',fontSize:15}}> Ghi chú : </Text>
+                                        <Text> Uống sau bữa ăn trưa  ăn trưa ăn trưa ăn trưa ăn trưa ăn trưa ăn trưa ăn trưa</Text>
                                     </View>
-                                    <View style={{width:'30%'}}>
-                                        <Text>Liều : (300ml)</Text>
-                                    </View>
-                            </View>
-                            <View style={{flexDirection:'row'}}> 
-                                    <View>
-                                        <Text style={{fontWeight:'bold'}}> Ghi chú</Text>
-                                    </View>
-                                    <View style={{width:'80%'}}>
-                                        <Text>: Uống sau bữa ăn trưa  ăn trưa ăn trưa ăn trưa ăn trưa ăn trưa ăn trưa ăn trưa</Text>
+                                    <View style={{width:'30%',alignItems:'center',alignSelf:'center'}}>
+                                       <Image style={{width:60,height:60}} source={IconKidsStudy}/>
                                     </View>
                             </View>
                         </View>

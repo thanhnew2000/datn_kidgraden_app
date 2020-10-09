@@ -7,6 +7,7 @@ import {
     Dimensions,
     Image,
     TouchableOpacity,
+    AsyncStorage,
     ImageBackground,
     ScrollView,
   } from 'react-native';
@@ -26,16 +27,52 @@ import {
   import IconDonHo from '../android/app/src/asset/img/icon-don-ho.jpg';
   
  
-  
+  import apiRequest from '../android/app/src/api/users';
+
 const Home2 = ({ navigation }) => 
 {
+
+
+  const [userToken, setUserToken] = useState(null);
+
+    useEffect(() => {
+      async function fetchData() {
+        try{
+          var v = await AsyncStorage.getItem('user_token');
+          if(v !== null){
+            setUserToken(v)
+          }
+          console.log(v)
+            // async function getlistPostRandom(){
+            //   try{
+            //     const {data} = await apiRequest.getUser(userToken)
+            //       console.log('USER',data);
+            //   }catch(error){
+            //     console.log(error);
+            //   }
+            // }
+            // getlistPostRandom()
+
+
+        }catch (e){
+          console.log(e);
+        }
+    }
+    fetchData();
+  },[]);
+
+
+
+ 
+
+
 
   const [Category,setCategory] = useState([
     {id: 1, name : 'Điểm danh',image :IconDiemDanh },
     {id: 2, name : 'Xin nghỉ',image :IconXinNghi },
     {id: 3, name : 'Dặn thuốc',image :IconMedicine },
     {id: 4, name : 'Bản tin',image :IconNews },
-    {id: 5, name : 'Biểu đồ',image :IconNatri },
+    {id: 5, name : 'Biểu đồ',image :IconChart },
     {id: 6, name : 'Hoạt động',image :IconCalender },
     {id: 7, name : 'Đánh giá GV',image :IconFeedBack },
     {id: 8, name : 'Đón hộ',image :IconDonHo },
@@ -123,9 +160,8 @@ const styles = StyleSheet.create({
         paddingTop:30,
       },
       borderOftext:{
-        // backgroundColor: 'rgba(10, 150, 38, 0.83)',
-        backgroundColor: 'rgba(11, 75, 120, 0.82)',
-      
+        backgroundColor: 'rgba(255, 137, 93, 0.95)',
+        // backgroundColor: 'rgba(11, 75, 120, 0.82)',
         borderTopLeftRadius:60,
         borderTopRightRadius:60,
         height:100,

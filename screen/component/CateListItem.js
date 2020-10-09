@@ -23,7 +23,7 @@ const CateListItem = ({category,navigation,onPress}) => {
   }
   const styles = StyleSheet.create({
     imageThucDon: {
-        width:100, height:65,borderRadius:20,
+        width:75, height:75,borderRadius:100
     },
     textThucDon:{
        fontWeight: 'bold', 
@@ -36,8 +36,9 @@ const CateListItem = ({category,navigation,onPress}) => {
         borderColor: "#D8D8D8",  
         // borderColor: "white", 
         borderRadius: 6,
-        paddingTop:15,
+        paddingTop:5,
         marginTop:15,
+        marginLeft:17
     },
    
   });

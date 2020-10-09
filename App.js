@@ -65,7 +65,7 @@ const HomeStackScreen = () => (
       options={{
         headerStyle : {
         // backgroundColor: 'rgb(98, 248, 160)'
-        backgroundColor: 'rgba(11, 75, 120, 0.82)'
+        backgroundColor: '#78bbe6'
         },
         headerTintColor: '#fff',
         headerTitleStyle: {
@@ -77,90 +77,97 @@ const HomeStackScreen = () => (
     />
 
 
-      <HomeStack.Screen name="Bản tin" component={News}  options={{title : "Tin tức"}} />
-      <HomeStack.Screen name="detail_new" component={Detail_new}  options={{title : "Tin chi tiết"}} />
+        
+      <HomeStack.Screen name="Bản tin" component={News}  options={{title : "Tin tức", headerStyle : { backgroundColor: '#78bbe6'}, headerTintColor: '#fff' }} />
+      <HomeStack.Screen name="detail_new" component={Detail_new}  options={{title : "Tin chi tiết", headerStyle : { backgroundColor: '#78bbe6'}, headerTintColor: '#fff' }} />
 
       <HomeStack.Screen name="Dặn thuốc" component={Medicine}    options={{
-         headerStyle : { backgroundColor: 'rgba(11, 75, 120, 0.82)' },
+        //  headerStyle : { backgroundColor: 'rgba(11, 75, 120, 0.82)' },
+         headerStyle : { backgroundColor: '#78bbe6' },
          headerTintColor: '#fff',
          title : "Dặn thuốc"
        }} />
-      <HomeStack.Screen name="detail_medicine" component={Detail_medicine}  options={{title : "Chi tiết dặn thuốc"}}  />
+      <HomeStack.Screen name="detail_medicine" component={Detail_medicine}  options={{
+         headerStyle : { backgroundColor: '#78bbe6' },
+         headerTintColor: '#fff',
+         title : "Chi tiết dặn thuốc"
+       }} />
       <HomeStack.Screen name="add_medicine" component={Add_medicine}  
       options={{
-         headerStyle : { backgroundColor: 'rgba(11, 75, 120, 0.82)' },
+         headerStyle : { backgroundColor: '#78bbe6' },
          headerTintColor: '#fff',
          title : "Thêm đơn thuốc"
        }} />
 
       <HomeStack.Screen name="Xin nghỉ" component={DayOff} 
        options={{
-         headerStyle : {backgroundColor: 'rgba(11, 75, 120, 0.82)' },
+        //  headerStyle : {backgroundColor: 'rgba(11, 75, 120, 0.82)' },
+         headerStyle : { backgroundColor: '#78bbe6' },
          headerTintColor: '#fff',
          title : "Xin nghỉ học"
        }} />
 
     <HomeStack.Screen name="Tạo đơn xin nghỉ" component={ThemDonNghi}  
        options={{
-         headerStyle : { backgroundColor: 'rgba(11, 75, 120, 0.82)' },
+        headerStyle : { backgroundColor: '#78bbe6' },
          headerTintColor: '#fff',
          title : "Tạo đơn nghỉ"
        }} />
 
     <HomeStack.Screen name="Hoạt động" component={HoatDong}  options={{title : "Hoạt động"}}   
        options={{
-         headerStyle : {
-            backgroundColor: 'rgba(11, 75, 120, 0.82)'
-         },
+        headerStyle : { backgroundColor: '#78bbe6' },
          headerTintColor: '#fff',
        }} />
 
 
      <HomeStack.Screen name="Điểm danh" component={DiemDanh}  
        options={{
-         headerStyle : { backgroundColor: 'rgba(11, 75, 120, 0.82)' },
+        //  headerStyle : { backgroundColor: 'rgba(11, 75, 120, 0.82)' },
+         headerStyle : { backgroundColor: '#78bbe6' },
+
          headerTintColor: '#fff',
          title : "Điểm Danh"
        }} />
 
     <HomeStack.Screen name="Đón hộ" component={DonHo}  
        options={{
-         headerStyle : { backgroundColor: 'rgba(11, 75, 120, 0.82)' },
+         headerStyle : { backgroundColor: '#78bbe6' },
          headerTintColor: '#fff',
          title : "Đón hộ"
      }} />
 
     <HomeStack.Screen name="add_donho" component={ThemDonHo}  
           options={{
-            headerStyle : { backgroundColor: 'rgba(11, 75, 120, 0.82)' },
+            headerStyle : { backgroundColor: '#78bbe6' },
             headerTintColor: '#fff',
             title : "Thêm đón họ"
         }} />
 
       <HomeStack.Screen name="Biểu đồ" component={BieuDo}  
                 options={{
-                  headerStyle : { backgroundColor: 'rgba(11, 75, 120, 0.82)' },
+                  headerStyle : { backgroundColor: '#78bbe6' },
                   headerTintColor: '#fff',
                   title : "Biểu đồ tăng trưởng của bé"
               }} />
 
       <HomeStack.Screen name="Học phí" component={HocPhi}  
                 options={{
-                  headerStyle : { backgroundColor: 'rgba(11, 75, 120, 0.82)' },
+                  headerStyle : { backgroundColor: '#78bbe6' },
                   headerTintColor: '#fff',
                   title : "Học phí"
               }} />
 
       <HomeStack.Screen name="ChiTietHocPhi" component={ChiTietHocPhi}  
                 options={{
-                  headerStyle : { backgroundColor: 'rgba(11, 75, 120, 0.82)' },
+                  headerStyle : { backgroundColor: '#78bbe6' },
                   headerTintColor: '#fff',
                   title : "Chi tiết học phí"
               }} />     
 
       <HomeStack.Screen name="Đánh giá GV" component={Feedback}  
           options={{
-            headerStyle : { backgroundColor: 'rgba(11, 75, 120, 0.82)' },
+            headerStyle : { backgroundColor: '#78bbe6' },
             headerTintColor: '#fff',
             title : "Đánh giá giáo viên"
         }} />           
@@ -223,8 +230,8 @@ const UserGreeting = () => (
           activeTintColor: 'tomato',
           inactiveTintColor: 'white',
           style:{
-            // backgroundColor: '#04B431'
-            backgroundColor: 'rgba(11, 75, 120, 0.82)',
+            backgroundColor: '#78bbe6',
+            // backgroundColor: 'rgba(11, 75, 120, 0.82)',
           },
           labelStyle: {
             fontSize: 13,

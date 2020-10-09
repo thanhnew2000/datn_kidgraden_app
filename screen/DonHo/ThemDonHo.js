@@ -21,7 +21,7 @@ const ThemDonHo =  ({ navigation }) => {
        phone:''
      })
 
-    const [avatarSource , setAvatarSource] =  useState(null)
+    const [avatarSource , setAvatarSource] =  useState(ImageAavatar)
     const options = {
       title: 'Select Avatar', 
       cameraType: 'front',
@@ -70,12 +70,12 @@ const ThemDonHo =  ({ navigation }) => {
                       <View style={{flexDirection:'row'}}>
                             <View style={{width:'45%',justifyContent:'center'}}>
                                 <TouchableOpacity onPress={chosePickImage} >
-                                    <Button title='Chọn ảnh' />
+                                    <Text>CHọn ảnh</Text>
                                 </TouchableOpacity>
                             </View>
 
                             <View style={{width:'55%',alignItems:'center'}}>
-                                <Image source={ImageAavatar} style={{width:130,height:100}} />
+                                <Image source={avatarSource} style={{width:130,height:100}} />
                             </View>
                       </View>
 

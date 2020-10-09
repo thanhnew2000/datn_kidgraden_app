@@ -19,14 +19,19 @@
       android:allowBackup="false"
       android:theme="@style/AppTheme"
       android:requestLegacyExternalStorage="true"
-      >
+      
+     >
       <activity
         android:name=".MainActivity"
         android:label="@string/app_name"
         android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
         android:launchMode="singleTask"
         android:windowSoftInputMode="adjustResize"
+
+        android:screenOrientation="portrait"
         >
+      <!-- dòng 31 (portrait) THANHNV thêm để ko cho Xoay ngang mành hình điện thoại -->
+
         <intent-filter>
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />
