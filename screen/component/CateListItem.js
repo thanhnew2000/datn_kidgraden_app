@@ -12,7 +12,7 @@ import {
 const CateListItem = ({category,navigation,onPress}) => {
       return (
          <TouchableOpacity onPress={()=>{
-            navigation.navigate(`${category.name}`)
+            navigation.navigate(`${category.naviga}`)
          }} >
             <View style={styles.containers}>
                         <Image style={styles.imageThucDon} source={category.image}/>

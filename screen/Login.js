@@ -18,6 +18,7 @@ import { Input } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { AuthContext } from './context';
 import WaitLoading from './Wait_Loading';
+import ipApi from '../android/app/src/api/ipApi';
 
 // import userApiRequest from '../android/app/src/api/users';
 
@@ -30,16 +31,33 @@ const [dataUser,setDataUser] = useState({
   password: '',
 });
 
-async function createToken(token) {
+async function createToken(token,data_hocsinh,data_user) {
   try{
-    await AsyncStorage.setItem('user_token',token);
-    console.log('đã tạo token');
+    // await AsyncStorage.setItem('user_token',token);
+    let array = { token: token, data_hocsinh: data_hocsinh,data_user : data_user}
+    
+    await AsyncStorage.setItem('data_storge',JSON.stringify(array));
+    await AsyncStorage.setItem('data_hs',JSON.stringify(data_hocsinh));
+    // console.log('đã tạo token');
+    // let v =  AsyncStorage.getItem('data_hocsinh');
+    // something()
     signIn();
   }catch (e){
       console.log(e)
   }
 }
 
+// async function something() {
+//   try{
+//     // await AsyncStorage.setItem('user_token',token);
+//    let a = await AsyncStorage.getItem('data_storge');
+//    let c =  JSON.parse(a);
+//     console.log(c.token);
+//     // signIn();
+//   }catch (e){
+//       console.log(e)
+//   }
+// }
 
 function onSubMit(){
   // console.log(dataUser.username)
@@ -49,12 +67,17 @@ function onSubMit(){
       Alert.alert('Hãy nhập mật khẩu !')
     }else{
       setSubmitLoading(true);
-      axios.post('http://34.122.241.19:8080/api/login',dataUser)
+      axios.post(ipApi+'api/login',dataUser)
       .then(function (response) {
         setSubmitLoading(false);
         console.log(response);
-        createToken(response.data.access_token)
-        console.log(response.data.access_token)
+        console.log(response.data.token_user.original.access_token);
+        // $data = response.data;
+        createToken(
+          response.data.token_user.original.access_token,
+          response.data.data_hocsinh,
+          response.data.data_user,
+          );
       })
       .catch(function (error) {
         setSubmitLoading(false);
@@ -65,7 +88,6 @@ function onSubMit(){
     }
 
 }
-
 
   return (
             <View style={styles.container}>

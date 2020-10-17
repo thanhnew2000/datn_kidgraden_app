@@ -7,7 +7,6 @@ import {
     Dimensions,
     Image,
     TouchableOpacity,
-    AsyncStorage,
     ImageBackground,
     ScrollView,
   } from 'react-native';
@@ -25,8 +24,8 @@ import {
   import IconMedicine from '../android/app/src/asset/img/icon-medicine.jpg';
   import IconFeedBack from '../android/app/src/asset/img/icon-feedback.png';
   import IconDonHo from '../android/app/src/asset/img/icon-don-ho.jpg';
-  
- 
+  import AsyncStorage from '@react-native-community/async-storage';
+  import ApiHocSinh from '../android/app/src/api/HocSinhApi';
   import apiRequest from '../android/app/src/api/users';
 
 const Home2 = ({ navigation }) => 
@@ -34,26 +33,42 @@ const Home2 = ({ navigation }) =>
 
 
   const [userToken, setUserToken] = useState(null);
+  const [data_hocsinh, setData_hocsinh] = useState({});
+  const [data_lop, setData_lop] = useState({});
+  const [data_user, setData_user] = useState({});
+
+
+  const getThisHocSinh = (token,id_hs) => {
+    ApiHocSinh.getOne(token,id_hs)
+      .then(function (response) {
+        let data = response.data;
+        console.log('data',data);
+        setData_hocsinh(data);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+};
 
     useEffect(() => {
       async function fetchData() {
         try{
-          var v = await AsyncStorage.getItem('user_token');
-          if(v !== null){
-            setUserToken(v)
+          var v = await AsyncStorage.getItem('data_storge');
+          var hs = await AsyncStorage.getItem('data_hs');
+
+          if(v !== null && hs !== null){
+            let data =  JSON.parse(v);
+            let data_HocSinh =  JSON.parse(hs);
+            setData_hocsinh(data_HocSinh)
+            setData_lop(data_HocSinh.get_lop)
+            setData_user(data.data_user)
+
+            getThisHocSinh(data.token,data_HocSinh.id)
+
           }
+
+          
           console.log(v)
-            // async function getlistPostRandom(){
-            //   try{
-            //     const {data} = await apiRequest.getUser(userToken)
-            //       console.log('USER',data);
-            //   }catch(error){
-            //     console.log(error);
-            //   }
-            // }
-            // getlistPostRandom()
-
-
         }catch (e){
           console.log(e);
         }
@@ -61,39 +76,20 @@ const Home2 = ({ navigation }) =>
     fetchData();
   },[]);
 
-
-
- 
-
-
-
   const [Category,setCategory] = useState([
-    {id: 1, name : 'Điểm danh',image :IconDiemDanh },
-    {id: 2, name : 'Xin nghỉ',image :IconXinNghi },
-    {id: 3, name : 'Dặn thuốc',image :IconMedicine },
-    {id: 4, name : 'Bản tin',image :IconNews },
-    {id: 5, name : 'Biểu đồ',image :IconChart },
-    {id: 6, name : 'Hoạt động',image :IconCalender },
-    {id: 7, name : 'Đánh giá GV',image :IconFeedBack },
-    {id: 8, name : 'Đón hộ',image :IconDonHo },
-    {id: 9, name : 'Học phí',image :IconMoney },
+    {id: 1, name : 'Điểm danh',image :IconDiemDanh , naviga:'Điểm danh'},
+    {id: 2, name : 'Xin nghỉ',image :IconXinNghi , naviga:'Xin nghỉ' },
+    {id: 3, name : 'Dặn thuốc',image :IconMedicine , naviga:'add_medicine'},
+    {id: 8, name : 'Đón hộ',image :IconDonHo ,  naviga:'Đón hộ' },
+    {id: 7, name : 'Đánh giá GV',image :IconFeedBack  ,  naviga:'Đánh giá GV'},
+    {id: 4, name : 'Bản tin',image :IconNews, naviga:'Bản tin' },
+    {id: 5, name : 'Biểu đồ',image :IconChart , naviga:'Biểu đồ' },
+    {id: 6, name : 'Hoạt động',image :IconCalender , naviga:'Hoạt động'},
+    {id: 9, name : 'Học phí',image :IconMoney , naviga:'Học phí'},
   ])
 
 
-    const [News, setAllTinTuc] = useState([])
-    const getListCate = () => {
-         axios.get('https://hosteshoper.000webhostapp.com/api/post')
-         .then(function (response) {
-           let data = response.data;
-           let threeNews = data.filter(el => (el.id <= 3));
-            setAllTinTuc(threeNews);
-         })
-         .catch(function (error) {
-           console.log(error);
-         });
-     };
-     useEffect(getListCate, []);
-
+   
   return (
 
     
@@ -101,8 +97,8 @@ const Home2 = ({ navigation }) =>
          <ImageBackground style={{width: '100%' , height:250 }}   source={require('../android/app/src/kids_student.jpg')}>
             <View style={styles.infoText}>
                 <View style={styles.borderOftext}>
-                      <Text style={{fontSize:20, fontWeight:'bold',color:'white'}}>Tran Thanh Tuyet</Text>
-                      <Text style={{fontSize:18,color:'white'}}>Lop Mam 1 - năm 2020</Text>
+                      <Text style={{fontSize:20, fontWeight:'bold',color:'white'}}>{data_hocsinh.ten}</Text>
+                      <Text style={{fontSize:18,color:'white'}}>{data_lop.ten_lop} - năm 2020</Text>
                 </View>
             </View>
          </ImageBackground>

@@ -1,7 +1,7 @@
 
 import React ,{ useState,useEffect }from 'react';
 import { View, Text, Image,
-    TouchableOpacity, ScrollView,StyleSheet,TextInput,  Modal, Button,FlatList, Alert,AsyncStorage
+    TouchableOpacity, ScrollView,StyleSheet,TextInput,  Modal,FlatList, Alert
  } from 'react-native'
  import HTMLView from 'react-native-htmlview';
  import DateTimePicker from '@react-native-community/datetimepicker';
@@ -9,22 +9,33 @@ import { View, Text, Image,
 import Entypo from 'react-native-vector-icons/Entypo';
 import IconKidsStudy from '../../android/app/src/asset/img/icon-kids-study.jpg';
 import ImagePicker from 'react-native-image-picker';
-
-import { Input } from 'react-native-elements';
+import ipApi from '../../android/app/src/api/ipApi';
+import ApiDonThuoc from '../../android/app/src/api/DonThuocApi';
+import AsyncStorage from '@react-native-community/async-storage';
+import { Input ,Button } from 'react-native-elements';
 import axios from "axios";
+import Modal_SubmitLoading from '../component/reuse/Modal_SubmitLoading';
+
 
 const Add_medicine =  ({ navigation , route }) => {
-  const { reloadAgain } = route.params;
+  // const { reloadAgain } = route.params;
+  // const { userToken } = route.params;
 
+  const [submitLoading, setSubmitLoading] = useState(false);
+  
     const [userToken, setUserToken] = useState(null)
+    const [data_HS, setDataHS] = useState(null)
     useEffect(() => {
         async function fetchData() {
           try{
-            var v = await AsyncStorage.getItem('user_token');
-            if(v !== null){
-              setUserToken(v)
+            var v = await AsyncStorage.getItem('data_storge');
+            var hs = await AsyncStorage.getItem('data_hs');
+            if(v !== null && hs !== null){
+              let data = JSON.parse(v)
+              let data_HocSinh = JSON.parse(hs)
+              setUserToken(data.token) 
+              setDataHS(data_HocSinh) 
             }
-            console.log(v)
           }catch (e){
             console.log(e);
           }
@@ -72,11 +83,11 @@ const Add_medicine =  ({ navigation , route }) => {
     ]);
 
 
-    const [dateFrom, setDateFrom] = useState(new Date(1598051730000));
+    const [dateFrom, setDateFrom] = useState(new Date());
     const [modeDateFrom, setModeDateFrom] = useState('date');
     const [showDateFrom, setShowDateFrom] = useState(false);
 
-    const [dateTo, setDateTo] = useState(new Date(1598051730000));
+    const [dateTo, setDateTo] = useState(new Date());
     const [modeDateTo, setModeDateTo] = useState('date');
     const [showDateTo, setShowDateTo] = useState(false);
 
@@ -125,10 +136,18 @@ const Add_medicine =  ({ navigation , route }) => {
 
     //   NÚT THÊM THUỐC VÀO ĐƠN
       function addMedicinetoList(){
+        if(oneMedicineAdd.name == ''){
+          Alert.alert('Hãy nhập tên thuốc')
+        }else if(oneMedicineAdd.lieu == ''){
+          Alert.alert('Hãy nhập liều thuốc')
+        }else if(oneMedicineAdd.lieu == ''){
+          Alert.alert('Hãy nhập đơn vị thuốc')
+        }else{
             setListAddMedicine([...listAddMedicine,oneMedicineAdd])
             setImageThuoc(null);
             modelShow(false);
             setOneMedicineAdd({ name: '',lieu: '',   donvi:'',note: '', image:'' })
+        }
       }
 
 
@@ -147,6 +166,7 @@ const Add_medicine =  ({ navigation , route }) => {
                         <AntDesign name="closecircle" size={30} color="red" onPress={() => removeMedicineAdd(index)} />
                     </View>
             </View>
+            
             <View style={{flexDirection:'row'}}> 
                     <View>
                         <Text style={{fontWeight:'bold'}}> Ghi chú</Text>
@@ -193,45 +213,57 @@ const Add_medicine =  ({ navigation , route }) => {
 }
 
 function submitAdd(){
+  if(listAddMedicine.length <= 0 ){
+    Alert.alert('Bạn chưa nhập thuốc')
+  }else{
+    setSubmitLoading(true)
         const formData = new FormData();
-            // formData.append("dateFrom",dateTo.getDate() dateTo.getMonth() + 1}dateTo.getFullYear());
-            // formData.append("dateTo",dateTo);
-            formData.append("loinhan",loiNhan);
-
-            for (var i = 0; i < listAddMedicine.length; i++) {
-                if(listAddMedicine[i].image.uri){
-                    formData.append("donthuoc["+i+"][anhImage]", {type: 'image/jpg', uri:listAddMedicine[i].image.uri, name:'uploaded.jpg'});
-                }
-                   formData.append("donthuoc["+i+"][name]",listAddMedicine[i].name);
-                    formData.append("donthuoc["+i+"][lieu]",listAddMedicine[i].lieu);
-                    formData.append("donthuoc["+i+"][donvi]",listAddMedicine[i].donvi);
-                    formData.append("donthuoc["+i+"][note]",listAddMedicine[i].note);
-            }
+          formData.append("dateFrom",dateFrom.getDate()+ '-' + parseInt(dateFrom.getMonth() + 1) +'-'+ dateFrom.getFullYear());
+          formData.append("dateTo",dateTo.getDate()+ '-' + parseInt(dateTo.getMonth() + 1) +'-'+ dateTo.getFullYear());
+          formData.append("loinhan",loiNhan);
+          for (var i = 0; i < listAddMedicine.length; i++) {
+              if(listAddMedicine[i].image.uri){
+                  formData.append("donthuoc["+i+"][anhImage]", {type: 'image/jpg', uri:listAddMedicine[i].image.uri, name:'uploaded.jpg'});
+              }
+                  formData.append("donthuoc["+i+"][name]",listAddMedicine[i].name);
+                  formData.append("donthuoc["+i+"][lieu]",listAddMedicine[i].lieu);
+                  formData.append("donthuoc["+i+"][donvi]",listAddMedicine[i].donvi);
+                  formData.append("donthuoc["+i+"][note]",listAddMedicine[i].note);
+          }
+          console.log(formData);
             const heads = 
             {
             //     headers: {
             //         "Content-type": "application/json",
             //         'Authorization': "Bearer "+userToken
             // }
-        }
-
-        axios
-        .post(
-            "http://10.24.11.114:8080/api/dan-thuoc",
-            formData,
-            heads
-        )
+            }
+        // axios
+        // .post(
+        //   ipApi+"api/dan-thuoc",
+        //     formData,
+        //     heads
+        // )
+        ApiDonThuoc.insertDonThuoc(userToken,data_HS.id,formData)
         .then(res => {
             console.log(res.data);
-            reloadAgain();
-            navigation.navigate('Dặn thuốc');
+            setSubmitLoading(false)
+            Alert.alert(
+              "Đã gửi đơn thuốc thành công",
+              "",
+              [
+                { text: "OK", onPress: () => navigation.navigate('Home') }
+              ],
+              { cancelable: false }
+            );
+            // // reloadAgain();
+            // navigation.navigate('Dặn thuốc');
         })
         .catch(err => {
-
             console.log(err);
         });
 
-
+      }
 
  
 }
@@ -240,8 +272,13 @@ function submitAdd(){
 
   return (
             <View style={styles.containers}>
-                <View>
+                <View style={{flexDirection:'row'}}>
+                  <View style={{width:'70%'}}>
                    <Text style={{fontSize:16,fontWeight:'bold',paddingVertical:7}}>NỘI DUNG DẶN THUỐC :</Text>
+                  </View>
+                  <View style={{width:'30%'}}>
+                   <Button title="Xem lịch sử"  type="outline" onPress={()=> navigation.navigate('Dặn thuốc')} />
+                  </View>
                 </View>
 
 
@@ -257,6 +294,7 @@ function submitAdd(){
                                                     <DateTimePicker
                                                     testID="dateTimePicker"
                                                     value={dateFrom}
+                                                    minimumDate={dateFrom}
                                                     mode={modeDateFrom}
                                                     is24Hour={true}
                                                     display="default"
@@ -280,6 +318,7 @@ function submitAdd(){
                                                     testID="dateTimePicker"
                                                     value={dateTo}
                                                     mode={modeDateTo}
+                                                    minimumDate={dateFrom}
                                                     is24Hour={true}
                                                     display="default"
                                                     onChange={onChangeDateTo}
@@ -391,18 +430,34 @@ function submitAdd(){
                 </Modal>
 
 
-                <FlatList
-                    data={listAddMedicine}
-                    renderItem={({item,index})=>
-                    <BoxThuoc item={item} index={index} />
-                    } 
-                    keyExtractor={(item,index) => `${index}`}  />
+            <FlatList
+                data={listAddMedicine}
+                renderItem={({item,index})=>
+                <BoxThuoc item={item} index={index} />
+                } 
+                keyExtractor={(item,index) => `${index}`} 
+            />
 
 
-                    <View style={{width:'100%',alignItems:'flex-end'}}>
-                          <Button title="Tạo đơn" onPress={submitAdd}/>
-                    </View>
-                 </View>
+              <View style={{width:'100%',alignItems:'flex-end'}}>
+                    <Button title="Tạo đơn" onPress={submitAdd}/>
+              </View>
+
+
+                {/* <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={submitLoading}
+                    onRequestClose={() => {
+                    Alert.alert("Modal has been closed.");
+                    }}
+                >
+                  <WaitLoading />
+              </Modal> */}
+
+              <Modal_SubmitLoading submitLoading={submitLoading} />
+
+     </View>
                
   
   );

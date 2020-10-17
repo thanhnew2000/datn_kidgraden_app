@@ -1,4 +1,5 @@
-import React from 'react'
+import React ,{ useState, useEffect }from 'react';
+
 import {
     StyleSheet,
     Image,
@@ -11,9 +12,33 @@ import {
   import IconKidsStudy from '../../android/app/src/asset/img/icon-kids-study.jpg';
   import { ListItem } from 'react-native-elements';
   import { AuthContext } from '../context';
+  import AsyncStorage from '@react-native-community/async-storage';
+
 const Account = ({navigation}) => {
 
     const { signOut } = React.useContext(AuthContext);
+
+    const [du_lieu_hs, setDuLieuHS] = useState({});
+    const [lop_hs, setLopHs] = useState({});
+
+    useEffect(() => {
+          async function fetchData() {
+            try{
+              var hs = await AsyncStorage.getItem('data_hs');
+              let data_HS = JSON.parse(hs);
+              console.log(data_HS);
+              if(hs !== null){
+                setDuLieuHS(data_HS);
+                setLopHs(data_HS.get_lop);
+              }
+            }catch (e){
+              console.log(e);
+            }
+        }
+        fetchData();
+    },[]);
+
+  
 
     const list = [
         {
@@ -36,8 +61,8 @@ const Account = ({navigation}) => {
             <View style={styles.containers}>
                 <View style={{alignItems:'center',padding:10}}>
                      <Image style={styles.imageAvatar}   source={require('../../android/app/src/kids_student.jpg')} />
-                     <Text style={{fontSize:16,paddingTop:10,fontWeight:'bold'}}>Bé : Tuyết Thanh Hà - 5 Tuổi</Text>
-                     <Text style={{fontSize:16,fontWeight:'bold'}}>Lớp Mầm</Text>
+                     <Text style={{fontSize:16,paddingTop:10,fontWeight:'bold'}}>Bé : {du_lieu_hs.ten} - 5 Tuổi</Text>
+                     <Text style={{fontSize:16,fontWeight:'bold'}}>{lop_hs.ten_lop}</Text>
                 </View>
                 <View>
                 {

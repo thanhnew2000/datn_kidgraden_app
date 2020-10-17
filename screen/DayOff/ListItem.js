@@ -3,29 +3,32 @@ import React ,{ useState, useEffect }from 'react';
 import axios from 'axios';
 import { View, Text, Image, TouchableOpacity, FlatList,StyleSheet, Button } from 'react-native'
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import moment from "moment";
 
-const ListItem =  ({ navigation }) => {
+const ListItem =  ({ navigation , item }) => {
   return (
                          <View  style={styles.contain}>
                             <View style={{flexDirection: 'row'}}>
-                                <View style={{width:'35%',marginLeft:10}}>
+                                <View style={{width:'25%',marginLeft:10}}>
                                     <Text  style={{fontWeight:'bold'}}>Ngày gửi: </Text>
-                                    <Text>10/5/1999</Text>
+                                    <Text>{moment(item['created_at']).format("YYYY-MM-DD") }</Text>
                                 </View>
 
-                                <View style={{width:'35%'}}>
-                                    <Text style={{fontWeight:'bold'}}>Thời gian nghỉ:</Text>
-                                    <Text>10/2/1999 - 10/3/1999</Text>
-                                </View>
+                                <View style={{width:'47%'}}>
+                                        <Text style={{fontWeight:'bold'}}>Thời gian nghỉ:</Text>
+                                        <Text>{item['ngay_bat_dau']} - {item['ngay_ket_thuc']}</Text> 
+                                 </View>
+                                 <View style={{width:'20%'}}>
+                                          <Text style={item['trang_thai'] == 0 ? styles.statusChuaXacNhan : styles.statusDaXacNhan}> 
+                                            {item['trang_thai'] == 0 ? 'Chờ xác nhận' : 'Đã xác nhận'}
+                                            </Text>
+                                 </View>
 
-                                <View style={{width:'35%'}}>
-                                    <Text style={styles.status}>Chờ xác nhận</Text>
-                                </View>
                              
                             </View>
                             <View style={{flexDirection: 'row',marginLeft:10}}>
                                 <Text style={{fontWeight:'bold'}} >Lý do :</Text>
-                                <Text> Cháu hôm nay sốt cô cho cháu nghỉ nhé hihi, ThankYou baby </Text>
+                                 <Text> {item['noi_dung']}</Text>
                             </View>
                           </View>
   );
@@ -47,13 +50,22 @@ const styles = StyleSheet.create({
         
         elevation: 10,
     },
-    status:{
+    statusChuaXacNhan:{
         width:95,
         height:20,
-        backgroundColor:'#ddd',
+        color:'gray',
         paddingHorizontal:3,
-        marginTop:10,
-        marginLeft:-2,
+        fontWeight:'bold'
+        // marginLeft:-2,
+    },
+    statusDaXacNhan:{
+        width:95,
+        height:20,
+        color:'green',
+        paddingHorizontal:3,
+        fontWeight:'bold'
+
+        // marginLeft:-2,
     }
   });
 

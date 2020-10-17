@@ -1,0 +1,30 @@
+
+  async function testGetItem() {
+    try{
+      var v = await AsyncStorage.getItem('data_storge');
+      let data = JSON.parse(v);
+      return data;
+    }catch (e){
+      console.log(e);
+    }
+  }
+
+  //  useEffect(() => {
+  //   async function fetchData() {
+  //     try{
+  //       // var v = await AsyncStorage.getItem('user_token');
+  //       var v = await AsyncStorage.getItem('data_storge');
+  //       let data = JSON.parse(v);
+  //       if(v !== null){
+  //         setUserToken(data.token);
+  //         getListDonXinNghi(data.token);
+  //         setData_HS(data.data_hocsinh)
+  //       }
+  //       console.log(v)
+  //     }catch (e){
+  //       console.log(e);
+  //     }
+  //   }
+  //   fetchData();
+  // },[]);
+

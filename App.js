@@ -1,7 +1,7 @@
 // In App.js in a new project
 
 import React ,{ useState, useEffect }from 'react';
-import {Button, View, Text, StyleSheet , AsyncStorage,Alert } from 'react-native';
+import {Button, View, Text, StyleSheet , Alert } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -12,6 +12,7 @@ import Login from './screen/Login';
 import Loading from './screen/Loading';
 import { AuthContext } from './screen/context';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import AsyncStorage from '@react-native-community/async-storage';
 
 
 import News from './screen/News/News';
@@ -36,6 +37,7 @@ import BieuDo from './screen/BieuDo/BieuDo';
 import Account from './screen/Account/Account';
 import ChangePass from './screen/Account/ChangePass';
 import CapNhapThongTin from './screen/Account/CapNhapThongTin';
+import EditInfoParent from './screen/Account/EditInfoParent';
 
 import Notification from './screen/Notification/Notification';
 
@@ -170,7 +172,14 @@ const HomeStackScreen = () => (
             headerStyle : { backgroundColor: '#78bbe6' },
             headerTintColor: '#fff',
             title : "Đánh giá giáo viên"
-        }} />           
+        }} />     
+
+          <HomeStack.Screen name="edit_info_parent" component={EditInfoParent}  
+          options={{
+            headerStyle : { backgroundColor: '#78bbe6' },
+            headerTintColor: '#fff',
+            title : "Thông tin phụ huynh"
+        }} />                
 
   </HomeStack.Navigator>
 )
@@ -179,7 +188,7 @@ const AccountScreen = () => (
   <AccountStack.Navigator initialRouteName="Account">
      <AccountStack.Screen name="Account" component={Account}  options={{ headerShown: false}} />
      <AccountStack.Screen name="ChangePass" component={ChangePass}  options={{ title:' Đổi mật khẩu'}} />
-     <AccountStack.Screen name="CapNhapThongTin" component={CapNhapThongTin}  options={{ title:'Cập nhập thông tin'}} />
+     <AccountStack.Screen name="CapNhapThongTin" ids='1'  component={CapNhapThongTin}  options={{ title:'Cập nhập thông tin'}} />
   </AccountStack.Navigator>
 )
 
@@ -239,8 +248,8 @@ const UserGreeting = () => (
         }}
       >
       <Tabs.Screen name="Kids" component={HomeStackScreen}   options={{title : "Home" }}   />
-      <Tabs.Screen name="Account" component={AccountScreen}  />
-      <Tabs.Screen name="DanhBa" component={DanhBaScreen}   options={{title : "Danh bạ"}} />
+      <Tabs.Screen name="Account" component={AccountScreen}  options={{title : "Tài khoản" }}  />
+      {/* <Tabs.Screen name="DanhBa" component={DanhBaScreen}   options={{title : "Danh bạ"}} /> */}
       <Tabs.Screen name="Thông báo" component={NotificationScreen}   options={{title : "Thông báo" , tabBarBadge:'3'}}   />
 </Tabs.Navigator>
 )
@@ -251,10 +260,16 @@ function App() {
   useEffect(() => {
     async function fetchData() {
       try{
-        var v = await AsyncStorage.getItem('user_token');
+        // var v = await AsyncStorage.getItem('user_token');
+        // if(v !== null){
+        //   setUserToken(v)
+        // }
+        var v = await AsyncStorage.getItem('data_storge');
         if(v !== null){
-          setUserToken(v)
+          let data =  JSON.parse(v);
+          setUserToken(data.token)
         }
+
       }catch (e){
         console.log(e);
       }
@@ -265,10 +280,12 @@ function App() {
 
   async function getTokenHaveSignIn() {
     try{
-      var v = await AsyncStorage.getItem('user_token');
-      if(v !== null){
-        setUserToken(v)
-      }
+      // var v = await AsyncStorage.getItem('user_token');
+        var v = await AsyncStorage.getItem('data_storge');
+          if(v !== null){
+            let data =  JSON.parse(v);
+            setUserToken(data.token)
+          }
     }catch (e){
       console.log(e);
     }
@@ -283,7 +300,7 @@ function App() {
         getTokenHaveSignIn();
       },
       signOut: () => {
-        AsyncStorage.removeItem('user_token');
+        AsyncStorage.removeItem('data_storge');
         setUserToken(null);
       }
     }

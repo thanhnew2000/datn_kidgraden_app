@@ -10,62 +10,228 @@ import { ScrollView } from 'react-native-gesture-handler';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import moment from "moment";
+import ipApi from '../../android/app/src/api/ipApi';
+import ApiDonHo from '../../android/app/src/api/DonHoApi';
+import AsyncStorage from '@react-native-community/async-storage';
+import Modal_Loading from '../component/reuse/Modal_Loading'
 
 const DonHo =  ({ navigation }) => {
 
   const [viewModel, setViewModel] = useState(false);
-  
+  const [userToken, setUserToken] = useState('');
 
+  
+  const [showLoading, setShowLoading] = useState(false);
+
+  const getListDonHo = (v) => {
+    console.log('dang chay ....');
+      ApiDonHo.getAll(v)
+      .then(function (response) {
+        let data = response.data;
+        console.log(data);
+        setDanhSachDonHo(data);
+        setShowLoading(false);
+
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+ };
+
+ 
+ useEffect(() => {
+  async function fetchData() {
+    try{
+      var v = await AsyncStorage.getItem('data_storge');
+      let data = JSON.parse(v);
+      if(v !== null){
+        setUserToken(data.token);
+        getListDonHo(data.token);
+        
+        getListDonHo(data.token);
+      }
+      console.log(v)
+    }catch (e){
+      console.log(e);
+    }
+}
+fetchData();
+},[]);
+
+
+
+
+
+  const [detailNguoiDon, setDetailNguoiDon] = useState({
+    ten_nguoi_don_ho:'',
+    date_end:'',
+    date_start:'',
+    cmtnd:''
+  })
+
+
+
+  const [danhSachDonHo, setDanhSachDonHo] = useState([])
+
+   function reloadAgain(){
+    setShowLoading(true);
+    getListDonHo(userToken);
+   }
 
   function modelDetailShow(value){
     setViewModel(value)
   }
 
 
+  function showDetailNguoiDonHo(itemDonHo){
+    setDetailNguoiDon({
+      ten_nguoi_don_ho:itemDonHo.ten_nguoi_don_ho,
+      date_end:itemDonHo.date_end,
+      date_start:itemDonHo.date_start,
+      cmtnd:itemDonHo.cmtnd,
+      phone_number:itemDonHo.phone_number,
+      anh_nguoi_don_ho:itemDonHo.anh_nguoi_don_ho,
+    })
+    setViewModel(true)
+  }
   
-  const ListDonHo = () => (
-    <View style={styles.oBox}>
-    <View style={styles.chia2thanh}>
-      <View style={{width:'20%'}}>
-         <Image style={{width:50,height:50}} source={IconKidsStudy}/>
+
+  
+  // const ListDonHo = ({itemDonHo}) => (
+
+  //   <View style={styles.oBox}>
+  //    <TouchableOpacity onPress={()=>showDetailNguoiDonHo(itemDonHo)} >
+  //         <View style={styles.chia2thanh}>
+  //           <View style={{width:'20%'}}>
+  //             {/* <Image style={{width:50,height:50}} source={IconKidsStudy}/> */}
+  //             <Image style={{width:50,height:50}} source={{uri : ipApi +'storage/'+itemDonHo.anh_nguoi_don_ho}}/>
+  //           </View>
+  //           <View style={{width:'50%'}}>
+  //               <Text style={{fontWeight:'bold',fontSize:17}}>Người đón: {itemDonHo.ten_nguoi_don_ho}</Text>
+  //               <Text style={{color:'black'}}>Bé : {data_HS.ten}</Text>
+  //           </View>
+            
+  //           <View style={{width:'30%',alignItems:'center'}}>
+  //           <Text style={{color:'green',fontWeight:'bold',paddingBottom:5}}>{itemDonHo.date_start} - {itemDonHo.date_end}</Text>
+  //           </View>
+  //         </View>
+  //         <View style={styles.chia2thanh}>
+  //             <Text>{itemDonHo.ghi_chu}</Text>
+  //         </View>
+  //   </TouchableOpacity>
+  // </View>
+
+  // );
+
+  const ListDonHoNew = ({itemDonHo}) => (
+     <TouchableOpacity onPress={()=>showDetailNguoiDonHo(itemDonHo)} >
+        <View style={styles.oBox}>
+              <View style={{flexDirection:'row',borderBottomWidth:1,paddingVertical:5}}>
+                <Text style={{fontWeight:'bold'}}>Ngày : </Text>
+                <Text style={{fontSize:15,fontWeight:'bold',color:'green'}}> {itemDonHo.date_start} -- {itemDonHo.date_end}</Text>
+              </View>
+              {/* <Text style={{fontSize:15,color:'blue',paddingVertical:2}}>Người đón</Text> */}
+              <View style={styles.chia2thanh}>
+
+                  <View style={{width:'25%'}}>
+                    <Image style={{width:50,height:50}} source={{uri : ipApi +'storage/'+itemDonHo.anh_nguoi_don_ho}}/>
+                  </View>
+                  <View style={{width:'70%'}}>
+                      <Text style={{fontWeight:'bold',fontSize:15}}>{itemDonHo.ten_nguoi_don_ho} </Text>
+                      <Text style={{color:'black'}}>SĐT :  {itemDonHo.phone_number} </Text>
+                  </View>
+            
+              </View>
       </View>
-      <View style={{width:'50%'}}>
-          <Text style={{fontWeight:'bold',fontSize:17}}>Lê Ngọc Tân</Text>
-          <Text style={{color:'black'}}>Bé : Phạm Trung Hiếu</Text>
-      </View>
-      
-      <View style={{width:'30%',alignItems:'center'}}>
-        <Text style={{color:'green',fontWeight:'bold',paddingBottom:5}}>14/7/2019</Text>
-        <TouchableOpacity onPress={()=>{
-              navigation.navigate('detail_medicine')
-          }} >
-            <Button title="Chi Tiết" onPress={()=>modelDetailShow(true)} />
-        </TouchableOpacity>
-      </View>
-    </View>
-    <View style={styles.chia2thanh}>
-        <Text>Nay bố mẹ cháu bận, nhờ a Tân đón cháu hộ, mong cô để ý a</Text>
-    </View>
-</View>
+    </TouchableOpacity>
+
+
   );
 
+
+
+  const ListModel = () => (
+           <Modal
+                      animationType="slide"
+                      transparent={true}
+                      visible={viewModel}
+                      onRequestClose={() => {
+                      Alert.alert("Modal has been closed.");
+                      }}
+                     >
+                    <View style={{backgroundColor:'#000000aa',flex:1,justifyContent:'center'}}>
+                        <View style={{backgroundColor:'#ffffff',margin:20,padding:10,borderRadius:10}}>
+                        <View style={{flexDirection:'row',padding:10,borderBottomWidth:1}}>
+                          <View style={{width:'80%'}}>
+                             <Text style={{fontWeight:'bold',fontSize:16}}>Thông tin người đón hộ : </Text>
+                          </View>
+                          <View style={{width:'20%',paddingLeft:10}}>
+                            <TouchableOpacity onPress={()=>modelDetailShow(false)}>
+                                <FontAwesome name="window-close" size={35} color="#dddd" />
+                            </TouchableOpacity>
+                          </View>
+
+                        </View>
+
+                        <View style={{alignItems:'center',paddingTop:10}}>
+                          {/* <Image source={IconKidsStudy} style={{width:150,height:140}} /> */}
+                          <Image source={{uri : ipApi +'storage/'+detailNguoiDon.anh_nguoi_don_ho}} style={{width:150,height:140}} />
+
+                        </View>
+                        <View style={{flexDirection:'row',padding:10}}>
+                          <View style={{width:'50%'}}>
+                              <Text style={{fontWeight:'bold',fontSize:15}}>Tên : </Text>
+                         <Text>{detailNguoiDon.ten_nguoi_don_ho}</Text>
+                          </View>
+                          <View style={{width:'50%'}}>
+                              <Text  style={{fontWeight:'bold',fontSize:15}}>Số CMND :</Text>
+                              <Text>{detailNguoiDon.cmtnd}</Text>
+                          </View>
+                        </View>
+                        <View style={{flexDirection:'row',padding:10}}>
+                          <View style={{width:'50%'}}>
+                                <Text style={{fontWeight:'bold',fontSize:15}}>Số điện thoại : </Text>
+                                <Text>{detailNguoiDon.phone_number}</Text>
+                          </View>
+
+                          <View style={{width:'50%'}}>
+                                <Text style={{fontWeight:'bold',fontSize:15}}>Đón bé : </Text>
+                                <Text>Phạm Trung Hiếu</Text>
+                          </View>
+                         </View>
+
+                         <View style={{width:'50%',padding:10,flexDirection:'row'}}>
+                                <Text style={{fontWeight:'bold',fontSize:15}}>Ngày đón: </Text>
+                                <Text> {detailNguoiDon.date_start} - {detailNguoiDon.date_end}</Text>
+                          </View>
+
+                        </View>
+                    </View>
+                </Modal>
+  );
 
   return (
     <ScrollView style={styles.container}>
             <View >
                   <View  style={{width:'100%',marginTop:5}}>
                         <TouchableOpacity onPress={()=>{
-                                navigation.navigate('add_donho')
+                                navigation.navigate('add_donho',{reloadAgain:reloadAgain,userToken : userToken})
                             }} >
                               <FontAwesome5 name="user-plus" size={35} color="green" />
                         </TouchableOpacity>
                    </View>
-               
-                    <ListDonHo />
-                    <ListDonHo />
+                                 
+                   <FlatList
+                      data={danhSachDonHo}
+                      renderItem={({item}) =>
+                         <ListDonHoNew itemDonHo={item} />
+                      }
+                    />
 
 
-                    <Modal
+                      <ListModel />
+                    {/* <Modal
                       animationType="slide"
                       transparent={true}
                       visible={viewModel}
@@ -119,9 +285,13 @@ const DonHo =  ({ navigation }) => {
 
                         </View>
                     </View>
-                </Modal>
+                </Modal> */}
 
 
+
+    
+
+                <Modal_Loading showLoading = {showLoading} />
 
 
             </View>
@@ -154,7 +324,7 @@ const styles = StyleSheet.create({
     },
     chia2thanh:{
       flexDirection:'row',
-      paddingVertical:5
+      paddingTop:3
     },
     oDuoi:{
       flexDirection:'row',

@@ -2,36 +2,60 @@
 import React ,{ useState }from 'react';
 import { View, Text, Image, StyleSheet, 
     TextInput,
-    TouchableOpacity, ScrollView,Button
+    TouchableOpacity, ScrollView,Button,FlatList
  } from 'react-native'
  import HTMLView from 'react-native-htmlview';
 import IconKidsStudy from '../../android/app/src/asset/img/icon-kids-study.jpg';
 import { Input } from 'react-native-elements';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-
+import ipApi from '../../android/app/src/api/ipApi';
 
 const Detail_medicine =  ({ route,navigation }) => {
-    // const { post } = route.params;
+    const { donthuoc } = route.params;
+    // const { data_HS } = route.params;
+    const chitietdon = donthuoc.chi_tiet_don_dan_thuoc;
 
+
+const DetailMedicine = ({item}) => {
+return    <View style={styles.listMedicine}>
+            <View style={{flexDirection:'row'}}> 
+                    <View style={{width:'70%'}}>
+                        <Text style={{fontWeight:'bold',fontSize:15}}> {item.ten_thuoc} </Text>
+                        <View style={{flexDirection:'row'}}>
+                            <Text style={{fontWeight:'bold',fontSize:15}}> Liều : </Text>
+                            <Text>{item.lieu_luong}  ({item.don_vi})</Text>
+                        </View>
+                        <Text style={{fontWeight:'bold',fontSize:15}}> Ghi chú : </Text>
+                        <Text>{item.ghi_chu}</Text>
+                    </View>
+                    <View style={{width:'30%',alignItems:'center',alignSelf:'center'}}>
+                    {/* <Image style={{width:60,height:60}} source={IconKidsStudy}/> */}
+                    <Image  style={{width:60,height:60}} source={{uri : ipApi + 'storage/'+item.anh}}/>
+                   </View>
+            </View>
+        </View>
+
+}
   return (
             <View style={styles.container}>
                <ScrollView>
-                        <View style={{flexDirection:'row'}}>
+                        {/* <View style={{flexDirection:'row'}}>
                             <View>
-                            <Image style={{width:70,height:70}} source={IconKidsStudy}/>
+                            <Image style={{width:70,height:70}} source={{uri : ipApi+'storage/'+data_HS.avatar}}/>
+
                             </View>
                             <View style={{paddingLeft:10,paddingTop:10}}>
-                                <Text style={{fontSize:19,fontWeight:'bold'}}>Phạm Trung Hiếu</Text>
+                                <Text style={{fontSize:19,fontWeight:'bold'}}>{data_HS.ten}</Text>
                                 <Text style={{}}>17/9/2020</Text>
                             </View>
-                        </View>
+                        </View> */}
 
                         <View style={{paddingVertical:5}}>
                             <Text style={{fontWeight:'bold',backgroundColor:'green',width:'20%',color:'white',textAlign:'center'}}>Lời nhắn</Text>
-                            <Text>"Cô giúp cháu uống thuốc đùng giờ ạ"</Text>
+                                <Text>"{donthuoc.noi_dung}"</Text>
                         </View>
 
-                        <View style={styles.listMedicine}>
+                        {/* <View style={styles.listMedicine}>
                             <View style={{flexDirection:'row'}}> 
                                     <View style={{width:'70%'}}>
                                         <Text style={{fontWeight:'bold',fontSize:15}}> Sino </Text>
@@ -46,34 +70,21 @@ const Detail_medicine =  ({ route,navigation }) => {
                                        <Image style={{width:60,height:60}} source={IconKidsStudy}/>
                                     </View>
                             </View>
-                        </View>
+                        </View> */}
+                        
+                        <FlatList
+                            data={chitietdon}
+                            renderItem={({item,index})=>
+                            <DetailMedicine  item={item} index={index} />
+                            } 
+                            keyExtractor={(item,index) => `${index}`} 
+                             />
 
-                        
-                        <View style={styles.listMedicine}>
-                            <View style={{flexDirection:'row'}}> 
-                                    <View style={{width:'70%'}}>
-                                        <Text style={{fontWeight:'bold',fontSize:15}}> Sino </Text>
-                                    </View>
-                                    <View style={{width:'30%'}}>
-                                        <Text>Liều : (300ml)</Text>
-                                    </View>
-                            </View>
-                            <View style={{flexDirection:'row'}}> 
-                                    <View>
-                                        <Text style={{fontWeight:'bold'}}> Ghi chú</Text>
-                                    </View>
-                                    <View style={{width:'80%'}}>
-                                        <Text>: Uống sau bữa ăn trưa  ăn trưa ăn trưa ăn trưa ăn trưa ăn trưa ăn trưa ăn trưa</Text>
-                                    </View>
-                            </View>
-                        </View>
-                        
                         <View style={{paddingVertical:5,flexDirection:'row'}}>
                             {/* <Text  style={{color:'green',fontSize:16}}>Đã cho con uống</Text> */}
                             <AntDesign name="check" size={20} color="green" />
                             <Text  style={{color:'green',fontSize:16}}>Đã cho con uống</Text>
                         </View>
-
 
 
                         <View style={{flexDirection:'row',paddingVertical:5}}>
@@ -96,7 +107,7 @@ const Detail_medicine =  ({ route,navigation }) => {
 
                 </ScrollView>
 
-                <View style={{flexDirection:'row',position: 'absolute', left: 0, right: 0, bottom: 0,flex:0.1}}>
+                <View style={{flexDirection:'row',position: 'absolute', left: 0, right: 0, bottom: 0,flex:0.1,paddingBottom:10}}>
                            <TextInput   style={{ width:'80%',height: 35, borderColor: 'gray', borderWidth: 1,backgroundColor:'white' }} 
                            placeholder="Phản hồi cho giáo viên"
                            />

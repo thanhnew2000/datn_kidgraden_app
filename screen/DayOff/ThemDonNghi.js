@@ -1,17 +1,28 @@
 
 import React ,{ useState, useEffect }from 'react';
 import axios from 'axios';
-import { View, Text, Image,TextInput, TouchableOpacity, FlatList,StyleSheet, Button } from 'react-native';
+import { View, Text, Image,TextInput, TouchableOpacity, FlatList,StyleSheet, Button,Modal,Alert } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Entypo from 'react-native-vector-icons/Entypo';
+import ipApi from '../../android/app/src/api/ipApi';
+import ApiXinNghi from '../../android/app/src/api/XinNghiHocApi';
+import AsyncStorage from '@react-native-community/async-storage';
+import Modal_SubmitLoading from '../component/reuse/Modal_SubmitLoading';
 
-const ThemDonNghi =  ({ navigation }) => {
-    const [dateFrom, setDateFrom] = useState(new Date(1598051730000));
+const ThemDonNghi =  ({ navigation , route}) => {
+  const { reloadAgain } = route.params;
+  const { userToken } = route.params;
+  const { data_HS } = route.params;
+  
+    const [submitLoading, setSubmitLoading] = useState(false);
+    const [lyDoXinNghi, setLyDoXinNghi] = useState(null);
+
+    const [dateFrom, setDateFrom] = useState(new Date());
     const [modeDateFrom, setModeDateFrom] = useState('date');
     const [showDateFrom, setShowDateFrom] = useState(false);
 
-    const [dateTo, setDateTo] = useState(new Date(1598051730000));
+    const [dateTo, setDateTo] = useState(new Date());
     const [modeDateTo, setModeDateTo] = useState('date');
     const [showDateTo, setShowDateTo] = useState(false);
 
@@ -45,6 +56,58 @@ const ThemDonNghi =  ({ navigation }) => {
         showModeTo('date');
       };
 
+
+      function Checkvalidation(dateFrom,dateTo,lyDoXinNghi){
+           if(dateFrom > dateTo){
+            return 'Ngày bắt đầu không lớn hơn ngày kết thúc';
+          }else if(lyDoXinNghi == null){
+            return 'Hãy viết lý do xin nghỉ';
+          }else{
+            return true
+          }
+      }
+
+
+      function submitFrom (){
+        setSubmitLoading(true)
+        let checkValidate = Checkvalidation(dateFrom,dateTo,lyDoXinNghi);
+         if(checkValidate !== true){
+              setSubmitLoading(false)
+              Alert.alert(checkValidate)
+            }else{
+                  const formData = new FormData();
+                    formData.append("ngay_bat_dau",dateFrom.getDate()+ '-' + parseInt(dateFrom.getMonth() + 1) +'-'+ dateFrom.getFullYear());
+                    formData.append("ngay_ket_thuc",dateTo.getDate()+ '-' + parseInt(dateTo.getMonth() + 1) +'-'+ dateTo.getFullYear());
+                    formData.append("noi_dung",lyDoXinNghi);
+                      const heads = 
+                      {
+                      //     headers: {
+                      //         "Content-type": "application/json",
+                      //         'Authorization': "Bearer "+userToken
+                      // }
+                      }
+
+                      console.log(formData)
+                  // axios
+                  // .post(
+                  //   ipApi+"api/xin-nghi-hoc",
+                  //     formData,
+                  //     heads
+                  // )
+                  ApiXinNghi.insertXinNghiHoc(userToken,data_HS.id,formData)
+                  .then(res => {
+                      console.log(res.data);
+                      setSubmitLoading(false);
+                      reloadAgain();
+                      navigation.navigate('Xin nghỉ');
+                  })
+                  .catch(err => {
+                      console.log(err);
+                  });
+
+                }
+
+      }
   return (
             <View style={styles.containers}>
               <View style={{flexDirection:'row'}}>
@@ -57,16 +120,18 @@ const ThemDonNghi =  ({ navigation }) => {
                                    {showDateFrom && (
                                         <DateTimePicker
                                         testID="dateTimePicker"
+                                        minimumDate={dateFrom}
                                         value={dateFrom}
                                         mode={modeDateFrom}
                                         is24Hour={true}
                                         display="default"
+                                        dateFormat="dayofweek day month"
                                         onChange={onChangeDateFrom}
                                         />
                                    )}
                                    <Entypo  style={{marginLeft:50,marginTop:-10}} name="arrow-bold-right" size={35} color="green"  />
 
-                            </View>
+                            </View> 
 
                             
                     </View>
@@ -80,6 +145,7 @@ const ThemDonNghi =  ({ navigation }) => {
                                         <DateTimePicker
                                         testID="dateTimePicker"
                                         value={dateTo}
+                                        minimumDate={dateFrom} 
                                         mode={modeDateTo}
                                         is24Hour={true}
                                         display="default"
@@ -95,34 +161,45 @@ const ThemDonNghi =  ({ navigation }) => {
                          <Text style={{fontSize:15,marginRight:10,fontWeight:'bold'}}>Lý do viêt đơn nghỉ :</Text> 
               </View>
               <View style={{flexDirection:'row'}}>
-                         <TextInput
+
+                       <TextInput 
+                            onChangeText={text  => {setLyDoXinNghi(text)}}
+                            placeholder="Lời nhắn tới giáo viên"
                             multiline={true}
-                            numberOfLines={10}
-                            style={{ height:200, borderRadius:4,width: 300, marginTop:10,
-                                backgroundColor:'#fff',
-                                shadowColor: "#000",
-                                shadowOffset: {
-                                    width: 0,
-                                    height: 7,
-                                },
-                                shadowOpacity: 1.70,
-                                shadowRadius: 6.27,
-                                
-                                elevation: 19,}}
-                       />
+                            numberOfLines={7}
+                            textAlignVertical = "top"
+                            style={{ width:'100%', borderColor: 'gray', backgroundColor:'white',
+                            shadowColor: "#000",
+                            shadowOffset: {
+                                width: 0,
+                                height: 7,
+                            },
+                            shadowOpacity: 1.70,
+                            shadowRadius: 6.27,
+                            
+                            elevation: 19,}}
+                        />
+
+                      
               </View>
               <View style={{flexDirection:'row'}}>
                   <View style={{width:'70%'}}>
                   </View>
                   <View style={{width:'30%',flexDirection:'row',marginTop:17}}>
                       <View style={{marginLeft:10}}>
-                        <Button title="Gửi đơn"/>
+                        <Button title="Gửi đơn" onPress={submitFrom}/>
                       </View>
                       
                   </View>
 
 
               </View>
+
+
+
+
+              <Modal_SubmitLoading submitLoading={submitLoading} />
+
             </View>
   );
 };

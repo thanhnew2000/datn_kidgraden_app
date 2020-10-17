@@ -1,22 +1,88 @@
 
 import React ,{ useState, useEffect }from 'react';
 import axios from 'axios';
-import { View, Text, Image, TouchableOpacity, FlatList,StyleSheet, Button } from 'react-native'
+import { View, Text, Image, TouchableOpacity, FlatList,StyleSheet, Button,Modal } from 'react-native'
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import ListItem from './ListItem';
+import moment from "moment";
+import ipApi from '../../android/app/src/api/ipApi';
+import AsyncStorage from '@react-native-community/async-storage';
+import ApiXinNghi from '../../android/app/src/api/XinNghiHocApi';
+import Modal_Loading from '../component/reuse/Modal_Loading'
+
 const DayOff =  ({ navigation }) => {
+
+
+  const [showLoading, setShowLoading] = useState(true);
+  const [listDonXinNghi, setListDonXinNghi] = useState([]);
+  const [userToken, setUserToken] = useState(null);
+  const [data_HS, setData_HS] = useState({});
+
+  const getListDonXinNghi = (v) => {
+      //  axios.get(ipApi+"api/all-don-xin-nghi")
+
+      console.log(v)
+      ApiXinNghi.getAll(v)
+       .then(function (response) {
+         let data = response.data;
+
+         let create_At = new Date(data[0]['created_at']);
+         console.log(moment(data[0]['created_at']).format("YYYY-MM-DD"))
+         console.log(create_At.getMonth())
+         console.log(data);
+         setListDonXinNghi(data);
+         setShowLoading(false);
+       })
+       .catch(function (error) {
+         console.log(error);
+       });
+   };
+
+
+   
+  async function fetchData(){
+    let data  = await AsyncStorage.getItem('data_storge');
+    let data_HocSinh  = await AsyncStorage.getItem('data_hs');
+    let dulieu = JSON.parse(data);
+    let dulieu_hs = JSON.parse(data_HocSinh);
+    setUserToken(dulieu.token);
+    getListDonXinNghi(dulieu.token);
+    setData_HS(dulieu_hs)
+  }
+  useEffect(() => {fetchData()}, []);
+
+
+
+
+   function reloadAgain(){
+    setShowLoading(true);
+    getListDonXinNghi(userToken);
+   }
+
   return (
             <View style={styles.containers}>
                 <View  style={{width:'100%',marginTop:5}}>
                 <TouchableOpacity onPress={()=>{
-                        navigation.navigate('Tạo đơn xin nghỉ')
+                        navigation.navigate('Tạo đơn xin nghỉ',{reloadAgain:reloadAgain, userToken: userToken,data_HS:data_HS})
                     }} >
                       <AntDesign name="pluscircleo" size={35} color="green" />
                 </TouchableOpacity>
                 </View>
 
-                 <ListItem />
-                 <ListItem />
+
+
+                <FlatList
+                  data={listDonXinNghi}
+                  renderItem={({item,index}) => <ListItem item = {item}/>}
+                  keyExtractor={(value, index) => index}
+               />
+
+
+
+               
+                <Modal_Loading showLoading = {showLoading} />
+
+           
             </View>
   );
 };
