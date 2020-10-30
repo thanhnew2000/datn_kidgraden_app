@@ -20,8 +20,8 @@ const Medicine =  ({ navigation }) => {
   const [showLoading, setShowLoading] = useState(true);
   const [data_HS, setData_HS] = useState({});
 
-  const getListThuoc = (v) => {
-       ApiDonThuoc.getAll(v)
+  const getListThuoc = (token,id_hs) => {
+       ApiDonThuoc.getAllByHs(token,id_hs)
        .then(function (response) {
          let data = response.data;
          console.log(data);
@@ -33,21 +33,19 @@ const Medicine =  ({ navigation }) => {
        });
    };
 
-  //  useEffect(getListThuoc, []);
    const [userToken, setUserToken] = useState(null);
       useEffect(() => {
         async function fetchData() {
           try{
-            var v = await AsyncStorage.getItem('data_storge');
+            var token = await AsyncStorage.getItem('data_token');
             var hs = await AsyncStorage.getItem('data_hs');
-            let data = JSON.parse(v)
             let data_HocSinh = JSON.parse(hs)
-            if(v !== null){
-              setUserToken(data.token) 
-              getListThuoc(data.token)
+            if(token !== null){
+              setUserToken(token) 
+              getListThuoc(token,data_HocSinh.id)
               setData_HS(data_HocSinh)
             }
-            console.log(data.token)
+            console.log(data_HocSinh.id)
           }catch (e){
             console.log(e);
           }
@@ -127,7 +125,7 @@ const Medicine =  ({ navigation }) => {
     
     <View style={styles.oDonThuc}>
           <TouchableOpacity onPress={()=>{
-              navigation.navigate('detail_medicine',{donthuoc : itemDon , data_HS: data_HS})
+              navigation.navigate('detail_medicine',{donthuoc : itemDon , data_HS: data_HS, userToken:userToken })
               }} >
                 <View style={{paddingVertical:10,flexDirection:'row'}}>
                   <Text style={{fontSize:16,fontWeight:'bold'}}>Ngày : </Text>
@@ -161,7 +159,7 @@ const Medicine =  ({ navigation }) => {
             <View >
                   <View  style={{width:'100%',marginTop:5}}>
                         <TouchableOpacity onPress={()=>{
-                                navigation.navigate('add_medicine',{reloadAgain : reloadAgain,userToken:userToken})
+                                navigation.navigate('add_medicine',{reloadAgain : reloadAgain, userToken:userToken })
                             }} >
                               <AntDesign name="medicinebox" size={35} color="green" />
                         </TouchableOpacity>

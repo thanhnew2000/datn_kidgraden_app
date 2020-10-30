@@ -23,7 +23,7 @@ const CateListItem = ({category,navigation,onPress}) => {
   }
   const styles = StyleSheet.create({
     imageThucDon: {
-        width:75, height:75,borderRadius:100
+        width:55, height:55,borderRadius:100,marginLeft:'6%'
     },
     textThucDon:{
        fontWeight: 'bold', 

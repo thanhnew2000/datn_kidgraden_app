@@ -22,42 +22,37 @@ const DonHo =  ({ navigation }) => {
   const [userToken, setUserToken] = useState('');
 
   
-  const [showLoading, setShowLoading] = useState(false);
+    const [showLoading, setShowLoading] = useState(false);
 
-  const getListDonHo = (v) => {
-    console.log('dang chay ....');
-      ApiDonHo.getAll(v)
-      .then(function (response) {
-        let data = response.data;
-        console.log(data);
-        setDanhSachDonHo(data);
-        setShowLoading(false);
+    const getListDonHo = (token) => {
+        ApiDonHo.getAll(token)
+        .then(function (response) {
+          let data = response.data;
+          console.log(data);
+          setDanhSachDonHo(data);
+          setShowLoading(false);
 
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
- };
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    };
 
- 
- useEffect(() => {
-  async function fetchData() {
-    try{
-      var v = await AsyncStorage.getItem('data_storge');
-      let data = JSON.parse(v);
-      if(v !== null){
-        setUserToken(data.token);
-        getListDonHo(data.token);
-        
-        getListDonHo(data.token);
-      }
-      console.log(v)
-    }catch (e){
-      console.log(e);
+    
+    useEffect(() => {
+      async function fetchData() {
+        try{
+          var token = await AsyncStorage.getItem('data_token');
+          if(token !== null){
+            setUserToken(token);
+            getListDonHo(token);
+          }
+        }catch (e){
+          console.log(e);
+        }
     }
-}
-fetchData();
-},[]);
+    fetchData();
+    },[]);
 
 
 

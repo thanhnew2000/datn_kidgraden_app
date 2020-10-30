@@ -4,15 +4,21 @@ import React ,{ useState, useEffect }from 'react';
 import {Button, View, Text, StyleSheet , Alert } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Home from './screen/Home2';
 import ListDanhBa from './screen/ListDanhBa';
+import DrawerScreen from './screen/DrawerScreen';
+
 import Header from './screen/Header';
 import Login from './screen/Login';
 import Loading from './screen/Loading';
 import { AuthContext } from './screen/context';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import AsyncStorage from '@react-native-community/async-storage';
+import ApiHocSinh from './android/app/src/api/HocSinhApi';
+// import { AuthContext } from './screen/context';
+import Modal_Start_App from './screen/component/reuse/Modal_Start_App'
 
 
 import News from './screen/News/News';
@@ -47,6 +53,14 @@ import ChiTietHocPhi from './screen/HocPhi/ChiTietHocPhi';
 
 import Feedback from './screen/Feedback/Feedback';
 
+// Redux
+import { createStore,applyMiddleware} from 'redux';
+import myReducer from './src/redux/reducers/index';
+import {Provider} from 'react-redux';
+import thunk from 'redux-thunk'
+
+const store = createStore(myReducer,applyMiddleware(thunk));
+
 
 const Stack = createStackNavigator();
 const HomeStack = createStackNavigator();
@@ -57,24 +71,21 @@ const LoginStack = createStackNavigator();
 const Tabs = createBottomTabNavigator();
 
 
+const Drawer = createDrawerNavigator();
+
 const HomeStackScreen = () => (
   <HomeStack.Navigator initialRouteName="Home">
-
       <HomeStack.Screen name="loading" component={Loading}  options={{ headerShown: false }} />
-
-
       <HomeStack.Screen name="Home" component={Home}  
       options={{
         headerStyle : {
-        // backgroundColor: 'rgb(98, 248, 160)'
-        backgroundColor: '#78bbe6'
+          backgroundColor: '#78bbe6'
         },
         headerTintColor: '#fff',
         headerTitleStyle: {
           textAlign: 'center',
-       },
-       headerTitle: () =><Header/>
-
+        },
+     
     }}
     />
 
@@ -185,10 +196,14 @@ const HomeStackScreen = () => (
 )
 
 const AccountScreen = () => (
-  <AccountStack.Navigator initialRouteName="Account">
+  <AccountStack.Navigator initialRouteName="CapNhapThongTin">
      <AccountStack.Screen name="Account" component={Account}  options={{ headerShown: false}} />
      <AccountStack.Screen name="ChangePass" component={ChangePass}  options={{ title:' Đổi mật khẩu'}} />
-     <AccountStack.Screen name="CapNhapThongTin" ids='1'  component={CapNhapThongTin}  options={{ title:'Cập nhập thông tin'}} />
+     <AccountStack.Screen name="CapNhapThongTin"   component={CapNhapThongTin}      options={{
+            headerStyle : { backgroundColor: '#78bbe6' },
+            headerTintColor: '#fff',
+            title : "Thông tin"
+        }} />
   </AccountStack.Navigator>
 )
 
@@ -248,28 +263,48 @@ const UserGreeting = () => (
         }}
       >
       <Tabs.Screen name="Kids" component={HomeStackScreen}   options={{title : "Home" }}   />
-      <Tabs.Screen name="Account" component={AccountScreen}  options={{title : "Tài khoản" }}  />
+      <Tabs.Screen name="Account" component={AccountScreen}  options={{title : "Thông tin" }}  />
       {/* <Tabs.Screen name="DanhBa" component={DanhBaScreen}   options={{title : "Danh bạ"}} /> */}
       <Tabs.Screen name="Thông báo" component={NotificationScreen}   options={{title : "Thông báo" , tabBarBadge:'3'}}   />
+
+
+
 </Tabs.Navigator>
 )
 
 function App() {
+  const [showLoading, setShowLoading] = useState(true);
   const [userToken, setUserToken] = useState(null);
+
+
+  const getHsIdUser = (token,id_hs) => {
+    ApiHocSinh.getHocSinhIdUser(token,id_hs)
+      .then(function (response) {
+        console.log('token su dung')
+      })
+      .catch(function (error) {
+        console.log(error);
+        AsyncStorage.removeItem('data_user');
+        AsyncStorage.removeItem('data_hs');
+        AsyncStorage.removeItem('data_token');
+        setUserToken(null);
+      });
+  };
+
 
   useEffect(() => {
     async function fetchData() {
       try{
-        // var v = await AsyncStorage.getItem('user_token');
-        // if(v !== null){
-        //   setUserToken(v)
-        // }
-        var v = await AsyncStorage.getItem('data_storge');
-        if(v !== null){
-          let data =  JSON.parse(v);
-          setUserToken(data.token)
+        var token = await AsyncStorage.getItem('data_token');
+        var data_user = await AsyncStorage.getItem('data_user');
+        let user =  JSON.parse(data_user);
+        if(token !== null){
+          await getHsIdUser(token,user.id);
+          setUserToken(token)
+          setShowLoading(false)
+        }else{
+          setShowLoading(false)
         }
-
       }catch (e){
         console.log(e);
       }
@@ -280,19 +315,14 @@ function App() {
 
   async function getTokenHaveSignIn() {
     try{
-      // var v = await AsyncStorage.getItem('user_token');
-        var v = await AsyncStorage.getItem('data_storge');
-          if(v !== null){
-            let data =  JSON.parse(v);
-            setUserToken(data.token)
+        var token = await AsyncStorage.getItem('data_token');
+          if(token !== null){
+            setUserToken(token)
           }
     }catch (e){
       console.log(e);
     }
  }
-
-
-
 
   const authContext = React.useMemo(()=>{
     return {
@@ -300,48 +330,47 @@ function App() {
         getTokenHaveSignIn();
       },
       signOut: () => {
-        AsyncStorage.removeItem('data_storge');
+        AsyncStorage.removeItem('data_user');
+        AsyncStorage.removeItem('data_hs');
+        AsyncStorage.removeItem('data_token');
         setUserToken(null);
       }
     }
   })
 
- function Routers() {
-    if (userToken) {
-      return <UserGreeting />;
-    }
-    return <GuestGreeting />;
-  }
-
-
-  // useEffect(() => {
-  //       async function fetchData() {
-  //         try{
-  //           var v = await AsyncStorage.getItem('user_token');
-  //           if(v !== null){
-  //             setloginis(true)
-  //           }
-  //         }catch (e){
-  //           console.log(e);
-  //         }
-  //      }
-  //      fetchData();
-  // },[]);
-
  
+
+
   return (
 
-    <AuthContext.Provider value ={authContext}>
-        <NavigationContainer>
-          {userToken ? (
-            <UserGreeting />
-          ) : (
-            <GuestGreeting />
-          )}
+    <Provider store={store}>
+      <AuthContext.Provider value ={authContext}>
+          <NavigationContainer>
+            {/* {userToken ? (
+              <UserGreeting />
+            ) : (
+              <GuestGreeting />
+            )} */}
 
-          {/* <Greeting isLoggedIn={true} /> */}
-       </NavigationContainer>
-    </AuthContext.Provider>
+            {/* <Greeting isLoggedIn={true} /> */}
+          {
+                userToken ? (
+                  <Drawer.Navigator drawerContent={props => <DrawerScreen {...props} />} >
+                      <Drawer.Screen name="Home"  component={UserGreeting}    />
+                    </Drawer.Navigator>
+                    ) : (
+                    <GuestGreeting />
+                  ) 
+          
+          }
+
+
+        <Modal_Start_App showLoading = {showLoading} /> 
+        
+
+        </NavigationContainer>
+      </AuthContext.Provider>
+    </Provider>
 
        );
       }

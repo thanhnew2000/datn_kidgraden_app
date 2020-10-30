@@ -14,29 +14,37 @@ import {
   import { AuthContext } from '../context';
   import AsyncStorage from '@react-native-community/async-storage';
 
+  import { useSelector,useDispatch,useStore  } from 'react-redux'
+  
 const Account = ({navigation}) => {
+
+    const dispatch = useDispatch();
+    const student = useSelector(state => state)
+    const lop_hs = student.hocsinh.data.get_lop;
+    const hs = student.hocsinh.data;
+
 
     const { signOut } = React.useContext(AuthContext);
 
     const [du_lieu_hs, setDuLieuHS] = useState({});
-    const [lop_hs, setLopHs] = useState({});
+    // const [lop_hs, setLopHs] = useState({});
 
-    useEffect(() => {
-          async function fetchData() {
-            try{
-              var hs = await AsyncStorage.getItem('data_hs');
-              let data_HS = JSON.parse(hs);
-              console.log(data_HS);
-              if(hs !== null){
-                setDuLieuHS(data_HS);
-                setLopHs(data_HS.get_lop);
-              }
-            }catch (e){
-              console.log(e);
-            }
-        }
-        fetchData();
-    },[]);
+    // useEffect(() => {
+    //       async function fetchData() {
+    //         try{
+    //           var hs = await AsyncStorage.getItem('data_hs');
+    //           let data_HS = JSON.parse(hs);
+    //           console.log(data_HS);
+    //           if(hs !== null){
+    //             setDuLieuHS(data_HS);
+    //             setLopHs(data_HS.get_lop);
+    //           }
+    //         }catch (e){
+    //           console.log(e);
+    //         }
+    //     }
+    //     fetchData();
+    // },[]);
 
   
 
@@ -61,8 +69,8 @@ const Account = ({navigation}) => {
             <View style={styles.containers}>
                 <View style={{alignItems:'center',padding:10}}>
                      <Image style={styles.imageAvatar}   source={require('../../android/app/src/kids_student.jpg')} />
-                     <Text style={{fontSize:16,paddingTop:10,fontWeight:'bold'}}>Bé : {du_lieu_hs.ten} - 5 Tuổi</Text>
-                     <Text style={{fontSize:16,fontWeight:'bold'}}>{lop_hs.ten_lop}</Text>
+                     <Text style={{fontSize:16,paddingTop:10,fontWeight:'bold'}}>Bé : {hs.ten} - 5 Tuổi</Text>
+                     <Text style={{fontSize:16,fontWeight:'bold'}}>{lop_hs == undefined ? ' ' : lop_hs.ten_lop }</Text>
                 </View>
                 <View>
                 {

@@ -34,16 +34,14 @@ const Feedback = ({navigation}) => {
   useEffect(() => {
     async function fetchData() {
       try{
-        var v = await AsyncStorage.getItem('data_storge');
+        var token = await AsyncStorage.getItem('data_token');
         var hs = await AsyncStorage.getItem('data_hs');
-        let data = JSON.parse(v);
         let data_hs = JSON.parse(hs);
-        if(v !== null){
-          setUserToken(data.token);
+        if(token !== null){
+          setUserToken(token);
           setData_HS(data_hs);
-          getListGiaoVien(data.token,data_hs.lop_id);
+          getListGiaoVien(token,data_hs.lop_id);
         }
-        console.log(v)
       }catch (e){
         console.log(e);
       }
@@ -53,9 +51,8 @@ const Feedback = ({navigation}) => {
 
 
 
-function getListGiaoVien(v,lop_id){
-  console.log(lop_id);
-  ApiGiaoVien.getGVbyIdLop(v,lop_id)
+function getListGiaoVien(token,lop_id){
+  ApiGiaoVien.getGVbyIdLop(token,lop_id)
     .then(function (response) {
       let data = response.data;
       setDataGiaoVien(data);

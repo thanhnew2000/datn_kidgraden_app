@@ -27,15 +27,13 @@ const ThemDonHo =  ({ navigation , route}) => {
   useEffect(() => {
     async function fetchData() {
       try{
-        var v = await AsyncStorage.getItem('data_storge');
+        var token = await AsyncStorage.getItem('data_token');
         var hs = await AsyncStorage.getItem('data_hs');
-        let data = JSON.parse(v);
         let data_hs = JSON.parse(hs);
-        if(v !== null){
-          setUserToken(data.token);
+        if(token !== null){
+          setUserToken(token);
           setDataHS(data_hs);
         }
-        console.log(v)
       }catch (e){
         console.log(e);
       }

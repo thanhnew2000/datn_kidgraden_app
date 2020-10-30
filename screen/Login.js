@@ -36,8 +36,10 @@ async function createToken(token,data_hocsinh,data_user) {
     // await AsyncStorage.setItem('user_token',token);
     let array = { token: token, data_hocsinh: data_hocsinh,data_user : data_user}
     
-    await AsyncStorage.setItem('data_storge',JSON.stringify(array));
+    // await AsyncStorage.setItem('data_storge',JSON.stringify(array));
     await AsyncStorage.setItem('data_hs',JSON.stringify(data_hocsinh));
+    await AsyncStorage.setItem('data_token',token);
+    await AsyncStorage.setItem('data_user',JSON.stringify(data_user));
     // console.log('đã tạo token');
     // let v =  AsyncStorage.getItem('data_hocsinh');
     // something()
@@ -115,13 +117,21 @@ function onSubMit(){
                   secureTextEntry={true}
                 />
 
-                <Button
-                title="Đăng nhập"
-                 onPress={() => onSubMit()}
-                // onPress={() =>
-                //     navigation.navigate('Home2')
-                // }
-                />
+
+        <TouchableOpacity 
+           style={{ 
+            backgroundColor:'#0099ff',
+            borderColor:'red',
+            borderRadius:30,
+            paddingVertical:8,
+            justifyContent: 'center', 
+            alignItems:'center',
+            }}
+            onPress={() => onSubMit()}>
+
+          <Text style={{color:'white'}}>Đăng nhập</Text>
+        </TouchableOpacity>
+             
 
 
 

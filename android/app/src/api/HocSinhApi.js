@@ -8,7 +8,13 @@ const getOne = (token,id) => {
 const editInfoHS = (token,id,data) => {
     return http.axiosAPItoken(token).post('/edit-thong-tin-hoc-sinh/'+id,data);
 };
+const getHocSinhIdUser = (token,id) => {
+    return http.axiosAPItoken(token).get('/get-hoc-sinh-id-user/'+id);
+}
+
+
 export default {
     getOne,
-    editInfoHS
+    editInfoHS,
+    getHocSinhIdUser
 };

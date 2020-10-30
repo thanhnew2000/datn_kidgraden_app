@@ -9,7 +9,12 @@ const insertXinNghiHoc = (token,id_hs,data) => {
 const getAll = (token) => {
     return http.axiosAPItoken(token).get('/all-don-xin-nghi');
 };
+
+const getAllByHs = (token,id_hs) => {
+    return http.axiosAPItoken(token).get('/all-don-xin-nghi-hs/'+id_hs);
+};
 export default {
     insertXinNghiHoc,
-    getAll
+    getAll,
+    getAllByHs
 };

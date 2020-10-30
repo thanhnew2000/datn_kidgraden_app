@@ -18,17 +18,13 @@ const DayOff =  ({ navigation }) => {
   const [userToken, setUserToken] = useState(null);
   const [data_HS, setData_HS] = useState({});
 
-  const getListDonXinNghi = (v) => {
-      //  axios.get(ipApi+"api/all-don-xin-nghi")
-
-      console.log(v)
-      ApiXinNghi.getAll(v)
+  const getListDonXinNghi = (token,id_hs) => {
+      ApiXinNghi.getAllByHs(token,id_hs)
        .then(function (response) {
          let data = response.data;
-
-         let create_At = new Date(data[0]['created_at']);
-         console.log(moment(data[0]['created_at']).format("YYYY-MM-DD"))
-         console.log(create_At.getMonth())
+        //  let create_At = new Date(data[0]['created_at']);
+        //  console.log(moment(data[0]['created_at']).format("YYYY-MM-DD"))
+        //  console.log(create_At.getMonth())
          console.log(data);
          setListDonXinNghi(data);
          setShowLoading(false);
@@ -41,13 +37,14 @@ const DayOff =  ({ navigation }) => {
 
    
   async function fetchData(){
-    let data  = await AsyncStorage.getItem('data_storge');
+    console.log('ad')
+    let token  = await AsyncStorage.getItem('data_token');
     let data_HocSinh  = await AsyncStorage.getItem('data_hs');
-    let dulieu = JSON.parse(data);
     let dulieu_hs = JSON.parse(data_HocSinh);
-    setUserToken(dulieu.token);
-    getListDonXinNghi(dulieu.token);
-    setData_HS(dulieu_hs)
+    console.log(dulieu_hs.id);
+    // setUserToken(token);
+    getListDonXinNghi(token,dulieu_hs.id);
+    // setData_HS(dulieu_hs)
   }
   useEffect(() => {fetchData()}, []);
 
@@ -68,8 +65,6 @@ const DayOff =  ({ navigation }) => {
                       <AntDesign name="pluscircleo" size={35} color="green" />
                 </TouchableOpacity>
                 </View>
-
-
 
                 <FlatList
                   data={listDonXinNghi}

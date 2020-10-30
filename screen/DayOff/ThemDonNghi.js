@@ -79,33 +79,19 @@ const ThemDonNghi =  ({ navigation , route}) => {
                     formData.append("ngay_bat_dau",dateFrom.getDate()+ '-' + parseInt(dateFrom.getMonth() + 1) +'-'+ dateFrom.getFullYear());
                     formData.append("ngay_ket_thuc",dateTo.getDate()+ '-' + parseInt(dateTo.getMonth() + 1) +'-'+ dateTo.getFullYear());
                     formData.append("noi_dung",lyDoXinNghi);
-                      const heads = 
-                      {
-                      //     headers: {
-                      //         "Content-type": "application/json",
-                      //         'Authorization': "Bearer "+userToken
-                      // }
-                      }
 
-                      console.log(formData)
-                  // axios
-                  // .post(
-                  //   ipApi+"api/xin-nghi-hoc",
-                  //     formData,
-                  //     heads
-                  // )
-                  ApiXinNghi.insertXinNghiHoc(userToken,data_HS.id,formData)
-                  .then(res => {
-                      console.log(res.data);
-                      setSubmitLoading(false);
-                      reloadAgain();
-                      navigation.navigate('Xin nghỉ');
-                  })
-                  .catch(err => {
-                      console.log(err);
-                  });
+                    ApiXinNghi.insertXinNghiHoc(userToken,data_HS.id,formData)
+                    .then(res => {
+                        console.log(res.data);
+                        setSubmitLoading(false);
+                        reloadAgain();
+                        navigation.navigate('Xin nghỉ');
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    });
 
-                }
+                  }
 
       }
   return (

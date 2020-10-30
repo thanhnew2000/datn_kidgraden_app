@@ -23,7 +23,7 @@ const EditInfoParent = ({navigation,route}) => {
   const { userToken } = route.params;
   const { data_hocsinh } = route.params;
 
-  const [du_lieu_edit_hs, setDuLieuEditHS] = useState({});
+  const [du_lieu_edit_hs, setDuLieuEditHS] = useState({}); 
   const [submitLoading, setSubmitLoading] = useState(false);
 
  

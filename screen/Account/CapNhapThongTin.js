@@ -12,39 +12,40 @@ import { Input } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 import Collapsible from 'react-native-collapsible';
+
+
+import { fetchDataAsyncStorage } from '../../src/redux/action/index';
+import { useSelector,useDispatch,useStore  } from 'react-redux'
+import linkWeb from '../../android/app/src/api/linkWeb/index';
+
 const CapNhapThongTin =  ({ navigation ,route}) => {
 
+    
+    const student = useSelector(state => state)
+    const lop_hs = student.hocsinh.data.get_lop;
+    const du_lieu_hs = student.hocsinh.data;
 
-
-  const [userToken, setUserToken] = useState(null);
-  const [du_lieu_hs, setDuLieuHS] = useState([]);
-  const [lop_hs, setLopHS] = useState([]);
   
   
 
-    useEffect(() => {
-        async function getOneHs(){
-            var v = await AsyncStorage.getItem('data_storge');
-            var hs = await AsyncStorage.getItem('data_hs');
-            let dulieu = JSON.parse(v);
-            let dulieu_hs = JSON.parse(hs);
-            setUserToken(dulieu.token)
-            setDuLieuHS(dulieu_hs);
-            setLopHS(dulieu_hs.get_lop);
+//   const [userToken, setUserToken] = useState(null);
+//   const [du_lieu_hs, setDuLieuHS] = useState([]);
+//   const [lop_hs, setLopHS] = useState([]);
+  
+  
 
-            // ApiHocSinh.getOne(dulieu.token,dulieu_hs.id)
-            //   .then(function (response) {
-            //     let data = response.data;
-            //     setDuLieuHS(data);
-            //     console.log(data);
-      
-            //   })
-            //   .catch(function (error) {
-            //     console.log(error);
-            //   });
-            }
-            getOneHs();
-    },[]);
+    // useEffect(() => {
+    //     async function getOneHs(){
+    //         var v = await AsyncStorage.getItem('data_storge');
+    //         var hs = await AsyncStorage.getItem('data_hs');
+    //         let dulieu = JSON.parse(v);
+    //         let dulieu_hs = JSON.parse(hs);
+    //         setUserToken(dulieu.token)
+    //         setDuLieuHS(dulieu_hs);
+    //         setLopHS(dulieu_hs.get_lop);
+    //         }
+    //         getOneHs();
+    // },[]);
 
 
   return (
@@ -52,7 +53,7 @@ const CapNhapThongTin =  ({ navigation ,route}) => {
             <View style={styles.container}>
               <View style={styles.sectionAvatar}>
                   <View style={{width:'50%'}}>
-                     <Image style={styles.showAvatar}  source={require('../../android/app/src/kids_student.jpg')} />
+                     <Image style={styles.showAvatar}  source={{uri: linkWeb + du_lieu_hs.avatar}} />
                   </View>
                   <View style={{width:'50%',alignSelf:'center'}}>
                       <Button title="Thay ảnh"/>
@@ -71,28 +72,28 @@ const CapNhapThongTin =  ({ navigation ,route}) => {
                         </View>
                         
                 <View style={{flexDirection:'row',paddingTop:10}}>
-                    <FontAwesome name="child" size={20} color="black" />
+                    <FontAwesome name="child" size={20} color={du_lieu_hs.gioi_tinh == 0 ? '#006699' : "#ff6699" }/>
                     <Text style={{}}> Tên: {du_lieu_hs.ten}</Text>
                 </View>
                 
                 <View style={{flexDirection:'row',paddingTop:10}}>
-                    <AntDesign name="carryout" size={20} color="black" />
+                    <AntDesign name="carryout" size={20} color="#ffcc00" />
                     <Text style={{}}> Mã : {du_lieu_hs.ma_hoc_sinh}</Text>
                 </View>
                 <View style={{flexDirection:'row',paddingTop:10}}>
-                    <AntDesign name="carryout" size={20} color="black" />
+                    <FontAwesome name="signal" size={20} color="#66ccff" />
                     <Text style={{}}> Tuổi: 4</Text>
                 </View>
 
 
                 <View style={{flexDirection:'row',paddingTop:10}}>
-                    <FontAwesome name="venus-mars" size={20} color="black" />
+                    <FontAwesome name="venus-mars" size={20} color={du_lieu_hs.gioi_tinh == 0 ? '#006699' : "#ff6699" } />
                     <Text style={{}}> Giới tính: {du_lieu_hs.gioi_tinh == 0 ? 'Nam' : 'Nữ'}</Text>
                 </View>
 
                 <View style={{flexDirection:'row',paddingTop:10}}>
-                    <FontAwesome name="black-tie" size={20} color="black" />
-                    <Text style={{}}> Lớp: {lop_hs.ten_lop}</Text>
+                    <FontAwesome name="black-tie" size={20} color="#0066ff" />
+                    <Text style={{}}> Lớp: {lop_hs == undefined ? ' ' : lop_hs.ten_lop}</Text>
                 </View>
             </View>
                 
@@ -104,9 +105,9 @@ const CapNhapThongTin =  ({ navigation ,route}) => {
                                    <Text style={{fontSize:17,fontWeight:'bold'}}>Thông tin phụ huynh</Text>
                         </View>
                         <View style={{width:'20%',alignSelf:'center'}}>
-                            <TouchableOpacity onPress={()=> navigation.navigate('edit_info_parent',{userToken:userToken,data_hocsinh:du_lieu_hs})}>
+                            {/* <TouchableOpacity onPress={()=> navigation.navigate('edit_info_parent',{userToken:userToken,data_hocsinh:du_lieu_hs})}> */}
                              <Text style={{color:'#3A9DFF'}}>Câp nhập</Text>
-                            </TouchableOpacity>
+                            {/* </TouchableOpacity> */}
                         </View>
                 </View>
                     {/*  Thông tin cha  */}
@@ -116,18 +117,18 @@ const CapNhapThongTin =  ({ navigation ,route}) => {
                 </View>
 
                 <View style={{flexDirection:'row',paddingTop:10}}>
-                    <AntDesign name="user" size={20} color="black" />
-                    <Text style={{}}> Nguyễn Ngọc An</Text>
+                    <AntDesign name="user" size={20} color="#0066cc" />
+                    <Text style={{}}> {du_lieu_hs.ten_cha}</Text>
                 </View>
 
                 <View style={{flexDirection:'row',paddingTop:10}}>
-                    <AntDesign name="phone" size={20} color="black" />
-                    <Text style={{}}> 039854976</Text>
+                    <AntDesign name="phone" size={20} color="#00cc00" />
+                    <Text style={{}}> {du_lieu_hs.dien_thoai_cha}</Text>
                 </View>
 
                 <View style={{flexDirection:'row',paddingTop:10}}>
-                    <AntDesign name="creditcard" size={20} color="black" />
-                    <Text style={{}}> CMND: 9032509434893</Text>
+                    <AntDesign name="creditcard" size={20} color="#339933" />
+                    <Text style={{}}> CMND: {du_lieu_hs.cmtnd_cha}</Text>
                 </View>
             {/*      */}
             {/* Thông tin mẹ */}
@@ -138,18 +139,18 @@ const CapNhapThongTin =  ({ navigation ,route}) => {
                 </View>
 
                 <View style={{flexDirection:'row',paddingTop:10}}>
-                    <AntDesign name="user" size={20} color="black" />
-                    <Text style={{}}> Ngọc Linh</Text>
+                    <AntDesign name="user" size={20} color="#ff3399" />
+                    <Text style={{}}> {du_lieu_hs.ten_me}</Text>
                 </View>
 
                 <View style={{flexDirection:'row',paddingTop:10}}>
-                    <AntDesign name="phone" size={20} color="black" />
-                    <Text style={{}}> 0365854976</Text>
+                    <AntDesign name="phone" size={20} color="#00cc00" />
+                    <Text style={{}}> {du_lieu_hs.dien_thoai_me}</Text>
                 </View>
 
                 <View style={{flexDirection:'row',paddingTop:10}}>
-                    <AntDesign name="creditcard" size={20} color="black" />
-                    <Text style={{}}> CMND: 872509434893</Text>
+                    <AntDesign name="creditcard" size={20} color="#339933" />
+                    <Text style={{}}> CMND: {du_lieu_hs.cmtnd_me}</Text>
                 </View>
 
               </View>    

@@ -1,4 +1,4 @@
-import React ,{ useState, useEffect }from 'react';
+import React ,{ useState, useEffect,useLayoutEffect }from 'react';
 import {
     StyleSheet,
     View,
@@ -9,6 +9,7 @@ import {
     TouchableOpacity,
     ImageBackground,
     ScrollView,
+    Button
   } from 'react-native';
   import axios from 'axios';
   import CateListItem from './component/CateListItem';
@@ -27,15 +28,59 @@ import {
   import AsyncStorage from '@react-native-community/async-storage';
   import ApiHocSinh from '../android/app/src/api/HocSinhApi';
   import apiRequest from '../android/app/src/api/users';
+  import Header from './Header';
+  import linkWeb from '../android/app/src/api/linkWeb/index';
+  import Modal_Loading from './component/reuse/Modal_Loading'
+  import { getDataSuccess } from '../src/redux/action/index';
+  import { AuthContext } from './context';
 
+  // Redux
+
+  import { status } from '../src/redux/action/index';
+  import { fetchDataAsyncStorage } from '../src/redux/action/index';
+  import { useSelector,useDispatch,useStore  } from 'react-redux'
 const Home2 = ({ navigation }) => 
 {
+
+  const { signOut } = React.useContext(AuthContext);
+
+  const dispatch = useDispatch();
+  // const lop_hs = '';
+  const counter = useSelector(state => state)
+  const lop_hs = counter.hocsinh.data.get_lop;
+  const hs = counter.hocsinh.data;
+  console.log('counter', data_lop);
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerTitle: () => <Header navigation={navigation}/>,
+    })
+   }, []);
+
 
 
   const [userToken, setUserToken] = useState(null);
   const [data_hocsinh, setData_hocsinh] = useState({});
-  const [data_lop, setData_lop] = useState({});
+  const [data_lop, setData_lop] = useState({
+    ten_lop: 'Lớp'
+  });
   const [data_user, setData_user] = useState({});
+  const [all_hs_user, setHsByUser] = useState({});
+  const [showLoading, setShowLoading] = useState(false);
+
+
+  const getHocSinhIdUser = (token,user_id) => {
+    ApiHocSinh.getHocSinhIdUser(token,user_id)
+      .then(function (response) {
+        let data = response.data;
+        console.log('data_hs_user',data);
+        setHsByUser(data);
+      })
+      .catch(function (error) {
+        // signOut();
+        console.log(error);
+      });
+  };
 
 
   const getThisHocSinh = (token,id_hs) => {
@@ -43,32 +88,36 @@ const Home2 = ({ navigation }) =>
       .then(function (response) {
         let data = response.data;
         console.log('data',data);
+        console.log('token',token);
         setData_hocsinh(data);
+        AsyncStorage.setItem('data_hs',JSON.stringify(data));
+        
       })
       .catch(function (error) {
         console.log(error);
       });
-};
+  };
 
     useEffect(() => {
       async function fetchData() {
         try{
-          var v = await AsyncStorage.getItem('data_storge');
+          // var v = await AsyncStorage.getItem('data_storge');
+          var token = await AsyncStorage.getItem('data_token');
           var hs = await AsyncStorage.getItem('data_hs');
+          var data_user = await AsyncStorage.getItem('data_user');
+          let user =  JSON.parse(data_user);
 
-          if(v !== null && hs !== null){
-            let data =  JSON.parse(v);
+          if(token !== null && hs !== null){
             let data_HocSinh =  JSON.parse(hs);
             setData_hocsinh(data_HocSinh)
-            setData_lop(data_HocSinh.get_lop)
-            setData_user(data.data_user)
-
-            getThisHocSinh(data.token,data_HocSinh.id)
-
+            // setData_lop(data_HocSinh.get_lop)
+            setData_user(data_user)
+            getHocSinhIdUser(token,user.id)
+            setUserToken(token)
+            getThisHocSinh(token,data_HocSinh.id)
           }
+          dispatch(fetchDataAsyncStorage())
 
-          
-          console.log(v)
         }catch (e){
           console.log(e);
         }
@@ -86,22 +135,91 @@ const Home2 = ({ navigation }) =>
     {id: 5, name : 'Biểu đồ',image :IconChart , naviga:'Biểu đồ' },
     {id: 6, name : 'Hoạt động',image :IconCalender , naviga:'Hoạt động'},
     {id: 9, name : 'Học phí',image :IconMoney , naviga:'Học phí'},
+
+    // {id: 11, name : 'Biểu đồ',image :IconChart , naviga:'Biểu đồ' },
+    // {id: 12, name : 'Hoạt động',image :IconCalender , naviga:'Hoạt động'},
+    // {id: 13, name : 'Học phí',image :IconMoney , naviga:'Học phí'},
   ])
 
+  function changeDataHs(id){
+    setShowLoading(true);
+      ApiHocSinh.getOne(userToken,id)
+        .then(function (response) {
+          let data = response.data;
+          console.log('data',data);
+           AsyncStorage.removeItem('data_hs');
+           AsyncStorage.setItem('data_hs',JSON.stringify(data));
+          // NativeModules.DevSettings.reload();
+          dispatch(getDataSuccess(data));
+         setShowLoading(false);
+         navigation.closeDrawer();
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+  }
 
    
   return (
+<ScrollView>
+
+    <View style={{height:'100%',backgroundColor:'#fff'}}>
+          <ImageBackground style={{width: '100%' }}   source={require('../android/app/src/asset/img/home_image_slide.jpg')}>
+
+          <View style={{backgroundColor:'rgba(221, 221, 222, 0.39)',paddingVertical:5}}>
+
+            <View style={{flexDirection:'row-reverse'}}>
+              <Text> </Text>
+              <FlatList
+                style={ all_hs_user.length >= 7 ?  null : styles.flexDirectionRowReverse}
+                data={all_hs_user}
+                horizontal={true}
+                renderItem={({ item }) => (
+                  <TouchableOpacity onPress={()=> changeDataHs(item.id)}>
+                    <Image style={{width: 37 , height:37,borderRadius:100,marginTop:5,marginLeft:10}}  source={{uri: linkWeb + item.avatar}}/>
+                  </TouchableOpacity>
+                  
+                )}
+                keyExtractor={item => item.id}
+              />
+            </View>
+
+            <View style={{flexDirection:'row'}}>
+                <View style={{width:'20%',justifyContent:'center',marginLeft:'5%'}}>
+                    <Image style={{width: 70 , height:70,borderRadius:100 }}  source={{uri: linkWeb + hs.avatar}}/>
+                </View>
+                <View style={{width:'80%',marginLeft:'5%',justifyContent:'center'}}>
+                  {/* <View style={{flexDirection:'row',marginLeft:'18%'}}>
+                    <View>
+                      <Image style={{width: 37 , height:37,borderRadius:100,marginTop:5,marginLeft:10}}  source={require('../android/app/src/kids_student.jpg')}/>
+                    </View>
+                  </View> */}
+
+                   <Text style={{fontSize:16,fontWeight:'bold'}}>{hs.ten}</Text>
+                <Text style={{fontSize:15}}>Lớp: {lop_hs == undefined ? null : lop_hs.ten_lop}</Text>
+                </View>
+             </View>
+         
+
+        </View>
+        </ImageBackground>
+
+
+    <View style={styles.container}>
+         {/* <ImageBackground style={{width: '100%' , height:120 }}   source={require('../android/app/src/asset/img/home_image_slide.jpg')}> */}
 
     
-    <View style={styles.container}>
-         <ImageBackground style={{width: '100%' , height:250 }}   source={require('../android/app/src/kids_student.jpg')}>
-            <View style={styles.infoText}>
-                <View style={styles.borderOftext}>
-                      <Text style={{fontSize:20, fontWeight:'bold',color:'white'}}>{data_hocsinh.ten}</Text>
-                      <Text style={{fontSize:18,color:'white'}}>{data_lop.ten_lop} - năm 2020</Text>
-                </View>
-            </View>
-         </ImageBackground>
+        {/* </ImageBackground> */}
+
+         {/* <ImageBackground style={{width: '100%' , height:100 }}   source={require('../android/app/src/kids_student.jpg')}> */}
+            {/* <View style={styles.infoText}> */}
+                {/* <View style={styles.borderOftext}>
+                      <Text style={{fontSize:20, fontWeight:'bold',color:'white'}}>{hs.ten}</Text>
+                      <Text style={{fontSize:18,color:'white'}}>{lop_hs == undefined ? ' ' : lop_hs.ten_lop } - năm 2020</Text>
+                </View> */}
+
+            {/* </View> */}
+         {/* </ImageBackground> */}
 
           <View>
               <FlatList
@@ -117,6 +235,11 @@ const Home2 = ({ navigation }) =>
           </View>
 
     </View>
+    <Modal_Loading showLoading = {showLoading} /> 
+
+
+    </View>
+    </ScrollView>
 
   );
 };
@@ -165,6 +288,9 @@ const styles = StyleSheet.create({
         justifyContent:'center',
         position: 'relative',
       },
+      flexDirectionRowReverse:{
+        flexDirection:'row-reverse'
+      }
     
 });
 

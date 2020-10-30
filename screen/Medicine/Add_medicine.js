@@ -28,12 +28,11 @@ const Add_medicine =  ({ navigation , route }) => {
     useEffect(() => {
         async function fetchData() {
           try{
-            var v = await AsyncStorage.getItem('data_storge');
+            var token = await AsyncStorage.getItem('data_token');
             var hs = await AsyncStorage.getItem('data_hs');
-            if(v !== null && hs !== null){
-              let data = JSON.parse(v)
+            if(token !== null && hs !== null){
               let data_HocSinh = JSON.parse(hs)
-              setUserToken(data.token) 
+              setUserToken(token) 
               setDataHS(data_HocSinh) 
             }
           }catch (e){
@@ -231,19 +230,7 @@ function submitAdd(){
                   formData.append("donthuoc["+i+"][note]",listAddMedicine[i].note);
           }
           console.log(formData);
-            const heads = 
-            {
-            //     headers: {
-            //         "Content-type": "application/json",
-            //         'Authorization': "Bearer "+userToken
-            // }
-            }
-        // axios
-        // .post(
-        //   ipApi+"api/dan-thuoc",
-        //     formData,
-        //     heads
-        // )
+     
         ApiDonThuoc.insertDonThuoc(userToken,data_HS.id,formData)
         .then(res => {
             console.log(res.data);
