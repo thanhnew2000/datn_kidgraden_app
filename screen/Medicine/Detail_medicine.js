@@ -1,5 +1,5 @@
 
-import React ,{ useState,useEffect }from 'react';
+import React ,{ useState,useRef,useEffect }from 'react';
 import { View, Text, Image, StyleSheet, 
     TextInput,
     TouchableOpacity, ScrollView,Button,FlatList,Alert
@@ -11,6 +11,8 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import ipApi from '../../android/app/src/api/ipApi';
 import ApiPhanHoi from '../../android/app/src/api/PhanHoiDonThuocApi';
 import AsyncStorage from '@react-native-community/async-storage';
+import Modal_SubmitLoading from '../component/reuse/Modal_SubmitLoading';
+
 
 const Detail_medicine =  ({ route,navigation }) => {
     const { donthuoc} = route.params;
@@ -21,6 +23,7 @@ const Detail_medicine =  ({ route,navigation }) => {
     const [userToken, setUserToken] = useState(null);
     const [data_HS, setData_HS] = useState({});
     const [Hscomment, setComment] = useState(null);
+    const [submitLoading, setSubmitLoading] = useState(false);
 
     const getBinhLuanDonThuoc = (token,id_don_thuoc) => {
         ApiPhanHoi.getBinhLuanOfDonThuoc(token,id_don_thuoc)
@@ -96,18 +99,28 @@ const BinhLuanCuaHocSinh= ({item}) =>{
     </View>
 }
 
+
 const submitBinhLuan = () => {
+    // setSubmitLoading(true);
             const formData = new FormData();
             formData.append("don_dan_thuoc_id",donthuoc.id);
             formData.append("nguoi_phan_hoi_id",data_HS.id);
             formData.append("noi_dung",Hscomment);
+    
 
             ApiPhanHoi.insertPhanHoi(userToken,formData)
             .then(res => {
                 console.log(res.data);
-                getBinhLuanDonThuoc(userToken,donthuoc.id)
+                setBinhLuan([...binhLuan,{
+                    type : 1,
+                    noi_dung : Hscomment
+                }])
+                setComment('');
+                setSubmitLoading(false);
             })
             .catch(err => {
+                setSubmitLoading(false);
+                Alert.alert('Có lỗi')
                 console.log(err);
             });
 
@@ -215,6 +228,7 @@ const submitBinhLuan = () => {
                 <View style={{flexDirection:'row',position: 'absolute', left: 0, right: 0, bottom: 0,flex:0.1,paddingBottom:10}}>
                            <TextInput   style={{ width:'80%',height: 35, borderColor: 'gray', borderWidth: 1,backgroundColor:'white' }} 
                            placeholder="Phản hồi cho giáo viên"
+                           value={Hscomment}
                            onChangeText={text  => {setComment(text)}}
                            
                            />
@@ -222,6 +236,10 @@ const submitBinhLuan = () => {
                              <Button title="Gui"  onPress={submitBinhLuan}/>
                           </View>
                 </View>
+
+
+              <Modal_SubmitLoading submitLoading={submitLoading} />
+
             </View> 
   );
 };
