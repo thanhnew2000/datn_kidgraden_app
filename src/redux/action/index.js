@@ -7,6 +7,19 @@ export const status = () =>{
         }
 }
 
+export const numberNotification = () =>{
+  return {
+      type: types.NUMBER_NOTIFI
+  }
+}
+export const setNumberNotification = (newNumber) =>{
+  return {
+      type: types.SET_NUMBER_NOTIFI,
+      newNumber
+  }
+}
+
+
 export const data_hs = () =>{
     return {
         type: types.DATA_HS

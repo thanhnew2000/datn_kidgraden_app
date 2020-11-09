@@ -1,51 +1,54 @@
 
-import React ,{ useState }from 'react';
+import React ,{ useState,useEffect }from 'react';
 import {
     StyleSheet,
     View,
-    FlatList,Text,Image,Button,Dimensions, ImageBackground
+    FlatList,Text,Image,Button,Dimensions, ImageBackground,Modal,TouchableOpacity
     
   } from 'react-native';
   import AntDesign from 'react-native-vector-icons/AntDesign';
   import DateTimePicker from '@react-native-community/datetimepicker';
+  import ApiDiemDanh from '../../android/app/src/api/DiemDanhApi';
+// import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const DiemDanh =  () => {
 
   const [SangChieu, setSangChieu] = useState(false);
     
+  const [showModal, setShowModal] = useState(false);
+  var month = new Date().getMonth() + 1; //To get the Current Month
+  var year = new Date().getFullYear()
+  const [thangNam, setThangNam] = useState(month+' / '+year);
+  const [arrDate, setArrDate] = useState([]);
 
-  const [date, setDate] = useState(new Date(1598051730000));
-  const [modeDate, setModeDate] = useState('date');
-  const [showDate, setShowDate] = useState(false);
+  const [dataDiemDanhDen, setDataDiemDanhDen] = useState([]);
+  const [dataDiemDanhVe, setDataDiemDanhVe] = useState([]);
+  
+     const getArrDate = (token) => {
+        ApiDiemDanh.getThangNamOfNamHocHienTai(token)
+        .then(function (response) {
+            let data = response.data;
+            let indexEnd = (data.length - 1);
+            setArrDate(data);
+            choseDateShow(month+' / '+year)
+        })
+        .catch(function (error) {
+        console.log(error);
+        });
+    };
+    useEffect(() => {getArrDate('rfe')}, []);
 
 
-  const onChangeDate= (event, selectedDate) => {
-    const currentDate = selectedDate || date;
-    setShowDate(Platform.OS === 'ios');
-    setDate(currentDate);
- };
-
-  const showMode = (currentMode) => {
-    setShowDate(true);
-    setModeDate(currentMode);
-  };
-
-  const showDatepicker = () => {
-    showMode('date');
-  };
-
-
-
-    const ListDiemDanh = () => (
+    const ListDiemDanh = ({item}) => (
       <View style={styles.listDiemDanh}>
             <View style={SangChieu ? styles.contentSang :  styles.contentChieu}>
-                <Text>18/5/2020</Text>
+                <Text>{SangChieu ? item.ngay_diem_danh_den : item.ngay_diem_danh_ve }</Text>
             </View>
             <View style={SangChieu ? styles.contentSang :  styles.contentChieu}>
                 <Text style={{color:'green'}}>Đi học</Text>
             </View> 
             <View style={{width:'40%',paddingLeft:5,borderColor: SangChieu ? '#2daaed' : '#F7C261',borderWidth:1}}>
-                <Text>Đi học muộn lắm abc</Text>
+                <Text>{item.chu_thich}</Text>
             </View>
      </View>
     );
@@ -57,28 +60,82 @@ const DiemDanh =  () => {
             setSangChieu(true);
         }
     }
+
+    function choseDateShow(date){
+        setThangNam(date);
+        console.log(date)
+        const formData = new FormData();
+        formData.append("date",date);
+        ApiDiemDanh.getDataByThangNam('token',formData)
+        .then(function (response) {
+            let data = response.data;
+            setDataDiemDanhDen(data.diem_danh_den);
+            setDataDiemDanhVe(data.diem_danh_ve);
+            
+            console.log(data.diem_danh_den)
+            console.log(data.diem_danh_ve)
+        })
+        .catch(function (error) {
+        console.log(error);
+        });
+        setShowModal(false)
+    }
+
+
   return (
             <View style={styles.container}>
 
                  <View style={styles.calender}>
                     <ImageBackground  style={{width:'100%' ,height:'100%',flexDirection:'row'}} source={require('../../android/app/src/asset/img/hoa-dao.gif')}>
 
-                        <View style={{width:'65%',alignItems:'flex-end',justifyContent:'center'}}>
-                            <Text style={{fontSize:17}}>Tháng 5 / 2019</Text>
+                        <View style={{width:'70%',alignItems:'flex-end',justifyContent:'flex-end'}}>
+                            <Text style={{fontSize:17}}>Tháng {thangNam}</Text>
                         </View>
                         <View style={{width:'25%',alignItems:'flex-end'}}>
 
-                        <AntDesign name="calendar" size={30} color="green" onPress={showDatepicker} />
-                                {showDate && (
-                                        <DateTimePicker
-                                        testID="dateTimePicker"
-                                        value={date}
-                                        mode={modeDate}
-                                        is24Hour={true}
-                                        display="spinner"
-                                        onChange={onChangeDate}
-                                        />
-                                )}
+                        <AntDesign name="calendar" size={30} color="green" onPress={()=>{ setShowModal(true)} } />
+
+                <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={showModal}
+                    onRequestClose={() => {
+                      setShowModal(false)
+                    }} 
+                    >
+                            <View style={{backgroundColor:'#dddd',flex:1,justifyContent:'center',alignItems:'center'}}>
+                                <View style={styles.boxModel}>
+                                    <View style={{flexDirection:'row',width:100,paddingVertical:5}}>
+                                        <View style={{width:'80%'}}>
+                                             <Text style={{fontSize:17,fontWeight:'bold'}}>Tháng</Text>
+                                        </View>
+                                        
+                                        <View style={{width:'20%'}}>
+                                            <TouchableOpacity onPress={()=>{setShowModal(false)}} >
+                                                <Text style={{fontSize:17,fontWeight:'bold'}}>X</Text>
+                                            </TouchableOpacity>
+                                        </View>
+
+                                    </View>
+
+
+                                    
+                                        <FlatList
+                                            data={arrDate}
+                                            renderItem={({item}) =>
+                                                <TouchableOpacity onPress={()=>choseDateShow(item)} >
+                                                    <View style={{borderBottomWidth:1,padding:5,paddingHorizontal:15}}>
+                                                        <Text style={thangNam == item ? styles.choseDate : styles.datePickerNormal}>{item}</Text>
+                                                    </View>
+                                                </TouchableOpacity>
+                                            }
+                                            keyExtractor={(value, index) => index}
+
+                                    />
+                                </View>
+                            </View>
+
+                </Modal>
                         </View>
 
                     </ImageBackground>
@@ -88,10 +145,10 @@ const DiemDanh =  () => {
 
                 <View style={styles.header}>
                     <View style={{width:'45%'}}>
-                        <Button title="Sáng" onPress={()=>showListSangChieu(1)} />
+                        <Button title="Điểm danh đến" onPress={()=>showListSangChieu(1)} />
                     </View>
                     <View style={{width:'45%',paddingLeft:10}}>
-                      <Button title="Chiều"  color="#F7C261" onPress={()=>showListSangChieu(2)} />
+                      <Button title="Điểm danh về"  color="#F7C261" onPress={()=>showListSangChieu(2)} />
                     </View>
                 </View>
 
@@ -117,11 +174,18 @@ const DiemDanh =  () => {
                      </View>
 
 
+
+                        
+                             <FlatList
+                                data={SangChieu ? dataDiemDanhDen : dataDiemDanhVe }
+                                renderItem={({item,index}) =>  <ListDiemDanh item={item} /> }
+                                keyExtractor={(value, index) => index}
+                            />
+                         
+                        {/* <ListDiemDanh />
                         <ListDiemDanh />
                         <ListDiemDanh />
-                        <ListDiemDanh />
-                        <ListDiemDanh />
-                        <ListDiemDanh />
+                        <ListDiemDanh /> */}
 
                 
 
@@ -206,7 +270,29 @@ const styles = StyleSheet.create({
     textTitleTableSang:{
         fontSize:15,color:'#2daaed',fontWeight:'bold'
     },
-   
+    boxModel:{
+        alignItems:'center',
+        padding:15,
+        borderRadius:4,
+        backgroundColor:'#fff',
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 7,
+        },
+        shadowOpacity: 1.70,
+        shadowRadius: 6.27,
+        elevation: 15,
+        height:200
+    },
+
+    datePickerNormal:{
+        fontSize:17,
+    },
+    choseDate:{
+        fontSize:17,
+        color:'green'
+    }
     
   });
 export default DiemDanh;

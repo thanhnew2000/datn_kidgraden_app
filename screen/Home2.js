@@ -49,7 +49,8 @@ const Home2 = ({ navigation }) =>
   const counter = useSelector(state => state)
   const lop_hs = counter.hocsinh.data.get_lop;
   const hs = counter.hocsinh.data;
-  console.log('counter', data_lop);
+  const notifi = counter.notification;
+  console.log('notifi', notifi);
 
   useEffect(() => {
     navigation.setOptions({

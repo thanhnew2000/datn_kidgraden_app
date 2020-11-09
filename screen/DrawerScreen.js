@@ -21,7 +21,7 @@ import {
   import linkWeb from '../android/app/src/api/linkWeb/index';
   
   // redux
-  import { getDataSuccess } from '../src/redux/action/index';
+  import { getDataSuccess,setNumberNotification } from '../src/redux/action/index';
   import { useSelector,useDispatch,useStore  } from 'react-redux'
 const DrawerScreen =  ({props,navigation}) => {
 
@@ -30,6 +30,7 @@ const DrawerScreen =  ({props,navigation}) => {
     const dispatch = useDispatch();
     const counter = useSelector(state => state)
     const hs = counter.hocsinh.data;
+    const numberNotification = counter.notification;
 
   const [isChuyenHocSinh, setIsChuyenHocSinh] = useState(true);
 
@@ -92,6 +93,9 @@ const DrawerScreen =  ({props,navigation}) => {
   setIsChuyenHocSinh(!isChuyenHocSinh)
  }
 
+ function clickTest(number){
+  dispatch(setNumberNotification(number));
+ }
 
   return (
   <View>
@@ -138,6 +142,14 @@ const DrawerScreen =  ({props,navigation}) => {
           <View style={{justifyContent:'center',width:'40%'}}>
             <Text >Đổi mật khẩu</Text>
           </View>
+          <View style={{justifyContent:'center',width:'40%'}}>
+             <Text >{numberNotification}</Text>
+            <TouchableOpacity onPress={()=>clickTest(1)}>
+              <Text>Click test</Text>
+            </TouchableOpacity>
+
+          </View>
+
       </View>
 
 

@@ -13,7 +13,7 @@ var myReducer = (state = initialState , action) => {
         return {
             data: action.data
           }
-    }
+    } 
     return state;
 }
 export default myReducer;
