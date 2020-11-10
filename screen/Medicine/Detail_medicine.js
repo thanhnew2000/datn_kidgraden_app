@@ -14,7 +14,17 @@ import AsyncStorage from '@react-native-community/async-storage';
 import Modal_SubmitLoading from '../component/reuse/Modal_SubmitLoading';
 
 
+//quang add database firebase
+import database from '@react-native-firebase/database';
+
 const Detail_medicine =  ({ route,navigation }) => {
+
+    //quang add get database firebase start
+
+    
+    //quang add get database firebase end
+
+
     const { donthuoc} = route.params;
     // const { data_HS } = route.params;
     const chitietdon = donthuoc.chi_tiet_don_dan_thuoc;
@@ -36,7 +46,6 @@ const Detail_medicine =  ({ route,navigation }) => {
             console.log(error);
           });
       };
-
       useEffect(() => {
         async function fetchData() {
           try{
@@ -47,6 +56,7 @@ const Detail_medicine =  ({ route,navigation }) => {
               setUserToken(token) 
               setData_HS(data_HocSinh)
               getBinhLuanDonThuoc(token,donthuoc.id)
+              
             }
           }catch (e){
             console.log(e);
@@ -54,6 +64,34 @@ const Detail_medicine =  ({ route,navigation }) => {
         }
         fetchData();
         },[]);
+
+
+    useEffect(() => {
+        const onValueChange = database()
+          .ref('phan_hoi_don_thuoc')
+          .on('value', snapshot => {
+            console.log('User data: ', snapshot.val());
+            ApiPhanHoi.getBinhLuanOfDonThuoc(userToken,donthuoc.id)
+                  .then(function (response) {
+                    let data = response.data;
+                    setBinhLuan(data);
+                  })
+                  .catch(function (error) {
+                    console.log(error);
+                  });
+          });
+    
+        // Stop listening for updates when no longer required
+        // return () =>
+        //   database()
+        //     .ref('phan_hoi_don_thuoc')
+        //     .off('value', onValueChange);
+      }, []);
+    
+            
+       
+
+    
 
 const DetailMedicine = ({item}) => {
 return    <View style={styles.listMedicine}>

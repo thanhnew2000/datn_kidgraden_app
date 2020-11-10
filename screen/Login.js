@@ -62,7 +62,7 @@ async function createToken(token,data_hocsinh,data_user) {
 // }
 
 function onSubMit(){
-  // console.log(dataUser.username)
+  console.log('dataUser.username')
     if(dataUser.username == ''){
       Alert.alert('Hãy nhập tài khoản !')
     }else if(dataUser.password == ''){

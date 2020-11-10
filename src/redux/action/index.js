@@ -1,5 +1,6 @@
 import * as types from '../constants/ActionType';
 import AsyncStorage from '@react-native-community/async-storage';
+import database from '@react-native-firebase/database';
 
 export const status = () =>{
         return {
@@ -12,12 +13,7 @@ export const numberNotification = () =>{
       type: types.NUMBER_NOTIFI
   }
 }
-export const setNumberNotification = (newNumber) =>{
-  return {
-      type: types.SET_NUMBER_NOTIFI,
-      newNumber
-  }
-}
+
 
 
 export const data_hs = () =>{
@@ -31,7 +27,17 @@ export function getDataSuccess(data) {
       type: types.FETCHING_DATA_ASYNCSTOAGE,
       data,
     }
- }
+}
+
+
+export const setNumberNotification = (newNumber) =>{
+  return {
+      type: types.SET_NUMBER_NOTIFI,
+      newNumber
+  }
+}
+
+
 
 
 export function fetchDataAsyncStorage() {

@@ -94,7 +94,7 @@ const DrawerScreen =  ({props,navigation}) => {
  }
 
  function clickTest(number){
-  dispatch(setNumberNotification(number));
+  dispatch(setNumberNotification(5));
  }
 
   return (
