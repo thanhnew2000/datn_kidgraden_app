@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "902720459484",
+    "firebase_url": "https://notify-1f812.firebaseio.com",
+    "project_id": "notify-1f812",
+    "storage_bucket": "notify-1f812.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:902720459484:android:22be07c5f1b4c8b5f9da19",
+        "android_client_info": {
+          "package_name": "com.app_kidsgraden"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "902720459484-jqcrdukpiukh9fj6qs34ktoq6c6v2cvh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBXZTrMLzFq_T68R58c-PtbsyW85cTvFJ8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "902720459484-jqcrdukpiukh9fj6qs34ktoq6c6v2cvh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -2,7 +2,7 @@
 
 import React ,{ useState, useEffect }from 'react';
 import {Button, View, Text, StyleSheet , Alert } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, useNavigation} from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -56,8 +56,17 @@ import Feedback from './screen/Feedback/Feedback';
 // Redux
 import { createStore,applyMiddleware} from 'redux';
 import myReducer from './src/redux/reducers/index';
-import {Provider} from 'react-redux';
+import {Provider,useSelector,useDispatch} from 'react-redux';
 import thunk from 'redux-thunk'
+
+import messaging from '@react-native-firebase/messaging';
+
+
+import database from '@react-native-firebase/database';
+
+
+import { setNumberNotification } from './src/redux/action/index';
+
 
 const store = createStore(myReducer,applyMiddleware(thunk));
 
@@ -230,7 +239,8 @@ const GuestGreeting  = () => (
    </Stack.Navigator> 
 )
 
-const UserGreeting = () => (
+const UserGreeting = (soLuongThongBao) => (
+  
   <Tabs.Navigator  style={styles.tabbutton}  initialRouteName="Kids"  screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color, size }) => {
             let iconName;
@@ -265,18 +275,124 @@ const UserGreeting = () => (
       <Tabs.Screen name="Kids" component={HomeStackScreen}   options={{title : "Home" }}   />
       <Tabs.Screen name="Account" component={AccountScreen}  options={{title : "Thông tin" }}  />
       {/* <Tabs.Screen name="DanhBa" component={DanhBaScreen}   options={{title : "Danh bạ"}} /> */}
-      <Tabs.Screen name="Thông báo" component={NotificationScreen}   options={{title : "Thông báo" , tabBarBadge:'3'}}   />
+      <Tabs.Screen name="Thông báo" component={NotificationScreen}   options={{title : "Thông báo" , tabBarBadge: soLuongThongBao}}   />
 
 
 
 </Tabs.Navigator>
 )
 
+
 function App() {
+
+  const [notification_number, setNotification_Number] = useState(0);
+  store.subscribe(() => {setNotification_Number(store.getState().notification)})
+  
+
   const [showLoading, setShowLoading] = useState(true);
   const [userToken, setUserToken] = useState(null);
+    const [data_HS, setDataHS] = useState(null);
+    useEffect(() => {
+        async function fetchData() {
+          try{
+            var token = await AsyncStorage.getItem('data_token');
+            var hs = await AsyncStorage.getItem('data_hs');
+            if(token !== null && hs !== null){
+              let data_HocSinh = JSON.parse(hs)
+              setUserToken(token) 
+              setDataHS(data_HocSinh) 
+
+              // onValueChangeNumberNoti(data_HocSinh.id)
+            }
+          }catch (e){
+            console.log(e);
+          }
+      }
+      fetchData();
+     
+    },[]);
+    // useEffect(() => {
 
 
+    // start lấy thông báo của học sinh
+      const onValueChangeNumberNoti = (id_hs)=>{ 
+        // database()
+        // .ref('notification')
+        //  .orderByChild('user_id').equalTo(id_hs)
+        //   .on('value', function(snapshot) { 
+        //     var so_luong_thong_bao = 0
+        //     var data_thong_bao = snapshot.val();
+        //     for (const key in data_thong_bao) {
+        //       if (data_thong_bao.hasOwnProperty(key)) {
+        //         const element = data_thong_bao[key];
+        //         if (element.type == 1) {
+        //           so_luong_thong_bao++;
+                 var so_luong_thong_bao = 1
+                  store.dispatch(setNumberNotification(so_luong_thong_bao));
+      //         }
+      //         }
+      //       }
+      //   },
+      //  );
+      }
+
+
+      // Stop listening for updates when no longer required
+      // return () =>
+      //   database()
+      //     .ref('phan_hoi_don_thuoc')
+      //     .off('value', onValueChange);
+    // }, []);
+    // end lấy thông báo của học sinh
+  // const navigation = useNavigation();
+  // const [loading, setLoading] = useState(true);
+  // const [initialRoute, setInitialRoute] = useState('DanhBa');
+
+  //  useEffect(() => {
+  //   const unsubscribe = messaging().onMessage(async remoteMessage => {
+  //     Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
+  //   });
+
+  //   return unsubscribe;
+  // }, []);
+  // useEffect(() => {
+  //   const unsubscribe = messaging().onMessage(async remoteMessage => {
+  //     Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
+  //   });
+
+  //   return unsubscribe;
+  // }, []);
+
+  // useEffect(() => {
+  //   // Assume a message-notification contains a "type" property in the data payload of the screen to open
+
+  //   messaging().onNotificationOpenedApp(remoteMessage => {
+  //     console.log(
+  //       'Notification caused app to open from background state:',
+  //       remoteMessage.notification,
+  //     );
+  //     navigation.navigate(remoteMessage.data.type);
+  //   });
+
+  //   // Check whether an initial notification is available
+  //   messaging()
+  //     .getInitialNotification()
+  //     .then(remoteMessage => {
+  //       if (remoteMessage) {
+  //        console.log(remoteMessage.data.type)
+  //         console.log(
+  //           'Notification caused app to open from quit state:',
+  //           remoteMessage.notification,
+  //         );
+  //         setInitialRoute(remoteMessage.data.type); // e.g. "Settings"
+  //       }
+  //       setLoading(false);
+  //     });
+  // }, []);
+
+  // if (loading) {
+  //   return null;
+  // }
   const getHsIdUser = (token,id_hs) => {
     ApiHocSinh.getHocSinhIdUser(token,id_hs)
       .then(function (response) {
@@ -290,6 +406,26 @@ function App() {
         setUserToken(null);
       });
   };
+
+  useEffect(() => {
+    // Get the device token
+    messaging()
+      .getToken()
+      .then(token => {
+        console.log('device',token)
+        Alert.alert(token)
+        // return saveTokenToDatabase(token);
+      });
+      
+    // If using other push notification providers (ie Amazon SNS, etc)
+    // you may need to get the APNs token instead for iOS:
+    // if(Platform.OS == 'ios') { messaging().getAPNSToken().then(token => { return saveTokenToDatabase(token); }); }
+
+    // Listen to whether the token changes
+    // return messaging().onTokenRefresh(token => {
+    //   saveTokenToDatabase(token);
+    // });
+  }, []);
 
 
   useEffect(() => {
@@ -356,7 +492,8 @@ function App() {
           {
                 userToken ? (
                   <Drawer.Navigator drawerContent={props => <DrawerScreen {...props} />} >
-                      <Drawer.Screen name="Home"  component={UserGreeting}    />
+                      {/* <Drawer.Screen name="Home"  component={() => UserGreeting(soLuongThongBao)}    /> */}
+                      <Drawer.Screen name="Home"  component={() => UserGreeting(notification_number)}    />
                     </Drawer.Navigator>
                     ) : (
                     <GuestGreeting />
