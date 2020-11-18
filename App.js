@@ -17,6 +17,7 @@ import { AuthContext } from './screen/context';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import AsyncStorage from '@react-native-community/async-storage';
 import ApiHocSinh from './android/app/src/api/HocSinhApi';
+import ApiUser from './android/app/src/api/users';
 // import { AuthContext } from './screen/context';
 import Modal_Start_App from './screen/component/reuse/Modal_Start_App'
 
@@ -33,6 +34,9 @@ import ThemDonNghi from './screen/DayOff/ThemDonNghi';
 
 import HoatDong from './screen/HoatDong/HoatDong';
 
+import Album from './screen/Album/Album';
+import Detail_Album from './screen/Album/Detail_Album';
+
 import DiemDanh from './screen/DiemDanh/DiemDanh';
 
 import DonHo from './screen/DonHo/DonHo';
@@ -46,6 +50,7 @@ import CapNhapThongTin from './screen/Account/CapNhapThongTin';
 import EditInfoParent from './screen/Account/EditInfoParent';
 
 import Notification from './screen/Notification/Notification';
+import HistoryNotification from './screen/Notification/HistoryNotification';
 
 import HocPhi from './screen/HocPhi/HocPhi';
 import ChiTietHocPhi from './screen/HocPhi/ChiTietHocPhi';
@@ -66,6 +71,10 @@ import database from '@react-native-firebase/database';
 
 
 import { setNumberNotification } from './src/redux/action/index';
+
+import TabNumberNoti from './screen/TabNumberNoti';
+
+
 
 
 const store = createStore(myReducer,applyMiddleware(thunk));
@@ -199,7 +208,21 @@ const HomeStackScreen = () => (
             headerStyle : { backgroundColor: '#78bbe6' },
             headerTintColor: '#fff',
             title : "Thông tin phụ huynh"
-        }} />                
+        }} />          
+
+       <HomeStack.Screen name="Album" component={Album}  
+          options={{
+            headerStyle : { backgroundColor: '#78bbe6' },
+            headerTintColor: '#fff',
+        }} />         
+
+        <HomeStack.Screen name="Detail_Album" component={Detail_Album}  
+          options={{
+            headerStyle : { backgroundColor: '#78bbe6' },
+            headerTintColor: '#fff',
+        }} />  
+
+     <HomeStack.Screen name="ChangePass" component={ChangePass}  options={{ title:' Đổi mật khẩu'}} />
 
   </HomeStack.Navigator>
 )
@@ -207,7 +230,6 @@ const HomeStackScreen = () => (
 const AccountScreen = () => (
   <AccountStack.Navigator initialRouteName="CapNhapThongTin">
      <AccountStack.Screen name="Account" component={Account}  options={{ headerShown: false}} />
-     <AccountStack.Screen name="ChangePass" component={ChangePass}  options={{ title:' Đổi mật khẩu'}} />
      <AccountStack.Screen name="CapNhapThongTin"   component={CapNhapThongTin}      options={{
             headerStyle : { backgroundColor: '#78bbe6' },
             headerTintColor: '#fff',
@@ -219,6 +241,7 @@ const AccountScreen = () => (
 const NotificationScreen = () => (
   <NotificationStack.Navigator initialRouteName="Notification">
      <NotificationStack.Screen name="Notification" component={Notification}  options={{ title:'Thông báo'}} />
+     <NotificationStack.Screen name="HistoryNotification" component={HistoryNotification}  options={{ title:'Tất cả thông báo'}} />
   </NotificationStack.Navigator>
 )
 
@@ -239,6 +262,11 @@ const GuestGreeting  = () => (
    </Stack.Navigator> 
 )
 
+
+let  number_Noti_Show = 0;
+ store.subscribe( function(){
+  return number_Noti_Show = store.getState().notification;
+}); 
 const UserGreeting = (soLuongThongBao) => (
   
   <Tabs.Navigator  style={styles.tabbutton}  initialRouteName="Kids"  screenOptions={({ route }) => ({
@@ -275,7 +303,7 @@ const UserGreeting = (soLuongThongBao) => (
       <Tabs.Screen name="Kids" component={HomeStackScreen}   options={{title : "Home" }}   />
       <Tabs.Screen name="Account" component={AccountScreen}  options={{title : "Thông tin" }}  />
       {/* <Tabs.Screen name="DanhBa" component={DanhBaScreen}   options={{title : "Danh bạ"}} /> */}
-      <Tabs.Screen name="Thông báo" component={NotificationScreen}   options={{title : "Thông báo" , tabBarBadge: soLuongThongBao}}   />
+      <Tabs.Screen name="Thông báo" component={NotificationScreen}   options={{title : "Thông báo" , tabBarBadge: <TabNumberNoti/>}}   />
 
 
 
@@ -285,9 +313,9 @@ const UserGreeting = (soLuongThongBao) => (
 
 function App() {
 
-  const [notification_number, setNotification_Number] = useState(0);
-  store.subscribe(() => {setNotification_Number(store.getState().notification)})
-  
+  // const [notification_number, setNotification_Number] = useState(0);
+  // store.subscribe(() => {setNotification_Number(store.getState().notification)})
+ 
 
   const [showLoading, setShowLoading] = useState(true);
   const [userToken, setUserToken] = useState(null);
@@ -460,16 +488,40 @@ function App() {
     }
  }
 
+
+
+ async function  dangXuat () {
+  var token = await AsyncStorage.getItem('data_token');
+  var data_user =  await AsyncStorage.getItem('data_user');
+  let user =  JSON.parse(data_user);
+  let data = {
+    device : ' '
+  }
+  AsyncStorage.removeItem('data_user');
+  AsyncStorage.removeItem('data_hs');
+  AsyncStorage.removeItem('data_token');
+  setUserToken(null);
+  // ApiUser.edit(token,user.id,data)
+  //   .then(function (response) {
+  //     console.log(response.data)
+  //      AsyncStorage.removeItem('data_user');
+  //       AsyncStorage.removeItem('data_hs');
+  //       AsyncStorage.removeItem('data_token');
+  //       setUserToken(null);
+  //   })
+  //   .catch(function (error) {
+  //     console.log(error);
+  //   });
+};
+
+
   const authContext = React.useMemo(()=>{
     return {
       signIn: () => {
         getTokenHaveSignIn();
       },
       signOut: () => {
-        AsyncStorage.removeItem('data_user');
-        AsyncStorage.removeItem('data_hs');
-        AsyncStorage.removeItem('data_token');
-        setUserToken(null);
+        dangXuat();
       }
     }
   })
@@ -493,7 +545,7 @@ function App() {
                 userToken ? (
                   <Drawer.Navigator drawerContent={props => <DrawerScreen {...props} />} >
                       {/* <Drawer.Screen name="Home"  component={() => UserGreeting(soLuongThongBao)}    /> */}
-                      <Drawer.Screen name="Home"  component={() => UserGreeting(notification_number)}    />
+                      <Drawer.Screen name="Home"  component={UserGreeting}    />
                     </Drawer.Navigator>
                     ) : (
                     <GuestGreeting />

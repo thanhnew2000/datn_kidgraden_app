@@ -10,9 +10,17 @@ import {
   import DateTimePicker from '@react-native-community/datetimepicker';
   import ApiDiemDanh from '../../android/app/src/api/DiemDanhApi';
 // import { TouchableOpacity } from 'react-native-gesture-handler';
+import AsyncStorage from '@react-native-community/async-storage';
+import { useSelector,useDispatch } from 'react-redux'
 
 const DiemDanh =  () => {
 
+
+    
+  const data_redux = useSelector(state => state)
+  const du_lieu_hs = data_redux.hocsinh.data;
+ 
+  
   const [SangChieu, setSangChieu] = useState(false);
     
   const [showModal, setShowModal] = useState(false);
@@ -20,23 +28,34 @@ const DiemDanh =  () => {
   var year = new Date().getFullYear()
   const [thangNam, setThangNam] = useState(month+' / '+year);
   const [arrDate, setArrDate] = useState([]);
+  const [token, setToken] = useState('');
 
   const [dataDiemDanhDen, setDataDiemDanhDen] = useState([]);
   const [dataDiemDanhVe, setDataDiemDanhVe] = useState([]);
-  
-     const getArrDate = (token) => {
-        ApiDiemDanh.getThangNamOfNamHocHienTai(token)
+
+     async function  getArrDate () {
+       var get_token = await AsyncStorage.getItem('data_token');
+    //    var hs = await AsyncStorage.getItem('data_hs');
+    //    let data_HocSinh = JSON.parse(hs)
+        setToken(token);
+        ApiDiemDanh.getThangNamOfNamHocHienTai(get_token)
         .then(function (response) {
             let data = response.data;
             let indexEnd = (data.length - 1);
             setArrDate(data);
-            choseDateShow(month+' / '+year)
+            // choseDateShow(month+' / '+year,data_HocSinh.id)
+            setThangNam(month+' / '+year);
+            const formData = new FormData();
+            formData.append("date",month+' / '+year);
+            formData.append("id_hs",du_lieu_hs.id);
+            HamGetDataByThangNam(get_token,formData)
+
         })
         .catch(function (error) {
         console.log(error);
         });
     };
-    useEffect(() => {getArrDate('rfe')}, []);
+    useEffect(() => {getArrDate()}, []);
 
 
     const ListDiemDanh = ({item}) => (
@@ -61,26 +80,31 @@ const DiemDanh =  () => {
         }
     }
 
-    function choseDateShow(date){
-        setThangNam(date);
-        console.log(date)
-        const formData = new FormData();
-        formData.append("date",date);
-        ApiDiemDanh.getDataByThangNam('token',formData)
+    function HamGetDataByThangNam(token,formData){
+        ApiDiemDanh.getDataByThangNam(token,formData)
         .then(function (response) {
             let data = response.data;
             setDataDiemDanhDen(data.diem_danh_den);
             setDataDiemDanhVe(data.diem_danh_ve);
-            
             console.log(data.diem_danh_den)
             console.log(data.diem_danh_ve)
         })
         .catch(function (error) {
         console.log(error);
         });
+    }
+
+
+    function choseDateShow(date){
+        setThangNam(date);
+        const formData = new FormData();
+        formData.append("date",date);
+        formData.append("id_hs",du_lieu_hs.id);
+        HamGetDataByThangNam(token,formData)
         setShowModal(false)
     }
 
+   
 
   return (
             <View style={styles.container}>

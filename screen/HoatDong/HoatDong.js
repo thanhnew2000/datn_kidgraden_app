@@ -10,14 +10,21 @@ import { ScrollView } from 'react-native-gesture-handler';
 
 import ApiHoatDong from '../../android/app/src/api/HoatDongApi';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { useSelector,useDispatch } from 'react-redux'
+
 const HoatDong =  ({ navigation }) => {
 
     const [data_hd, setDataHd] = useState([])
     const [value_Tuan, setValueTuan] = useState({})
     const [showModel, setShowModel] = useState(false)
 
-    const getHoatDong = (token,id_lop) => {
-        ApiHoatDong.getHoatDongByLop(token,id_lop)
+    const data_redux = useSelector(state => state)
+    const du_lieu_hs = data_redux.hocsinh.data;
+    const data_token = data_redux.token;
+
+   
+    const getHoatDong = () => {
+        ApiHoatDong.getHoatDongByLop(data_token.token,du_lieu_hs.lop_id)
         .then(function (response) {
           let data = response.data;
           console.log(data);
@@ -27,7 +34,7 @@ const HoatDong =  ({ navigation }) => {
           console.log(error);
         });
     };
-    useEffect(() => {getHoatDong('rfe',5)}, []);
+    useEffect(() => {getHoatDong()}, []);
 
 
     function clickShowModels(){

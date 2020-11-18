@@ -33,11 +33,12 @@ import {
   import Modal_Loading from './component/reuse/Modal_Loading'
   import { getDataSuccess } from '../src/redux/action/index';
   import { AuthContext } from './context';
+  import AntDesign from 'react-native-vector-icons/AntDesign';
 
   // Redux
 
   import { status } from '../src/redux/action/index';
-  import { fetchDataAsyncStorage } from '../src/redux/action/index';
+  import { fetchDataAsyncStorage,fetchTokenAsyncStorage } from '../src/redux/action/index';
   import { useSelector,useDispatch,useStore  } from 'react-redux'
 const Home2 = ({ navigation }) => 
 {
@@ -118,6 +119,7 @@ const Home2 = ({ navigation }) =>
             getThisHocSinh(token,data_HocSinh.id)
           }
           dispatch(fetchDataAsyncStorage())
+          dispatch(fetchTokenAsyncStorage())
 
         }catch (e){
           console.log(e);
@@ -132,7 +134,7 @@ const Home2 = ({ navigation }) =>
     {id: 3, name : 'Dặn thuốc',image :IconMedicine , naviga:'add_medicine'},
     {id: 8, name : 'Đón hộ',image :IconDonHo ,  naviga:'Đón hộ' },
     {id: 7, name : 'Đánh giá GV',image :IconFeedBack  ,  naviga:'Đánh giá GV'},
-    {id: 4, name : 'Bản tin',image :IconNews, naviga:'Bản tin' },
+    {id: 4, name : 'Album',image :IconNews, naviga:'Album' },
     {id: 5, name : 'Biểu đồ',image :IconChart , naviga:'Biểu đồ' },
     {id: 6, name : 'Hoạt động',image :IconCalender , naviga:'Hoạt động'},
     {id: 9, name : 'Học phí',image :IconMoney , naviga:'Học phí'},
@@ -160,6 +162,9 @@ const Home2 = ({ navigation }) =>
         });
   }
 
+  function testSomething(){
+    'hishdisahdis'
+  }
    
   return (
 <ScrollView>
@@ -170,7 +175,7 @@ const Home2 = ({ navigation }) =>
           <View style={{backgroundColor:'rgba(221, 221, 222, 0.39)',paddingVertical:5}}>
 
             <View style={{flexDirection:'row-reverse'}}>
-              <Text> </Text>
+              <Text>{ testSomething()} </Text>
               <FlatList
                 style={ all_hs_user.length >= 7 ?  null : styles.flexDirectionRowReverse}
                 data={all_hs_user}
@@ -207,21 +212,6 @@ const Home2 = ({ navigation }) =>
 
 
     <View style={styles.container}>
-         {/* <ImageBackground style={{width: '100%' , height:120 }}   source={require('../android/app/src/asset/img/home_image_slide.jpg')}> */}
-
-    
-        {/* </ImageBackground> */}
-
-         {/* <ImageBackground style={{width: '100%' , height:100 }}   source={require('../android/app/src/kids_student.jpg')}> */}
-            {/* <View style={styles.infoText}> */}
-                {/* <View style={styles.borderOftext}>
-                      <Text style={{fontSize:20, fontWeight:'bold',color:'white'}}>{hs.ten}</Text>
-                      <Text style={{fontSize:18,color:'white'}}>{lop_hs == undefined ? ' ' : lop_hs.ten_lop } - năm 2020</Text>
-                </View> */}
-
-            {/* </View> */}
-         {/* </ImageBackground> */}
-
           <View>
               <FlatList
                 data={Category}
@@ -234,6 +224,32 @@ const Home2 = ({ navigation }) =>
                 numColumns={3}
               />
           </View>
+
+
+          {/* <TouchableOpacity onPress={()=> navigation.navigate('Album')}>
+            <View style={{flexDirection:'row',height:100,paddingTop:10}}>
+                <View style={{flexDirection:'row',width:'80%',borderWidth:2,borderColor:'#8fadff',borderTopLeftRadius:10}}>
+                      <View style={{width:'37%',borderWidth:2,borderColor:'#8fadff'}}>
+                        <View style={{padding:2}}>
+                          <Image style={{height:'100%',width:'100%'}} source={IconDiemDanh}/>
+                        </View>
+                      </View>
+                      <View style={{width:'31%',padding:2,borderWidth:2,borderColor:'#8fadff'}}>
+                       <Image style={{height:'100%',width:'100%'}} source={IconXinNghi}/>
+                      </View>
+                      <View style={{width:'31%',padding:2,borderWidth:2,borderColor:'#8fadff'}}>
+                        <Image style={{height:'100%',width:'100%'}} source={IconXinNghi}/>
+                      </View>
+                </View>
+
+                    <View style={{width:'20%',backgroundColor:'#f37cfc',justifyContent:'center',alignItems:'center',borderBottomRightRadius:15}}>
+                      <AntDesign name="picture" size={29} color="#fcfdff" />
+                       <Text style={{color:'#ffff'}}>Album</Text>
+                   </View>
+
+               
+            </View>
+          </TouchableOpacity> */}
 
     </View>
     <Modal_Loading showLoading = {showLoading} /> 

@@ -15,8 +15,14 @@ import ipApi from '../../android/app/src/api/ipApi';
 import ApiDonHo from '../../android/app/src/api/DonHoApi';
 import AsyncStorage from '@react-native-community/async-storage';
 import Modal_Loading from '../component/reuse/Modal_Loading'
+import { useSelector,useDispatch } from 'react-redux'
 
 const DonHo =  ({ navigation }) => {
+
+
+  const data_redux = useSelector(state => state)
+  const du_lieu_hs = data_redux.hocsinh.data;
+ 
 
   const [viewModel, setViewModel] = useState(false);
   const [userToken, setUserToken] = useState('');
@@ -25,7 +31,7 @@ const DonHo =  ({ navigation }) => {
     const [showLoading, setShowLoading] = useState(false);
 
     const getListDonHo = (token) => {
-        ApiDonHo.getAll(token)
+        ApiDonHo.getNguoiDonHoByHs(token,du_lieu_hs.id)
         .then(function (response) {
           let data = response.data;
           console.log(data);

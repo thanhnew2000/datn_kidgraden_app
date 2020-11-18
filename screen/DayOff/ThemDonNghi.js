@@ -9,12 +9,17 @@ import ipApi from '../../android/app/src/api/ipApi';
 import ApiXinNghi from '../../android/app/src/api/XinNghiHocApi';
 import AsyncStorage from '@react-native-community/async-storage';
 import Modal_SubmitLoading from '../component/reuse/Modal_SubmitLoading';
+import { useSelector,useDispatch } from 'react-redux'
 
 const ThemDonNghi =  ({ navigation , route}) => {
   const { reloadAgain } = route.params;
   const { userToken } = route.params;
-  const { data_HS } = route.params;
+  // const { data_HS } = route.params;
   
+  
+  const data_redux = useSelector(state => state)
+  const du_lieu_hs = data_redux.hocsinh.data;
+
     const [submitLoading, setSubmitLoading] = useState(false);
     const [lyDoXinNghi, setLyDoXinNghi] = useState(null);
 
@@ -80,7 +85,7 @@ const ThemDonNghi =  ({ navigation , route}) => {
                     formData.append("ngay_ket_thuc",dateTo.getDate()+ '-' + parseInt(dateTo.getMonth() + 1) +'-'+ dateTo.getFullYear());
                     formData.append("noi_dung",lyDoXinNghi);
 
-                    ApiXinNghi.insertXinNghiHoc(userToken,data_HS.id,formData)
+                    ApiXinNghi.insertXinNghiHoc(userToken,du_lieu_hs.id,formData)
                     .then(res => {
                         console.log(res.data);
                         setSubmitLoading(false);

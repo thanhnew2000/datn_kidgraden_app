@@ -49,11 +49,35 @@ export function fetchDataAsyncStorage() {
                 let data_HocSinh =  JSON.parse(hs);
                 dispatch(getDataSuccess(data_HocSinh))
               }
-              console.log(hs)
             }catch (e){
               console.log(e);
             }
         }
       fetchData();
   }
+}
+
+
+
+
+
+export function setTokenRedux(token) {
+  return {
+    type: types.TOKEN_ASYNC,
+    token,
+  }
+}
+
+export function fetchTokenAsyncStorage() {
+  return (dispatch) => {
+     async function fetchToken() {
+          try{
+            var token = await AsyncStorage.getItem('data_token');
+            dispatch(setTokenRedux(token))
+          }catch (e){
+            console.log(e);
+          }
+      }
+      fetchToken();
+}
 }
