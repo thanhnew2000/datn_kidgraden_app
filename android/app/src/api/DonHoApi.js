@@ -6,10 +6,10 @@ const insertDonHo = (token,id_hs,data) => {
     return http.axiosAPItoken(token).post('/tao-don-ho/'+id_hs,data);
 };
 
-const getAll = (token) => {
-    return http.axiosAPItoken(token).get('/all-nguoi-don-ho');
+const getNguoiDonHoByHs = (token,id_hs) => {
+    return http.axiosAPItoken(token).get('/nguoi-don-ho-id-hs/'+id_hs);
 };
 export default {
-    insertDonHo,
-    getAll
+    getNguoiDonHoByHs,
+    insertDonHo
 };

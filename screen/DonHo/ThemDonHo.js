@@ -17,22 +17,29 @@ import ApiDonHo from '../../android/app/src/api/DonHoApi';
 import AsyncStorage from '@react-native-community/async-storage';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Modal_SubmitLoading from '../component/reuse/Modal_SubmitLoading';
+import { useSelector,useDispatch } from 'react-redux'
 
 const ThemDonHo =  ({ navigation , route}) => {
+
+
   const { reloadAgain } = route.params;
   const [userToken, setUserToken] = useState(null);
-  const [data_HS, setDataHS] = useState('date');
+  // const [data_HS, setDataHS] = useState('date');
+
+  const data_redux = useSelector(state => state)
+  const du_lieu_hs = data_redux.hocsinh.data;
+ 
 
 
   useEffect(() => {
     async function fetchData() {
       try{
         var token = await AsyncStorage.getItem('data_token');
-        var hs = await AsyncStorage.getItem('data_hs');
-        let data_hs = JSON.parse(hs);
+        // var hs = await AsyncStorage.getItem('data_hs');
+        // let data_hs = JSON.parse(hs);
         if(token !== null){
           setUserToken(token);
-          setDataHS(data_hs);
+          // setDataHS(data_hs);
         }
       }catch (e){
         console.log(e);
@@ -147,7 +154,7 @@ const ThemDonHo =  ({ navigation , route}) => {
                     formData.append("phone_number",valueInput.phone);
                     formData.append("ten_nguoi_don_ho",valueInput.name);
                     formData.append("ghi_chu",valueInput.ghi_chu);
-                      ApiDonHo.insertDonHo(userToken,data_HS.id,formData)
+                      ApiDonHo.insertDonHo(userToken,du_lieu_hs.id,formData)
                       .then(res => {
                           console.log(res.data);
                           setSubmitLoading(false)

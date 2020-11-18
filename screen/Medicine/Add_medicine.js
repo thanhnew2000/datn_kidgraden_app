@@ -15,25 +15,31 @@ import AsyncStorage from '@react-native-community/async-storage';
 import { Input ,Button } from 'react-native-elements';
 import axios from "axios";
 import Modal_SubmitLoading from '../component/reuse/Modal_SubmitLoading';
+import { useSelector,useDispatch } from 'react-redux'
 
 
 const Add_medicine =  ({ navigation , route }) => {
   // const { reloadAgain } = route.params;
   // const { userToken } = route.params;
+  const data_redux = useSelector(state => state)
+  const du_lieu_hs = data_redux.hocsinh.data;
 
-  const [submitLoading, setSubmitLoading] = useState(false);
-  
+   const [submitLoading, setSubmitLoading] = useState(false);
+
+ 
+   
     const [userToken, setUserToken] = useState(null)
-    const [data_HS, setDataHS] = useState(null)
+    // const [data_HS, setDataHS] = useState(null)
     useEffect(() => {
         async function fetchData() {
           try{
             var token = await AsyncStorage.getItem('data_token');
-            var hs = await AsyncStorage.getItem('data_hs');
+            // var hs = await AsyncStorage.getItem('data_hs');
             if(token !== null && hs !== null){
-              let data_HocSinh = JSON.parse(hs)
+              // let data_HocSinh = JSON.parse(hs)
+              console.log('token - hs',[token,data_HocSinh])
               setUserToken(token) 
-              setDataHS(data_HocSinh) 
+              // setDataHS(data_HocSinh) 
             }
           }catch (e){
             console.log(e);
@@ -48,12 +54,12 @@ const Add_medicine =  ({ navigation , route }) => {
     const [loiNhan, setLoiNhan] = useState(null)
 
     const [oneMedicineAdd, setOneMedicineAdd] = useState({
-        name: '',
-        lieu: '',
-        donvi:'',
-        note: '',
-        image:''
-  });
+          name: '',
+          lieu: '',
+          donvi:'',
+          note: '',
+          image:''
+   });
 
     const [listAddMedicine, setListAddMedicine] = useState([
         {
@@ -231,18 +237,30 @@ function submitAdd(){
           }
           console.log(formData);
      
-        ApiDonThuoc.insertDonThuoc(userToken,data_HS.id,formData)
+        ApiDonThuoc.insertDonThuoc(userToken,du_lieu_hs.id,formData)
         .then(res => {
             console.log(res.data);
             setSubmitLoading(false)
-            Alert.alert(
-              "Đã gửi đơn thuốc thành công",
-              "",
-              [
-                { text: "OK", onPress: () => navigation.navigate('Home') }
-              ],
-              { cancelable: false }
-            );
+            if(res.data == 'NoGiaoVien'){
+              Alert.alert(
+                "Lớp hiện chưa có giáo viên chưa thể gửi đơn được",
+                "",
+                [
+                  { text: "OK", onPress: () => navigation.navigate('Home') }
+                ],
+                { cancelable: false }
+              ); 
+            }else{
+              Alert.alert(
+                "Đã gửi đơn thuốc thành công",
+                "",
+                [
+                  { text: "OK", onPress: () => navigation.navigate('Home') }
+                ],
+                { cancelable: false }
+              );
+            }
+          
             // // reloadAgain();
             // navigation.navigate('Dặn thuốc');
         })

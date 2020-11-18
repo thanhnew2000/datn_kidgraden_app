@@ -7,11 +7,13 @@ import { View, Text, Image,
 
  import { VictoryBar, VictoryGroup, VictoryChart, VictoryLine,VictoryZoomContainer,VictoryBrushContainer ,VictoryAxis,VictoryScatter, VictoryLegend } from "victory-native";
  import ApiBieuDoSucKhoe from '../../android/app/src/api/BieuDoSucKhoeApi';
-
+ import AsyncStorage from '@react-native-community/async-storage';
+ import { useSelector,useDispatch } from 'react-redux'
 
 const BieuDo =  ({ navigation }) => {
 
-
+  const data_redux = useSelector(state => state)
+  const du_lieu_hs = data_redux.hocsinh.data;
  
   const data = {
     some : [
@@ -34,19 +36,33 @@ const BieuDo =  ({ navigation }) => {
     chieu_cao : '',
     can_nang : ''
   }); 
+ 
 
-  const getYear = () => {
-    ApiBieuDoSucKhoe.getYear('abfd')
-      .then(function (response) {
-        let data = response.data;
-        setAllYear(data);
-        let lengthIndexNam = data.length - 1;
-        getAllSucKhoeOfHs(2020);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-  };
+  function layNamAndGetAllSkHs(token,id_hs){
+    ApiBieuDoSucKhoe.getYear(token)
+    .then(function (response) {
+      let data = response.data;
+      setAllYear(data);
+      let lengthIndexNam = data.length - 1;
+      console.log(id_hs);
+      getAllSucKhoeOfHs(token,data[lengthIndexNam]['year'],id_hs);
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+  }
+
+async function getYear () {
+   var token = await AsyncStorage.getItem('data_token');
+  //  var hs = await AsyncStorage.getItem('data_hs');
+  //  let data_HocSinh = JSON.parse(hs)
+   await layNamAndGetAllSkHs(token,du_lieu_hs.id)
+ };
+
+ useEffect(() => {getYear()}, []);
+
+
+
 
   function locByYear(year){
     setChoseNam(year);
@@ -56,8 +72,8 @@ const BieuDo =  ({ navigation }) => {
     console.log(arr);
   }
 
-  function getAllSucKhoeOfHs(yearNear) {
-    ApiBieuDoSucKhoe.getAllDataSkHs('abfd',451)
+  function getAllSucKhoeOfHs(token,yearNear,id_hs) {
+    ApiBieuDoSucKhoe.getAllDataSkHs(token,id_hs)
     .then(function (response) {
       let data = response.data;
       console.log('data',data);
@@ -95,7 +111,6 @@ const BieuDo =  ({ navigation }) => {
         setDataCanNang(arrCan_Nang);
   };
 
-  useEffect(getYear, []);
 
 
   const [thisState,setThisState] = useState(
