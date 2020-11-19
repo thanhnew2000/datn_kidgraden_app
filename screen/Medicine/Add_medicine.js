@@ -23,30 +23,9 @@ const Add_medicine =  ({ navigation , route }) => {
   // const { userToken } = route.params;
   const data_redux = useSelector(state => state)
   const du_lieu_hs = data_redux.hocsinh.data;
+  const data_token = data_redux.token;
 
    const [submitLoading, setSubmitLoading] = useState(false);
-
- 
-   
-    const [userToken, setUserToken] = useState(null)
-    // const [data_HS, setDataHS] = useState(null)
-    useEffect(() => {
-        async function fetchData() {
-          try{
-            var token = await AsyncStorage.getItem('data_token');
-            // var hs = await AsyncStorage.getItem('data_hs');
-            if(token !== null && hs !== null){
-              // let data_HocSinh = JSON.parse(hs)
-              console.log('token - hs',[token,data_HocSinh])
-              setUserToken(token) 
-              // setDataHS(data_HocSinh) 
-            }
-          }catch (e){
-            console.log(e);
-          }
-      }
-      fetchData();
-    },[]);
 
 
     const [viewModel, setViewModel] = useState(false);
@@ -69,22 +48,7 @@ const Add_medicine =  ({ navigation , route }) => {
             note:'Uống sau bữa ăn',
             image:''
         },
-        {
-            name:'Sino 1',
-            lieu:'300',
-            donvi:'ml',
-            note:'Uống sau bữa ăn',
-            image:''
-
-        },
-        {
-            name:'Sino 2',
-            lieu:'300',
-            donvi:'ml',
-            note:'Uống sau bữa ăn',
-            image:''
-
-        },
+      
     ]);
 
 
@@ -237,29 +201,29 @@ function submitAdd(){
           }
           console.log(formData);
      
-        ApiDonThuoc.insertDonThuoc(userToken,du_lieu_hs.id,formData)
+        ApiDonThuoc.insertDonThuoc(data_token.token,du_lieu_hs.id,formData)
         .then(res => {
             console.log(res.data);
             setSubmitLoading(false)
-            if(res.data == 'NoGiaoVien'){
-              Alert.alert(
-                "Lớp hiện chưa có giáo viên chưa thể gửi đơn được",
-                "",
-                [
-                  { text: "OK", onPress: () => navigation.navigate('Home') }
-                ],
-                { cancelable: false }
-              ); 
-            }else{
-              Alert.alert(
-                "Đã gửi đơn thuốc thành công",
-                "",
-                [
-                  { text: "OK", onPress: () => navigation.navigate('Home') }
-                ],
-                { cancelable: false }
-              );
-            }
+            // if(res.data == 'NoGiaoVien'){
+            //   Alert.alert(
+            //     "Lớp hiện chưa có giáo viên chưa thể gửi đơn được",
+            //     "",
+            //     [
+            //       { text: "OK", onPress: () => navigation.navigate('Home') }
+            //     ],
+            //     { cancelable: false }
+            //   ); 
+            // }else{
+            //   Alert.alert(
+            //     "Đã gửi đơn thuốc thành công",
+            //     "",
+            //     [
+            //       { text: "OK", onPress: () => navigation.navigate('Home') }
+            //     ],
+            //     { cancelable: false }
+            //   );
+            // }
           
             // // reloadAgain();
             // navigation.navigate('Dặn thuốc');
