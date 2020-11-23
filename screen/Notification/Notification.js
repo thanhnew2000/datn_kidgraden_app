@@ -68,7 +68,6 @@ const Notification = ({navigation}) => {
 
       return (
         <View style={styles.containers}>
-          <ScrollView>
 
 
          <FlatList
@@ -100,7 +99,6 @@ const Notification = ({navigation}) => {
               <Text style={{fontSize:16,color:'#00ace6'}}>Xem tất cả</Text>
             </TouchableOpacity>
 
-          </ScrollView>
 
         </View>
 

@@ -139,19 +139,19 @@ const DrawerScreen =  ({props,navigation}) => {
           <View style={{alignItems:'center',justifyContent:'center',width:'20%'}}>
             <FontAwesome name="unlock-alt" size={20} color="black" />
           </View>
-       <TouchableOpacity onPress={()=> navigation.navigate('ChangePass') }>
             <View style={{justifyContent:'center',width:'40%'}}>
-              <Text >Đổi mật khẩu</Text>
+              <TouchableOpacity onPress={()=> navigation.navigate('ChangePass') }>
+                  <Text >Đổi mật khẩu</Text>
+              </TouchableOpacity>
             </View>
-          </TouchableOpacity>
 
-          <View style={{justifyContent:'center',width:'40%'}}>
+          {/* <View style={{justifyContent:'center',width:'40%'}}>
              <Text >{numberNotification}</Text>
             <TouchableOpacity onPress={()=>clickTest(1)}>
               <Text>Click test</Text>
             </TouchableOpacity>
 
-          </View>
+          </View> */}
 
       </View>
 

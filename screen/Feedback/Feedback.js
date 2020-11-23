@@ -25,9 +25,6 @@ const Feedback = ({navigation}) => {
   const data_token = data_redux.token;
 
   const [noiDung , setNoiDung] =  useState('')
-  const [dataGiaoVien , setDataGiaoVien] =  useState([])
-  const [userToken, setUserToken] = useState(null);
-  const [data_HS, setData_HS] = useState({});
 
   const [submitLoading, setSubmitLoading] = useState(false);
 
@@ -38,6 +35,7 @@ const Feedback = ({navigation}) => {
       'lop_id' : du_lieu_hs.lop_id,
       'noi_dung' : noiDung
     }
+
     ApiDanhGiaGiaoVien.insertDanhGiaGiaoVien(data_token.token,dataInsert)
     .then(res => {
         console.log(res.data);
@@ -59,19 +57,6 @@ const Feedback = ({navigation}) => {
 
        
             <View style={styles.container}>
-                {/* <View style={{flexDirection:'row',alignItems:'center',paddingLeft:10}}>
-                    <View style={{width:'40%'}}>
-                        <Text style={{fontSize:16}}>Chọn giáo viên</Text>
-                    </View>
-                    <View style={{width:'50%'}}>
-                              <Picker
-                                style={{ height: 50, width: 150 }}
-                                onValueChange={(itemValue, itemIndex) => setValueInput({...valueInput,giao_vien_id:itemValue})}
-                                >
-                                {serviceItems}
-                                </Picker>
-                    </View>
-                </View> */}
                 <View style={{paddingTop:10}}>
                     <Input label="Nội dung đánh giá"
                        multiline
@@ -81,7 +66,6 @@ const Feedback = ({navigation}) => {
                 <View style={{width:'40%',alignSelf:'flex-end'}}>
                     <Button  title="Gửi" onPress={submitFeedback}/>
                 </View>
-                        
 
               <Modal_SubmitLoading submitLoading={submitLoading} />
 

@@ -187,9 +187,11 @@ function submitAdd(){
   }else{
     setSubmitLoading(true)
         const formData = new FormData();
+        
           formData.append("dateFrom",dateFrom.getDate()+ '-' + parseInt(dateFrom.getMonth() + 1) +'-'+ dateFrom.getFullYear());
           formData.append("dateTo",dateTo.getDate()+ '-' + parseInt(dateTo.getMonth() + 1) +'-'+ dateTo.getFullYear());
           formData.append("loinhan",loiNhan);
+          formData.append("lop_id",du_lieu_hs.lop_id);
           for (var i = 0; i < listAddMedicine.length; i++) {
               if(listAddMedicine[i].image.uri){
                   formData.append("donthuoc["+i+"][anhImage]", {type: 'image/jpg', uri:listAddMedicine[i].image.uri, name:'uploaded.jpg'});
@@ -200,30 +202,31 @@ function submitAdd(){
                   formData.append("donthuoc["+i+"][note]",listAddMedicine[i].note);
           }
           console.log(formData);
+          console.log(du_lieu_hs.lop_id);
      
         ApiDonThuoc.insertDonThuoc(data_token.token,du_lieu_hs.id,formData)
         .then(res => {
             console.log(res.data);
             setSubmitLoading(false)
-            // if(res.data == 'NoGiaoVien'){
-            //   Alert.alert(
-            //     "Lớp hiện chưa có giáo viên chưa thể gửi đơn được",
-            //     "",
-            //     [
-            //       { text: "OK", onPress: () => navigation.navigate('Home') }
-            //     ],
-            //     { cancelable: false }
-            //   ); 
-            // }else{
-            //   Alert.alert(
-            //     "Đã gửi đơn thuốc thành công",
-            //     "",
-            //     [
-            //       { text: "OK", onPress: () => navigation.navigate('Home') }
-            //     ],
-            //     { cancelable: false }
-            //   );
-            // }
+            if(res.data == 'NoGiaoVien'){
+              Alert.alert(
+                "Lớp hiện chưa có giáo viên chưa thể gửi đơn được",
+                "",
+                [
+                  { text: "OK", onPress: () => navigation.navigate('Home') }
+                ],
+                { cancelable: false }
+              ); 
+            }else{
+              Alert.alert(
+                "Đã gửi đơn thuốc thành công",
+                "",
+                [
+                  { text: "OK", onPress: () => navigation.navigate('Home') }
+                ],
+                { cancelable: false }
+              );
+            }
           
             // // reloadAgain();
             // navigation.navigate('Dặn thuốc');
