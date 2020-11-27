@@ -10,24 +10,36 @@ import { ScrollView } from 'react-native-gesture-handler';
 
 import ApiHoatDong from '../../android/app/src/api/HoatDongApi';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { useSelector,useDispatch } from 'react-redux'
+import Modal_Loading from '../component/reuse/Modal_Loading'
+
 const HoatDong =  ({ navigation }) => {
 
     const [data_hd, setDataHd] = useState([])
     const [value_Tuan, setValueTuan] = useState({})
     const [showModel, setShowModel] = useState(false)
 
-    const getHoatDong = (token,id_lop) => {
-        ApiHoatDong.getHoatDongByLop(token,id_lop)
+    const [showLoading, setShowLoading] = useState(true);
+
+
+    const data_redux = useSelector(state => state)
+    const du_lieu_hs = data_redux.hocsinh.data;
+    const data_token = data_redux.token;
+
+   
+    const getHoatDong = () => {
+        ApiHoatDong.getHoatDongByLop(data_token.token,du_lieu_hs.lop_id)
         .then(function (response) {
           let data = response.data;
           console.log(data);
           setDataHd(data);
+           setShowLoading(false);
         })
         .catch(function (error) {
           console.log(error);
         });
     };
-    useEffect(() => {getHoatDong('rfe',5)}, []);
+    useEffect(() => {getHoatDong()}, []);
 
 
     function clickShowModels(){
@@ -47,7 +59,6 @@ const HoatDong =  ({ navigation }) => {
 
 
   return (
-    <ScrollView>
             <View style={styles.container}>
 
                 {/* <View style={styles.boxNgangFirst}>
@@ -70,7 +81,7 @@ const HoatDong =  ({ navigation }) => {
                     <FlatList
                     data={data_hd}
                     renderItem={({item})=>
-                    <TouchableOpacity onPress={() => Linking.openURL('http://google.com')}> 
+                    <TouchableOpacity onPress={() => Linking.openURL('http://34.122.241.19:2000/'+item.link_file_hd)}> 
                           <View style={{backgroundColor:'#6699ff',marginLeft:8,marginTop:5}}>
                               <Text style={{padding:10,color:'#fff'}}>Tuần {item.tuan}</Text>
                           </View>
@@ -102,8 +113,12 @@ const HoatDong =  ({ navigation }) => {
                 </View>
 
               </View>
+
+
+            <Modal_Loading showLoading = {showLoading} />
+
             </View>
-     </ScrollView>
+
   );
 };
 

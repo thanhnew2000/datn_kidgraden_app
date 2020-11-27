@@ -9,12 +9,18 @@ import ipApi from '../../android/app/src/api/ipApi';
 import ApiXinNghi from '../../android/app/src/api/XinNghiHocApi';
 import AsyncStorage from '@react-native-community/async-storage';
 import Modal_SubmitLoading from '../component/reuse/Modal_SubmitLoading';
+import { useSelector,useDispatch } from 'react-redux'
 
 const ThemDonNghi =  ({ navigation , route}) => {
-  const { reloadAgain } = route.params;
-  const { userToken } = route.params;
-  const { data_HS } = route.params;
+  // const { reloadAgain } = route.params;
+  // const { userToken } = route.params;
+  // const { data_HS } = route.params;
   
+  
+  const data_redux = useSelector(state => state)
+  const du_lieu_hs = data_redux.hocsinh.data;
+  const data_token = data_redux.token;
+
     const [submitLoading, setSubmitLoading] = useState(false);
     const [lyDoXinNghi, setLyDoXinNghi] = useState(null);
 
@@ -80,12 +86,12 @@ const ThemDonNghi =  ({ navigation , route}) => {
                     formData.append("ngay_ket_thuc",dateTo.getDate()+ '-' + parseInt(dateTo.getMonth() + 1) +'-'+ dateTo.getFullYear());
                     formData.append("noi_dung",lyDoXinNghi);
 
-                    ApiXinNghi.insertXinNghiHoc(userToken,data_HS.id,formData)
+                    ApiXinNghi.insertXinNghiHoc(data_token.token,du_lieu_hs.id,formData)
                     .then(res => {
                         console.log(res.data);
                         setSubmitLoading(false);
-                        reloadAgain();
-                        navigation.navigate('Xin nghỉ');
+                        // reloadAgain();
+                        navigation.navigate('Xin nghỉ',{ token : data_token.token , du_lieu_hs : du_lieu_hs});
                     })
                     .catch(err => {
                         console.log(err);
@@ -96,6 +102,13 @@ const ThemDonNghi =  ({ navigation , route}) => {
       }
   return (
             <View style={styles.containers}>
+
+                     <View  style={{width:'40%',marginVertical:5,backgroundColor:'green',alignSelf:'flex-end'}}>
+                       <Button title="Xem các đơn" onPress={()=>{
+                                navigation.navigate('Xin nghỉ',{ token : data_token.token , du_lieu_hs : du_lieu_hs});
+                            }} />
+                    </View> 
+
               <View style={{flexDirection:'row'}}>
                     <View style={{width:'65%'}}>
                     <Text style={{fontWeight:'bold',fontSize:15}}>Bắt đầu ngày :</Text>

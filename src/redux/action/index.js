@@ -1,5 +1,6 @@
 import * as types from '../constants/ActionType';
 import AsyncStorage from '@react-native-community/async-storage';
+import database from '@react-native-firebase/database';
 
 export const status = () =>{
         return {
@@ -12,12 +13,7 @@ export const numberNotification = () =>{
       type: types.NUMBER_NOTIFI
   }
 }
-export const setNumberNotification = (newNumber) =>{
-  return {
-      type: types.SET_NUMBER_NOTIFI,
-      newNumber
-  }
-}
+
 
 
 export const data_hs = () =>{
@@ -31,7 +27,17 @@ export function getDataSuccess(data) {
       type: types.FETCHING_DATA_ASYNCSTOAGE,
       data,
     }
- }
+}
+
+
+export const setNumberNotification = (newNumber) =>{
+  return {
+      type: types.SET_NUMBER_NOTIFI,
+      newNumber
+  }
+}
+
+
 
 
 export function fetchDataAsyncStorage() {
@@ -43,11 +49,35 @@ export function fetchDataAsyncStorage() {
                 let data_HocSinh =  JSON.parse(hs);
                 dispatch(getDataSuccess(data_HocSinh))
               }
-              console.log(hs)
             }catch (e){
               console.log(e);
             }
         }
       fetchData();
   }
+}
+
+
+
+
+
+export function setTokenRedux(token) {
+  return {
+    type: types.TOKEN_ASYNC,
+    token,
+  }
+}
+
+export function fetchTokenAsyncStorage() {
+  return (dispatch) => {
+     async function fetchToken() {
+          try{
+            var token = await AsyncStorage.getItem('data_token');
+            dispatch(setTokenRedux(token))
+          }catch (e){
+            console.log(e);
+          }
+      }
+      fetchToken();
+}
 }

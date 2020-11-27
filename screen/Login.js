@@ -1,5 +1,5 @@
 
-import React ,{ useState, useMemo, useReducer, useContext }from 'react';
+import React ,{ useState, useMemo, useReducer, useContext,useEffect }from 'react';
 import axios from 'axios';
 import {
     StyleSheet,
@@ -19,11 +19,13 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { AuthContext } from './context';
 import WaitLoading from './Wait_Loading';
 import ipApi from '../android/app/src/api/ipApi';
+import messaging from '@react-native-firebase/messaging';
 
 // import userApiRequest from '../android/app/src/api/users';
 
 const Login =  ({ navigation  }) => {
   const [submitLoading, setSubmitLoading] = useState(false);
+  const [deviceMay, setDeviceMay] = useState(0);
 const { signIn } = React.useContext(AuthContext);
 
 const [dataUser,setDataUser] = useState({
@@ -60,15 +62,27 @@ async function createToken(token,data_hocsinh,data_user) {
 //       console.log(e)
 //   }
 // }
+useEffect(() => {
+  // Get the device token
+  messaging()
+    .getToken()
+    .then(token => {
+      setDeviceMay(token);
+      // return saveTokenToDatabase(token);
+    });
+
+}, []);
 
 function onSubMit(){
-  // console.log(dataUser.username)
+  console.log('dataUser.username')
     if(dataUser.username == ''){
       Alert.alert('Hãy nhập tài khoản !')
     }else if(dataUser.password == ''){
       Alert.alert('Hãy nhập mật khẩu !')
     }else{
       setSubmitLoading(true);
+      dataUser.device = deviceMay;
+      console.log(dataUser);
       axios.post(ipApi+'api/login',dataUser)
       .then(function (response) {
         setSubmitLoading(false);

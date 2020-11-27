@@ -94,7 +94,7 @@ const DrawerScreen =  ({props,navigation}) => {
  }
 
  function clickTest(number){
-  dispatch(setNumberNotification(number));
+  dispatch(setNumberNotification(5));
  }
 
   return (
@@ -139,16 +139,18 @@ const DrawerScreen =  ({props,navigation}) => {
           <View style={{alignItems:'center',justifyContent:'center',width:'20%'}}>
             <FontAwesome name="unlock-alt" size={20} color="black" />
           </View>
-          <View style={{justifyContent:'center',width:'40%'}}>
-            <Text >Đổi mật khẩu</Text>
-          </View>
-          <View style={{justifyContent:'center',width:'40%'}}>
+            <View style={{justifyContent:'center',width:'40%'}}>
+              <TouchableOpacity onPress={()=> navigation.navigate('ChangePass') }>
+                  <Text >Đổi mật khẩu</Text>
+              </TouchableOpacity>
+            </View>
+
+          {/* <View style={{justifyContent:'center',width:'40%'}}>
              <Text >{numberNotification}</Text>
             <TouchableOpacity onPress={()=>clickTest(1)}>
               <Text>Click test</Text>
             </TouchableOpacity>
-
-          </View>
+          </View> */}
 
       </View>
 

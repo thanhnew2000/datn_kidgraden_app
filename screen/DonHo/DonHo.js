@@ -15,8 +15,14 @@ import ipApi from '../../android/app/src/api/ipApi';
 import ApiDonHo from '../../android/app/src/api/DonHoApi';
 import AsyncStorage from '@react-native-community/async-storage';
 import Modal_Loading from '../component/reuse/Modal_Loading'
+import { useSelector,useDispatch } from 'react-redux'
 
 const DonHo =  ({ navigation }) => {
+
+
+  const data_redux = useSelector(state => state)
+  const du_lieu_hs = data_redux.hocsinh.data;
+ 
 
   const [viewModel, setViewModel] = useState(false);
   const [userToken, setUserToken] = useState('');
@@ -25,7 +31,7 @@ const DonHo =  ({ navigation }) => {
     const [showLoading, setShowLoading] = useState(false);
 
     const getListDonHo = (token) => {
-        ApiDonHo.getAll(token)
+        ApiDonHo.getNguoiDonHoByHs(token,du_lieu_hs.id)
         .then(function (response) {
           let data = response.data;
           console.log(data);
@@ -93,31 +99,7 @@ const DonHo =  ({ navigation }) => {
   
 
   
-  // const ListDonHo = ({itemDonHo}) => (
-
-  //   <View style={styles.oBox}>
-  //    <TouchableOpacity onPress={()=>showDetailNguoiDonHo(itemDonHo)} >
-  //         <View style={styles.chia2thanh}>
-  //           <View style={{width:'20%'}}>
-  //             {/* <Image style={{width:50,height:50}} source={IconKidsStudy}/> */}
-  //             <Image style={{width:50,height:50}} source={{uri : ipApi +'storage/'+itemDonHo.anh_nguoi_don_ho}}/>
-  //           </View>
-  //           <View style={{width:'50%'}}>
-  //               <Text style={{fontWeight:'bold',fontSize:17}}>Người đón: {itemDonHo.ten_nguoi_don_ho}</Text>
-  //               <Text style={{color:'black'}}>Bé : {data_HS.ten}</Text>
-  //           </View>
-            
-  //           <View style={{width:'30%',alignItems:'center'}}>
-  //           <Text style={{color:'green',fontWeight:'bold',paddingBottom:5}}>{itemDonHo.date_start} - {itemDonHo.date_end}</Text>
-  //           </View>
-  //         </View>
-  //         <View style={styles.chia2thanh}>
-  //             <Text>{itemDonHo.ghi_chu}</Text>
-  //         </View>
-  //   </TouchableOpacity>
-  // </View>
-
-  // );
+  
 
   const ListDonHoNew = ({itemDonHo}) => (
      <TouchableOpacity onPress={()=>showDetailNguoiDonHo(itemDonHo)} >
@@ -140,7 +122,6 @@ const DonHo =  ({ navigation }) => {
               </View>
       </View>
     </TouchableOpacity>
-
 
   );
 
@@ -207,8 +188,7 @@ const DonHo =  ({ navigation }) => {
   );
 
   return (
-    <ScrollView style={styles.container}>
-            <View >
+            <View style={styles.container}>
                   <View  style={{width:'100%',marginTop:5}}>
                         <TouchableOpacity onPress={()=>{
                                 navigation.navigate('add_donho',{reloadAgain:reloadAgain,userToken : userToken})
@@ -290,7 +270,6 @@ const DonHo =  ({ navigation }) => {
 
 
             </View>
-     </ScrollView>
   );
 };
 

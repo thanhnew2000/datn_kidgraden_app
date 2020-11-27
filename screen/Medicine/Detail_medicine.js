@@ -10,22 +10,58 @@ import { Input } from 'react-native-elements';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import ipApi from '../../android/app/src/api/ipApi';
 import ApiPhanHoi from '../../android/app/src/api/PhanHoiDonThuocApi';
+import ApiDonThuoc from '../../android/app/src/api/DonThuocApi';
 import AsyncStorage from '@react-native-community/async-storage';
 import Modal_SubmitLoading from '../component/reuse/Modal_SubmitLoading';
+import { useSelector,useDispatch } from 'react-redux'
+import moment from 'moment';
+import 'moment/locale/vi';
 
+//quang add database firebase
+import database from '@react-native-firebase/database';
 
 const Detail_medicine =  ({ route,navigation }) => {
-    const { donthuoc} = route.params;
-    // const { data_HS } = route.params;
-    const chitietdon = donthuoc.chi_tiet_don_dan_thuoc;
+
+    //quang add get database firebase start
+
+    //quang add get database firebase end
+
+    const [chitietdon, setChiTietDon] = useState({});
+    const [donthuoc, setDonThuoc] = useState({});
+
+    const getDonThuocById = (token,id) => {
+      ApiDonThuoc.getDonThuocById(token,id)
+        .then(function (response) {
+          let data = response.data;
+          setDonThuoc(data);
+          setChiTietDon(data);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    };
+
+
+      // const { donthuoc } = route.params;
+      const { id_don_thuoc } = route.params;
+      // console.log('dt',donthuoc)
+      // // const { data_HS } = route.params;
+      // const chitietdon = donthuoc.chi_tiet_don_dan_thuoc;
+
+
+    const data_redux = useSelector(state => state)
+    const du_lieu_hs = data_redux.hocsinh.data;
+    const data_token = data_redux.token;
 
     const [binhLuan,setBinhLuan] = useState({});
-    const [userToken, setUserToken] = useState(null);
-    const [data_HS, setData_HS] = useState({});
+    // const [data_HS, setData_HS] = useState({});
     const [Hscomment, setComment] = useState(null);
     const [submitLoading, setSubmitLoading] = useState(false);
 
-    const getBinhLuanDonThuoc = (token,id_don_thuoc) => {
+
+    const [idShowTime, setIdShowTime] = useState(0);
+
+    const HamGetBinhLuanDonThuoc = (token,id_don_thuoc) => {
         ApiPhanHoi.getBinhLuanOfDonThuoc(token,id_don_thuoc)
           .then(function (response) {
             let data = response.data;
@@ -38,24 +74,44 @@ const Detail_medicine =  ({ route,navigation }) => {
       };
 
       useEffect(() => {
-        async function fetchData() {
-          try{
-            var token = await AsyncStorage.getItem('data_token');
-            var hs = await AsyncStorage.getItem('data_hs');
-            let data_HocSinh = JSON.parse(hs)
-            if(token !== null){
-              setUserToken(token) 
-              setData_HS(data_HocSinh)
-              getBinhLuanDonThuoc(token,donthuoc.id)
-            }
-          }catch (e){
-            console.log(e);
+          function fetchData() {
+                const { donthuoc } = route.params;
+                if(donthuoc == undefined){
+                  getDonThuocById(data_token.token,id_don_thuoc)
+                }else{
+                  setDonThuoc(donthuoc);
+                  setChiTietDon(donthuoc.chi_tiet_don_dan_thuoc);
+                  console.log('chi_tiet',donthuoc.chi_tiet_don_dan_thuoc);
+                }
+                  HamGetBinhLuanDonThuoc(data_token.token,id_don_thuoc)
+               
           }
-        }
+
         fetchData();
         },[]);
 
+
+    useEffect(() => {
+        const onValueChange = database()
+          .ref('phan_hoi_don_thuoc')
+          .on('value', snapshot => {
+            console.log('User data: ', snapshot.val());
+            HamGetBinhLuanDonThuoc(data_token.token,id_don_thuoc)
+          });
+        // Stop listening for updates when no longer required
+        // return () =>
+        //   database()
+        //     .ref('phan_hoi_don_thuoc')
+        //     .off('value', onValueChange);
+      }, []);
+    
+            
+       
+
+    
+
 const DetailMedicine = ({item}) => {
+
 return    <View style={styles.listMedicine}>
             <View style={{flexDirection:'row'}}> 
                     <View style={{width:'70%'}}>
@@ -84,18 +140,33 @@ const BinhLuanCuaGiaoVien = ({item}) => {
 
         <View style={{width:'50%'}}>
         <Text style={{color:'gray'}}> GV: {item.user.giao_vien.ten} </Text>
-            <View style={{paddingLeft:10,backgroundColor:'#e6e5e3',paddingRight:10,borderBottomRightRadius:10,borderTopRightRadius:10,paddingVertical:5}}>
-            <Text style={{}}>{item.noi_dung}</Text>
-            </View>
+           <TouchableOpacity onPress={()=> {setIdShowTime(item.id)}}>
+              <View style={{paddingLeft:10,backgroundColor:'#e6e5e3',paddingRight:10,borderBottomRightRadius:10,borderTopRightRadius:10,paddingVertical:5}}>
+                <Text style={{}}>{item.noi_dung}</Text>
+              </View>
+            </TouchableOpacity>
+
+          <View style={idShowTime == item.id ? styles.displayShow : styles.displayHide}>
+              <Text style={{color:'black',fontSize:12}}>{moment(item.created_at).format('MMMM Do YYYY, h:mm')} </Text>
+          </View>
+
         </View>
     </View>
 }
 
 const BinhLuanCuaHocSinh= ({item}) =>{
     return   <View style={{flexDirection:'row',justifyContent:'flex-end',paddingVertical:5}}>
-        <View style={{paddingLeft:10,backgroundColor:'#5a95fa',paddingRight:10,paddingVertical:5,borderBottomLeftRadius:10,borderTopLeftRadius:10}}>
-        <Text style={{fontSize:15,color:'#0a0a0a'}}>{item.noi_dung} </Text>
-        </View>
+    <View style={{flexDirection:'column'}}>
+      <TouchableOpacity onPress={()=> {setIdShowTime(item.id)}}>
+          <View style={{paddingLeft:10,backgroundColor:'#5a95fa',paddingRight:10,paddingVertical:5,borderBottomLeftRadius:10,borderTopLeftRadius:10}}>
+            <Text style={{fontSize:15,color:'#0a0a0a'}}>{item.noi_dung} </Text>
+          </View>
+      </TouchableOpacity>
+      <View style={idShowTime == item.id ? styles.displayShow : styles.displayHide}>
+        <Text style={{alignSelf:'flex-end',color:'black',fontSize:12}}> {moment(item.created_at).format('MMMM Do YYYY, h:mm')}</Text>
+      </View>
+
+    </View>
     </View>
 }
 
@@ -103,12 +174,12 @@ const BinhLuanCuaHocSinh= ({item}) =>{
 const submitBinhLuan = () => {
     // setSubmitLoading(true);
             const formData = new FormData();
-            formData.append("don_dan_thuoc_id",donthuoc.id);
-            formData.append("nguoi_phan_hoi_id",data_HS.id);
+            formData.append("don_dan_thuoc_id",id_don_thuoc);
+            formData.append("nguoi_phan_hoi_id",du_lieu_hs.id);
             formData.append("noi_dung",Hscomment);
     
 
-            ApiPhanHoi.insertPhanHoi(userToken,formData)
+            ApiPhanHoi.insertPhanHoi(data_token.token,formData)
             .then(res => {
                 console.log(res.data);
                 setBinhLuan([...binhLuan,{
@@ -177,7 +248,8 @@ const submitBinhLuan = () => {
 
 
 
-                        <FlatList
+
+                       <FlatList
                             data={binhLuan}
                             renderItem={({item,index})=>
                                item.type == 1 ? <BinhLuanCuaHocSinh item={item} /> : <BinhLuanCuaGiaoVien item={item}/> 
@@ -279,7 +351,13 @@ const styles = StyleSheet.create({
     },
     checkbox: {
         alignSelf: "center",
-      },
+    },
+    displayShow:{
+      display:'flex'
+    },
+    displayHide:{
+      display:'none'
+    },
 });
 
 export default Detail_medicine;

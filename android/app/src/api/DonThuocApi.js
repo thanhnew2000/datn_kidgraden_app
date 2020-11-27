@@ -12,8 +12,14 @@ const getAll = (token) => {
 const getAllByHs = (token,id_hs) => {
     return http.axiosAPItoken(token).get('/all-dan-thuoc-hs/'+id_hs);
 };
+
+const getDonThuocById = (token,id) => {
+    return http.axiosAPItoken(token).get('/get-one-don-thuoc/'+id);
+};
+
 export default {
     insertDonThuoc,
     getAll,
-    getAllByHs
+    getAllByHs,
+    getDonThuocById
 };

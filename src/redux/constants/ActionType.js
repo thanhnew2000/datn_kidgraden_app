@@ -3,5 +3,6 @@ export const FETCHING_DATA_ASYNCSTOAGE = 'FETCHING_DATA_ASYNCSTOAGE';
 
 export const DATA_HS = 'DATA_HS';
 
-export const NUMBER_NOTIFI = 'NUMBER_NOTIFI';
 export const SET_NUMBER_NOTIFI = 'SET_NUMBER_NOTIFI';
+export const TOKEN_ASYNC = 'TOKEN_ASYNC';
+export const DATA_TOKEN = 'DATA_TOKEN';

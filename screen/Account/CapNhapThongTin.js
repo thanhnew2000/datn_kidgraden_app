@@ -34,18 +34,12 @@ const CapNhapThongTin =  ({ navigation ,route}) => {
   
   
 
-    // useEffect(() => {
-    //     async function getOneHs(){
-    //         var v = await AsyncStorage.getItem('data_storge');
-    //         var hs = await AsyncStorage.getItem('data_hs');
-    //         let dulieu = JSON.parse(v);
-    //         let dulieu_hs = JSON.parse(hs);
-    //         setUserToken(dulieu.token)
-    //         setDuLieuHS(dulieu_hs);
-    //         setLopHS(dulieu_hs.get_lop);
-    //         }
-    //         getOneHs();
-    // },[]);
+    useEffect(() => {
+      function getOneHs(){
+            console.log('jjiji')
+            }
+            getOneHs();
+    },[]);
 
 
   return (

@@ -15,32 +15,17 @@ import AsyncStorage from '@react-native-community/async-storage';
 import { Input ,Button } from 'react-native-elements';
 import axios from "axios";
 import Modal_SubmitLoading from '../component/reuse/Modal_SubmitLoading';
+import { useSelector,useDispatch } from 'react-redux'
 
 
 const Add_medicine =  ({ navigation , route }) => {
   // const { reloadAgain } = route.params;
   // const { userToken } = route.params;
+  const data_redux = useSelector(state => state)
+  const du_lieu_hs = data_redux.hocsinh.data;
+  const data_token = data_redux.token;
 
-  const [submitLoading, setSubmitLoading] = useState(false);
-  
-    const [userToken, setUserToken] = useState(null)
-    const [data_HS, setDataHS] = useState(null)
-    useEffect(() => {
-        async function fetchData() {
-          try{
-            var token = await AsyncStorage.getItem('data_token');
-            var hs = await AsyncStorage.getItem('data_hs');
-            if(token !== null && hs !== null){
-              let data_HocSinh = JSON.parse(hs)
-              setUserToken(token) 
-              setDataHS(data_HocSinh) 
-            }
-          }catch (e){
-            console.log(e);
-          }
-      }
-      fetchData();
-    },[]);
+   const [submitLoading, setSubmitLoading] = useState(false);
 
 
     const [viewModel, setViewModel] = useState(false);
@@ -48,12 +33,12 @@ const Add_medicine =  ({ navigation , route }) => {
     const [loiNhan, setLoiNhan] = useState(null)
 
     const [oneMedicineAdd, setOneMedicineAdd] = useState({
-        name: '',
-        lieu: '',
-        donvi:'',
-        note: '',
-        image:''
-  });
+          name: '',
+          lieu: '',
+          donvi:'',
+          note: '',
+          image:''
+   });
 
     const [listAddMedicine, setListAddMedicine] = useState([
         {
@@ -63,22 +48,7 @@ const Add_medicine =  ({ navigation , route }) => {
             note:'Uống sau bữa ăn',
             image:''
         },
-        {
-            name:'Sino 1',
-            lieu:'300',
-            donvi:'ml',
-            note:'Uống sau bữa ăn',
-            image:''
-
-        },
-        {
-            name:'Sino 2',
-            lieu:'300',
-            donvi:'ml',
-            note:'Uống sau bữa ăn',
-            image:''
-
-        },
+      
     ]);
 
 
@@ -217,9 +187,11 @@ function submitAdd(){
   }else{
     setSubmitLoading(true)
         const formData = new FormData();
+        
           formData.append("dateFrom",dateFrom.getDate()+ '-' + parseInt(dateFrom.getMonth() + 1) +'-'+ dateFrom.getFullYear());
           formData.append("dateTo",dateTo.getDate()+ '-' + parseInt(dateTo.getMonth() + 1) +'-'+ dateTo.getFullYear());
           formData.append("loinhan",loiNhan);
+          formData.append("lop_id",du_lieu_hs.lop_id);
           for (var i = 0; i < listAddMedicine.length; i++) {
               if(listAddMedicine[i].image.uri){
                   formData.append("donthuoc["+i+"][anhImage]", {type: 'image/jpg', uri:listAddMedicine[i].image.uri, name:'uploaded.jpg'});
@@ -230,19 +202,32 @@ function submitAdd(){
                   formData.append("donthuoc["+i+"][note]",listAddMedicine[i].note);
           }
           console.log(formData);
+          console.log(du_lieu_hs.lop_id);
      
-        ApiDonThuoc.insertDonThuoc(userToken,data_HS.id,formData)
+        ApiDonThuoc.insertDonThuoc(data_token.token,du_lieu_hs.id,formData)
         .then(res => {
             console.log(res.data);
             setSubmitLoading(false)
-            Alert.alert(
-              "Đã gửi đơn thuốc thành công",
-              "",
-              [
-                { text: "OK", onPress: () => navigation.navigate('Home') }
-              ],
-              { cancelable: false }
-            );
+            if(res.data == 'NoGiaoVien'){
+              Alert.alert(
+                "Lớp hiện chưa có giáo viên chưa thể gửi đơn được",
+                "",
+                [
+                  { text: "OK", onPress: () => navigation.navigate('Home') }
+                ],
+                { cancelable: false }
+              ); 
+            }else{
+              Alert.alert(
+                "Đã gửi đơn thuốc thành công",
+                "",
+                [
+                  { text: "OK", onPress: () => navigation.navigate('Home') }
+                ],
+                { cancelable: false }
+              );
+            }
+          
             // // reloadAgain();
             // navigation.navigate('Dặn thuốc');
         })
