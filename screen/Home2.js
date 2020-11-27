@@ -150,7 +150,7 @@ const Home2 = ({ navigation }) =>
 
   const [Category,setCategory] = useState([
     {id: 1, name : 'Điểm danh',image :IconDiemDanh , naviga:'Điểm danh'},
-    {id: 2, name : 'Xin nghỉ',image :IconXinNghi , naviga:'Xin nghỉ' },
+    {id: 2, name : 'Xin nghỉ',image :IconXinNghi , naviga:'tao_don_xin_nghi_hoc' },
     {id: 3, name : 'Dặn thuốc',image :IconMedicine , naviga:'add_medicine'},
     {id: 8, name : 'Đón hộ',image :IconDonHo ,  naviga:'Đón hộ' },
     {id: 7, name : 'Đánh giá GV',image :IconFeedBack  ,  naviga:'Đánh giá GV'},

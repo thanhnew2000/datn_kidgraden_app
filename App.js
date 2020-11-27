@@ -38,6 +38,7 @@ import Album from './screen/Album/Album';
 import Detail_Album from './screen/Album/Detail_Album';
 
 import DiemDanh from './screen/DiemDanh/DiemDanh';
+import DetailDiemDanhVe from './screen/DiemDanh/DetailDiemDanhVe';
 
 import DonHo from './screen/DonHo/DonHo';
 import ThemDonHo from './screen/DonHo/ThemDonHo';
@@ -80,6 +81,17 @@ import TabNumberNoti from './screen/TabNumberNoti';
 const store = createStore(myReducer,applyMiddleware(thunk));
 
 
+
+
+
+
+function App() {
+  const [route_notifi, setRouteNotifi] = useState('Home');
+  const [id_don_thuoc, setIdDonThuoc] = useState(undefined);
+
+
+  
+
 const Stack = createStackNavigator();
 const HomeStack = createStackNavigator();
 const AccountStack = createStackNavigator();
@@ -92,7 +104,7 @@ const Tabs = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
 
 const HomeStackScreen = () => (
-  <HomeStack.Navigator initialRouteName="Home">
+  <HomeStack.Navigator initialRouteName={route_notifi}>
       <HomeStack.Screen name="loading" component={Loading}  options={{ headerShown: false }} />
       <HomeStack.Screen name="Home" component={Home}  
       options={{
@@ -118,7 +130,9 @@ const HomeStackScreen = () => (
          headerTintColor: '#fff',
          title : "Dặn thuốc"
        }} />
-      <HomeStack.Screen name="detail_medicine" component={Detail_medicine}  options={{
+      <HomeStack.Screen name="detail_medicine" component={Detail_medicine} 
+       initialParams={{ id_don_thuoc: id_don_thuoc }}
+       options={{
          headerStyle : { backgroundColor: '#78bbe6' },
          headerTintColor: '#fff',
          title : "Chi tiết dặn thuốc"
@@ -138,7 +152,7 @@ const HomeStackScreen = () => (
          title : "Xin nghỉ học"
        }} />
 
-    <HomeStack.Screen name="Tạo đơn xin nghỉ" component={ThemDonNghi}  
+    <HomeStack.Screen name="tao_don_xin_nghi_hoc" component={ThemDonNghi}  
        options={{
         headerStyle : { backgroundColor: '#78bbe6' },
          headerTintColor: '#fff',
@@ -222,6 +236,16 @@ const HomeStackScreen = () => (
             headerTintColor: '#fff',
         }} />  
 
+
+        
+        <HomeStack.Screen name="detail_diem_danh_ve" component={DetailDiemDanhVe}  
+              initialParams={{ itemId: 42 }}
+              options={{
+                headerStyle : { backgroundColor: '#78bbe6' },
+                headerTintColor: '#fff',
+                 title : "Chi tiết điểm danh về"
+            }} />  
+
      <HomeStack.Screen name="ChangePass" component={ChangePass}  options={{ title:' Đổi mật khẩu'}} />
 
   </HomeStack.Navigator>
@@ -267,8 +291,7 @@ let  number_Noti_Show = 0;
  store.subscribe( function(){
   return number_Noti_Show = store.getState().notification;
 }); 
-const UserGreeting = (soLuongThongBao) => (
-  
+const UserGreeting = () => (
   <Tabs.Navigator  style={styles.tabbutton}  initialRouteName="Kids"  screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color, size }) => {
             let iconName;
@@ -309,10 +332,6 @@ const UserGreeting = (soLuongThongBao) => (
 
 </Tabs.Navigator>
 )
-
-
-function App() {
-
   // const [notification_number, setNotification_Number] = useState(0);
   // store.subscribe(() => {setNotification_Number(store.getState().notification)})
  
@@ -391,32 +410,40 @@ function App() {
   //   return unsubscribe;
   // }, []);
 
-  // useEffect(() => {
-  //   // Assume a message-notification contains a "type" property in the data payload of the screen to open
+  useEffect(() => {
+    // Assume a message-notification contains a "type" property in the data payload of the screen to open
+    messaging().onNotificationOpenedApp(remoteMessage => {
+      console.log(
+        'Notification caused app to open from background state:',
+        remoteMessage.notification,
+      );
+      // console.log('app_conso',remoteMessage.data.route);
+      // setRouteNotifi(remoteMessage.data.route)
+      // navigation.navigate(remoteMessage.data.type);
 
-  //   messaging().onNotificationOpenedApp(remoteMessage => {
-  //     console.log(
-  //       'Notification caused app to open from background state:',
-  //       remoteMessage.notification,
-  //     );
-  //     navigation.navigate(remoteMessage.data.type);
-  //   });
-
-  //   // Check whether an initial notification is available
-  //   messaging()
-  //     .getInitialNotification()
-  //     .then(remoteMessage => {
-  //       if (remoteMessage) {
-  //        console.log(remoteMessage.data.type)
-  //         console.log(
-  //           'Notification caused app to open from quit state:',
-  //           remoteMessage.notification,
-  //         );
-  //         setInitialRoute(remoteMessage.data.type); // e.g. "Settings"
-  //       }
-  //       setLoading(false);
-  //     });
-  // }, []);
+    });
+    // Check whether an initial notification is available
+    messaging()
+      .getInitialNotification()
+      .then(remoteMessage => {
+        if (remoteMessage) {
+         console.log(remoteMessage.data.type)
+          console.log(
+            'Notification caused app to open from quit state:',
+            remoteMessage.notification,
+          );
+          console.log('app_conso',remoteMessage.data.route);
+          // if(remoteMessage.data.route == 'detail_medicine'){
+          //   setIdDonThuoc()
+          // }
+          setRouteNotifi(remoteMessage.data.route);
+          
+          // setInitialRoute(remoteMessage.data.type);
+           // e.g. "Settings"
+        }
+        setLoading(false);
+      });
+  }, []);
 
   // if (loading) {
   //   return null;
@@ -497,21 +524,21 @@ function App() {
   let data = {
     device : ' '
   }
-  AsyncStorage.removeItem('data_user');
-  AsyncStorage.removeItem('data_hs');
-  AsyncStorage.removeItem('data_token');
-  setUserToken(null);
-  // ApiUser.edit(token,user.id,data)
-  //   .then(function (response) {
-  //     console.log(response.data)
-  //      AsyncStorage.removeItem('data_user');
-  //       AsyncStorage.removeItem('data_hs');
-  //       AsyncStorage.removeItem('data_token');
-  //       setUserToken(null);
-  //   })
-  //   .catch(function (error) {
-  //     console.log(error);
-  //   });
+  // AsyncStorage.removeItem('data_user');
+  // AsyncStorage.removeItem('data_hs');
+  // AsyncStorage.removeItem('data_token');
+  // setUserToken(null);
+  ApiUser.edit(token,user.id,data)
+    .then( async function (response) {
+      console.log(response.data)
+      await AsyncStorage.removeItem('data_user');
+      await AsyncStorage.removeItem('data_hs');
+      await AsyncStorage.removeItem('data_token');
+        setUserToken(null);
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
 };
 
 
@@ -545,7 +572,7 @@ function App() {
                 userToken ? (
                   <Drawer.Navigator drawerContent={props => <DrawerScreen {...props} />} >
                       {/* <Drawer.Screen name="Home"  component={() => UserGreeting(soLuongThongBao)}    /> */}
-                      <Drawer.Screen name="Home"  component={UserGreeting}    />
+                      <Drawer.Screen name="Home"  component={ UserGreeting }    />
                     </Drawer.Navigator>
                     ) : (
                     <GuestGreeting />

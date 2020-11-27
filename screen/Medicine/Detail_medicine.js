@@ -10,6 +10,7 @@ import { Input } from 'react-native-elements';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import ipApi from '../../android/app/src/api/ipApi';
 import ApiPhanHoi from '../../android/app/src/api/PhanHoiDonThuocApi';
+import ApiDonThuoc from '../../android/app/src/api/DonThuocApi';
 import AsyncStorage from '@react-native-community/async-storage';
 import Modal_SubmitLoading from '../component/reuse/Modal_SubmitLoading';
 import { useSelector,useDispatch } from 'react-redux'
@@ -25,9 +26,27 @@ const Detail_medicine =  ({ route,navigation }) => {
 
     //quang add get database firebase end
 
-    const { donthuoc} = route.params;
-    // const { data_HS } = route.params;
-    const chitietdon = donthuoc.chi_tiet_don_dan_thuoc;
+    const [chitietdon, setChiTietDon] = useState({});
+    const [donthuoc, setDonThuoc] = useState({});
+
+    const getDonThuocById = (token,id) => {
+      ApiDonThuoc.getDonThuocById(token,id)
+        .then(function (response) {
+          let data = response.data;
+          setDonThuoc(data);
+          setChiTietDon(data);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    };
+
+
+      // const { donthuoc } = route.params;
+      const { id_don_thuoc } = route.params;
+      // console.log('dt',donthuoc)
+      // // const { data_HS } = route.params;
+      // const chitietdon = donthuoc.chi_tiet_don_dan_thuoc;
 
 
     const data_redux = useSelector(state => state)
@@ -56,8 +75,18 @@ const Detail_medicine =  ({ route,navigation }) => {
 
       useEffect(() => {
           function fetchData() {
-                  HamGetBinhLuanDonThuoc(data_token.token,donthuoc.id)
+                const { donthuoc } = route.params;
+                if(donthuoc == undefined){
+                  getDonThuocById(data_token.token,id_don_thuoc)
+                }else{
+                  setDonThuoc(donthuoc);
+                  setChiTietDon(donthuoc.chi_tiet_don_dan_thuoc);
+                  console.log('chi_tiet',donthuoc.chi_tiet_don_dan_thuoc);
+                }
+                  HamGetBinhLuanDonThuoc(data_token.token,id_don_thuoc)
+               
           }
+
         fetchData();
         },[]);
 
@@ -67,7 +96,7 @@ const Detail_medicine =  ({ route,navigation }) => {
           .ref('phan_hoi_don_thuoc')
           .on('value', snapshot => {
             console.log('User data: ', snapshot.val());
-            HamGetBinhLuanDonThuoc(data_token.token,donthuoc.id)
+            HamGetBinhLuanDonThuoc(data_token.token,id_don_thuoc)
           });
         // Stop listening for updates when no longer required
         // return () =>
@@ -82,6 +111,7 @@ const Detail_medicine =  ({ route,navigation }) => {
     
 
 const DetailMedicine = ({item}) => {
+
 return    <View style={styles.listMedicine}>
             <View style={{flexDirection:'row'}}> 
                     <View style={{width:'70%'}}>
@@ -144,7 +174,7 @@ const BinhLuanCuaHocSinh= ({item}) =>{
 const submitBinhLuan = () => {
     // setSubmitLoading(true);
             const formData = new FormData();
-            formData.append("don_dan_thuoc_id",donthuoc.id);
+            formData.append("don_dan_thuoc_id",id_don_thuoc);
             formData.append("nguoi_phan_hoi_id",du_lieu_hs.id);
             formData.append("noi_dung",Hscomment);
     

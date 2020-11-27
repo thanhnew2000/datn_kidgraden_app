@@ -59,7 +59,6 @@ const HoatDong =  ({ navigation }) => {
 
 
   return (
-    <ScrollView>
             <View style={styles.container}>
 
                 {/* <View style={styles.boxNgangFirst}>
@@ -114,13 +113,12 @@ const HoatDong =  ({ navigation }) => {
                 </View>
 
               </View>
-            </View>
 
 
             <Modal_Loading showLoading = {showLoading} />
 
+            </View>
 
-     </ScrollView>
   );
 };
 

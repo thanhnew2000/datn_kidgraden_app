@@ -64,7 +64,7 @@ const Medicine =  ({ navigation }) => {
     
     <View style={styles.oDonThuc}>
           <TouchableOpacity onPress={()=>{
-              navigation.navigate('detail_medicine',{donthuoc : itemDon , data_HS: data_HS, userToken:userToken })
+              navigation.navigate('detail_medicine',{donthuoc : itemDon , id_don_thuoc: itemDon.id ,data_HS: data_HS, userToken:userToken })
               }} >
                 <View style={{paddingVertical:10,flexDirection:'row'}}>
                   <Text style={{fontSize:16,fontWeight:'bold'}}>Ngày : </Text>

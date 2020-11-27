@@ -10,7 +10,13 @@ const getDataByThangNam = (token,data) => {
     return http.axiosAPItoken(token).post('/get-diem-danh-thang',data);
 };
 
+const getDataByThangNamTest = (token,data) => {
+    return http.axiosAPItoken(token).get('/test-d-d',data);
+};
+
+
 export default {
     getThangNamOfNamHocHienTai,
-    getDataByThangNam
+    getDataByThangNam,
+    getDataByThangNamTest
 };

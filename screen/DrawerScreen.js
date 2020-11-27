@@ -150,7 +150,6 @@ const DrawerScreen =  ({props,navigation}) => {
             <TouchableOpacity onPress={()=>clickTest(1)}>
               <Text>Click test</Text>
             </TouchableOpacity>
-
           </View> */}
 
       </View>

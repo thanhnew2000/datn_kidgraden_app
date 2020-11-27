@@ -123,7 +123,6 @@ const DonHo =  ({ navigation }) => {
       </View>
     </TouchableOpacity>
 
-
   );
 
 
@@ -189,8 +188,7 @@ const DonHo =  ({ navigation }) => {
   );
 
   return (
-    <ScrollView style={styles.container}>
-            <View >
+            <View style={styles.container}>
                   <View  style={{width:'100%',marginTop:5}}>
                         <TouchableOpacity onPress={()=>{
                                 navigation.navigate('add_donho',{reloadAgain:reloadAgain,userToken : userToken})
@@ -272,7 +270,6 @@ const DonHo =  ({ navigation }) => {
 
 
             </View>
-     </ScrollView>
   );
 };
 
