@@ -17,6 +17,9 @@ import { useSelector,useDispatch } from 'react-redux'
 import moment from 'moment';
 import 'moment/locale/vi';
 
+import HeaderNotifiWhenClick from '../HeaderNotifiWhenClick';
+
+
 //quang add database firebase
 import database from '@react-native-firebase/database';
 
@@ -74,20 +77,26 @@ const Detail_medicine =  ({ route,navigation }) => {
       };
 
       useEffect(() => {
-          function fetchData() {
+         async function fetchData() {
+             var token = await AsyncStorage.getItem('data_token');
+
                 const { donthuoc } = route.params;
                 if(donthuoc == undefined){
-                  getDonThuocById(data_token.token,id_don_thuoc)
+                  getDonThuocById(token,id_don_thuoc)
                 }else{
                   setDonThuoc(donthuoc);
                   setChiTietDon(donthuoc.chi_tiet_don_dan_thuoc);
-                  console.log('chi_tiet',donthuoc.chi_tiet_don_dan_thuoc);
                 }
-                  HamGetBinhLuanDonThuoc(data_token.token,id_don_thuoc)
-               
+                  HamGetBinhLuanDonThuoc(token,id_don_thuoc)
+          }
+          fetchData();
+          const { route_notifi } = route.params;
+          if(route_notifi == 'detail_medicine'){
+            navigation.setOptions({
+              headerTitle: () => <HeaderNotifiWhenClick navigation={navigation}/>,
+            })
           }
 
-        fetchData();
         },[]);
 
 

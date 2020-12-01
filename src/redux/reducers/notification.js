@@ -1,5 +1,5 @@
 
-var initialState = 1;
+var initialState = 0;
 var myReducer = (state = initialState , action) => {
     // if(action.type == 'NUMBER_NOTI'){
     //     state = 10;

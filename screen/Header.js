@@ -59,7 +59,7 @@ async function getData(){
               </View>
               <View style={{width:'50%'}}>
               <TouchableOpacity onPress={()=> getData()} >
-               <Image style={{width: 50 , height:50 }}  source={require('../android/app/src/logo.png')}/>
+                <Image style={{width: 50 , height:50 }}  source={require('../android/app/src/logo.png')}/>
                </TouchableOpacity>
 
               </View>

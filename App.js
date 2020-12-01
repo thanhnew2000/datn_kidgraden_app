@@ -21,6 +21,8 @@ import ApiUser from './android/app/src/api/users';
 // import { AuthContext } from './screen/context';
 import Modal_Start_App from './screen/component/reuse/Modal_Start_App'
 
+import ApiNotification from './android/app/src/api/NotificationApi';
+
 
 import News from './screen/News/News';
 import Detail_new from './screen/News/Detail_new';
@@ -66,12 +68,10 @@ import {Provider,useSelector,useDispatch} from 'react-redux';
 import thunk from 'redux-thunk'
 
 import messaging from '@react-native-firebase/messaging';
-
-
 import database from '@react-native-firebase/database';
 
 
-import { setNumberNotification } from './src/redux/action/index';
+import { setNumberNotification,fetchDataAsyncStorage,fetchTokenAsyncStorage } from './src/redux/action/index';
 
 import TabNumberNoti from './screen/TabNumberNoti';
 
@@ -89,8 +89,12 @@ function App() {
   const [route_notifi, setRouteNotifi] = useState('Home');
   const [id_don_thuoc, setIdDonThuoc] = useState(undefined);
 
-
   
+  
+  const [showLoading, setShowLoading] = useState(true);
+  const [userToken, setUserToken] = useState(null);
+    const [data_HS, setDataHS] = useState(null);
+
 
 const Stack = createStackNavigator();
 const HomeStack = createStackNavigator();
@@ -115,6 +119,7 @@ const HomeStackScreen = () => (
         headerTitleStyle: {
           textAlign: 'center',
         },
+        headerLeft: null
      
     }}
     />
@@ -131,13 +136,14 @@ const HomeStackScreen = () => (
          title : "Dặn thuốc"
        }} />
       <HomeStack.Screen name="detail_medicine" component={Detail_medicine} 
-       initialParams={{ id_don_thuoc: id_don_thuoc }}
+       initialParams={{ id_don_thuoc: id_don_thuoc,route_notifi: route_notifi }}
        options={{
          headerStyle : { backgroundColor: '#78bbe6' },
          headerTintColor: '#fff',
          title : "Chi tiết dặn thuốc"
        }} />
       <HomeStack.Screen name="add_medicine" component={Add_medicine}  
+      initialParams={{ route_notifi: route_notifi }}
       options={{
          headerStyle : { backgroundColor: '#78bbe6' },
          headerTintColor: '#fff',
@@ -287,6 +293,24 @@ const GuestGreeting  = () => (
 )
 
 
+async function updateBellNotification () {
+  if(store.getState().notification !== 0 ){
+    ApiNotification.updateTypeOrBellHs(userToken,data_HS.id,2)
+    .then(function (response) {
+        let data = response.data;
+        console.log('update_bell',data)
+      })
+      .catch(function (error) {
+      console.log('update_bell_err',error);
+      });
+  }
+};
+
+
+function ahihihi(){
+  return 22
+}
+
 let  number_Noti_Show = 0;
  store.subscribe( function(){
   return number_Noti_Show = store.getState().notification;
@@ -326,7 +350,17 @@ const UserGreeting = () => (
       <Tabs.Screen name="Kids" component={HomeStackScreen}   options={{title : "Home" }}   />
       <Tabs.Screen name="Account" component={AccountScreen}  options={{title : "Thông tin" }}  />
       {/* <Tabs.Screen name="DanhBa" component={DanhBaScreen}   options={{title : "Danh bạ"}} /> */}
-      <Tabs.Screen name="Thông báo" component={NotificationScreen}   options={{title : "Thông báo" , tabBarBadge: <TabNumberNoti/>}}   />
+      <Tabs.Screen name="Thông báo" component={NotificationScreen} 
+       options={{title : "Thông báo" , tabBarBadge: <TabNumberNoti/> }} 
+        listeners={{
+          tabPress: e => {
+            updateBellNotification()
+            // console.log(TabNumberNoti());
+          },
+        }}
+       />
+
+
 
 
 
@@ -336,9 +370,6 @@ const UserGreeting = () => (
   // store.subscribe(() => {setNotification_Number(store.getState().notification)})
  
 
-  const [showLoading, setShowLoading] = useState(true);
-  const [userToken, setUserToken] = useState(null);
-    const [data_HS, setDataHS] = useState(null);
     useEffect(() => {
         async function fetchData() {
           try{
@@ -346,10 +377,9 @@ const UserGreeting = () => (
             var hs = await AsyncStorage.getItem('data_hs');
             if(token !== null && hs !== null){
               let data_HocSinh = JSON.parse(hs)
-              setUserToken(token) 
-              setDataHS(data_HocSinh) 
-
-              // onValueChangeNumberNoti(data_HocSinh.id)
+              setUserToken(token);
+              setDataHS(data_HocSinh);
+              onValueChangeNumberNoti()
             }
           }catch (e){
             console.log(e);
@@ -358,32 +388,35 @@ const UserGreeting = () => (
       fetchData();
      
     },[]);
+
+
+
     // useEffect(() => {
-
-
     // start lấy thông báo của học sinh
-      const onValueChangeNumberNoti = (id_hs)=>{ 
-        // database()
-        // .ref('notification')
-        //  .orderByChild('user_id').equalTo(id_hs)
-        //   .on('value', function(snapshot) { 
-        //     var so_luong_thong_bao = 0
-        //     var data_thong_bao = snapshot.val();
-        //     for (const key in data_thong_bao) {
-        //       if (data_thong_bao.hasOwnProperty(key)) {
-        //         const element = data_thong_bao[key];
-        //         if (element.type == 1) {
-        //           so_luong_thong_bao++;
-                 var so_luong_thong_bao = 1
-                  store.dispatch(setNumberNotification(so_luong_thong_bao));
-      //         }
-      //         }
-      //       }
-      //   },
-      //  );
+      async function onValueChangeNumberNoti () { 
+        var hs = await AsyncStorage.getItem('data_hs');
+        let data_HocSinh = JSON.parse(hs)
+        database()
+        .ref('notification')
+         .orderByChild('user_id').equalTo(data_HocSinh.id)
+          .on('value', function(snapshot) { 
+            var so_luong_thong_bao = 0
+            var data_thong_bao = snapshot.val();
+            console.log(data_thong_bao);
+            for (const key in data_thong_bao) {
+              if (data_thong_bao.hasOwnProperty(key)) {
+                const element = data_thong_bao[key];
+                if(element.role == 2){
+                    if (element.bell == 1) {
+                      so_luong_thong_bao++;
+                    }
+                }
+              }
+            }
+            store.dispatch(setNumberNotification(so_luong_thong_bao));
+        },
+       );
       }
-
-
       // Stop listening for updates when no longer required
       // return () =>
       //   database()
@@ -410,17 +443,28 @@ const UserGreeting = () => (
   //   return unsubscribe;
   // }, []);
 
+
+  async function setHocSinh(id_hs){
+     var json_all_hs = await AsyncStorage.getItem('data_all_hs');
+     var all_hs = JSON.parse(json_all_hs);
+     await all_hs.map((item)=>{
+          if(item.id == id_hs){
+            AsyncStorage.setItem('data_hs',item);
+          }
+     })
+     store.dispatch(fetchDataAsyncStorage());
+  }
+
+
   useEffect(() => {
+
     // Assume a message-notification contains a "type" property in the data payload of the screen to open
     messaging().onNotificationOpenedApp(remoteMessage => {
       console.log(
         'Notification caused app to open from background state:',
         remoteMessage.notification,
       );
-      // console.log('app_conso',remoteMessage.data.route);
-      // setRouteNotifi(remoteMessage.data.route)
-      // navigation.navigate(remoteMessage.data.type);
-
+        // console.log('app_conso',remoteMessage.data.route);
     });
     // Check whether an initial notification is available
     messaging()
@@ -432,11 +476,14 @@ const UserGreeting = () => (
             'Notification caused app to open from quit state:',
             remoteMessage.notification,
           );
-          console.log('app_conso',remoteMessage.data.route);
-          // if(remoteMessage.data.route == 'detail_medicine'){
-          //   setIdDonThuoc()
+          // var route_get = JSON.parse(remoteMessage.data.route);
+          // console.log('route',route_get.name_route);
+          // if(route_get.name_route == 'detail_medicine'){
+          //   setIdDonThuoc(route_get.id)
           // }
-          setRouteNotifi(remoteMessage.data.route);
+          // setRouteNotifi(route_get.name_route);
+          setRouteNotifi('detail_medicine');
+          setIdDonThuoc(135)
           
           // setInitialRoute(remoteMessage.data.type);
            // e.g. "Settings"
@@ -488,9 +535,12 @@ const UserGreeting = () => (
       try{
         var token = await AsyncStorage.getItem('data_token');
         var data_user = await AsyncStorage.getItem('data_user');
+        var hs = await AsyncStorage.getItem('data_hs');
         let user =  JSON.parse(data_user);
         if(token !== null){
           await getHsIdUser(token,user.id);
+          store.dispatch(fetchDataAsyncStorage());
+          store.dispatch(fetchTokenAsyncStorage());
           setUserToken(token)
           setShowLoading(false)
         }else{
@@ -517,10 +567,12 @@ const UserGreeting = () => (
 
 
 
+
  async function  dangXuat () {
   var token = await AsyncStorage.getItem('data_token');
   var data_user =  await AsyncStorage.getItem('data_user');
   let user =  JSON.parse(data_user);
+  console.log('user',user);
   let data = {
     device : ' '
   }
@@ -528,17 +580,17 @@ const UserGreeting = () => (
   // AsyncStorage.removeItem('data_hs');
   // AsyncStorage.removeItem('data_token');
   // setUserToken(null);
-  ApiUser.edit(token,user.id,data)
-    .then( async function (response) {
-      console.log(response.data)
+  // ApiUser.edit(token,user.id,data)
+  //   .then( async function (response) {
+  //     console.log(response.data)
       await AsyncStorage.removeItem('data_user');
       await AsyncStorage.removeItem('data_hs');
       await AsyncStorage.removeItem('data_token');
-        setUserToken(null);
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
+      setUserToken(null);
+    // })
+    // .catch(function (error) {
+    //   console.log(error);
+    // });
 };
 
 
@@ -549,6 +601,9 @@ const UserGreeting = () => (
       },
       signOut: () => {
         dangXuat();
+      },
+      changeRoute: () => {
+        setRouteNotifi('Home');
       }
     }
   })

@@ -31,17 +31,22 @@ import {
   import Header from './Header';
   import linkWeb from '../android/app/src/api/linkWeb/index';
   import Modal_Loading from './component/reuse/Modal_Loading'
-  import { getDataSuccess } from '../src/redux/action/index';
+  import { getDataSuccess,setNumberNotification } from '../src/redux/action/index';
   import { AuthContext } from './context';
   import AntDesign from 'react-native-vector-icons/AntDesign';
 
 
-
+  import { Avatar, Badge, Icon, withBadge } from 'react-native-elements'
   // Redux
 
   import { status } from '../src/redux/action/index';
   import { fetchDataAsyncStorage,fetchTokenAsyncStorage } from '../src/redux/action/index';
   import { useSelector,useDispatch,useStore  } from 'react-redux'
+
+  //  firebase
+  
+import messaging from '@react-native-firebase/messaging';
+import database from '@react-native-firebase/database';
 const Home2 = ({ navigation }) => 
 {
 
@@ -60,29 +65,34 @@ const Home2 = ({ navigation }) =>
   async function  getHocSinhIdUser (token) {  
     var data_user = await AsyncStorage.getItem('data_user');
     let user =  JSON.parse(data_user);
-      ApiHocSinh.getHocSinhIdUser(token,user.id)
-        .then(function (response) {
-          let data = response.data;
-          console.log('data_hs_user',data);
-          setHsByUser(data);
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
+    var json_data_all_hs = await AsyncStorage.getItem('data_all_hs');
+    let all_hs =  JSON.parse(json_data_all_hs);
+    console.log('all_hs',all_hs)
+    setHsByUser(all_hs);
+    
+      // ApiHocSinh.getHocSinhIdUser(token,user.id)
+      //   .then(function (response) {
+      //     let data = response.data;
+      //     console.log('data_hs_user',data);
+      //     setHsByUser(data);
+      //   })
+      //   .catch(function (error) {
+      //     console.log(error);
+      //   });
   };
 
 
 
   useEffect(() => {
     function runStart(){
-        navigation.setOptions({
+         navigation.setOptions({
           headerTitle: () => <Header navigation={navigation}/>,
         })
 
         // getThisHocSinh(data_token.token,hs.id)
         getHocSinhIdUser(data_token.token)
         dispatch(fetchDataAsyncStorage())
-        dispatch(fetchTokenAsyncStorage())
+        dispatch(fetchTokenAsyncStorage());
       }
       runStart();
 
@@ -90,12 +100,7 @@ const Home2 = ({ navigation }) =>
 
 
 
-  // const [userToken, setUserToken] = useState(null);
-  // const [data_hocsinh, setData_hocsinh] = useState({});
-  // const [data_lop, setData_lop] = useState({
-  //   ten_lop: 'Lớp'
-  // });
-  // const [data_user, setData_user] = useState({});
+  
   const [all_hs_user, setHsByUser] = useState({});
   const [showLoading, setShowLoading] = useState(false);
 
@@ -161,6 +166,40 @@ const Home2 = ({ navigation }) =>
 
   ])
 
+
+  useEffect(() => {
+  function fetchData() {
+   console.log('hihihaha')
+   
+  }
+  fetchData();
+ 
+},[hs]);
+  async function onValueChangeNumberNoti () { 
+    var hs = await AsyncStorage.getItem('data_hs');
+    let data_HocSinh = JSON.parse(hs)
+    database()
+    .ref('notification')
+     .orderByChild('user_id').equalTo(data_HocSinh.id)
+      .on('value', function(snapshot) { 
+        var so_luong_thong_bao = 0;
+        var data_thong_bao = snapshot.val();
+        console.log(data_thong_bao);
+        for (const key in data_thong_bao) {
+          if (data_thong_bao.hasOwnProperty(key)) {
+            const element = data_thong_bao[key];
+            if(element.role == 3){
+                if (element.bell == 1) {
+                  so_luong_thong_bao++;
+                }
+            }
+          }
+        }
+       dispatch(setNumberNotification(so_luong_thong_bao));
+    },
+   );
+  }
+  
   function changeDataHs(id){
     setShowLoading(true);
       ApiHocSinh.getOne(data_token.token,id)
@@ -170,6 +209,7 @@ const Home2 = ({ navigation }) =>
            AsyncStorage.removeItem('data_hs');
            AsyncStorage.setItem('data_hs',JSON.stringify(data));
           dispatch(getDataSuccess(data));
+          onValueChangeNumberNoti()
           setShowLoading(false);
           navigation.closeDrawer();
           })
@@ -188,7 +228,7 @@ const Home2 = ({ navigation }) =>
 
               <View style={{backgroundColor:'rgba(221, 221, 222, 0.39)',paddingVertical:5}}>
 
-                <View style={{flexDirection:'row-reverse'}}>
+                <View style={{flexDirection:'row-reverse',marginLeft:5}}>
                   <Text> </Text>
                   <FlatList
                     style={ all_hs_user.length >= 7 ?  null : styles.flexDirectionRowReverse}
@@ -196,7 +236,23 @@ const Home2 = ({ navigation }) =>
                     horizontal={true}
                     renderItem={({ item }) => (
                       <TouchableOpacity onPress={()=> changeDataHs(item.id)}>
-                        <Image style={{width: 37 , height:37,borderRadius:100,marginTop:5,marginLeft:10}}  source={{uri: linkWeb + item.avatar}}/>
+                        {/* <Image style={{width: 37 , height:37,borderRadius:100,marginTop:5,marginLeft:10}}  source={{uri: linkWeb + item.avatar}}/> */}
+                     
+                        {/* <Image  source={require('../android/app/src/asset/img/home_image_slide.jpg')}/> */}
+                        <View style={{marginTop:10}}>
+                              <Avatar
+                                style={{width: 37 , height:37,borderRadius:100,marginLeft:10}} 
+                                rounded
+                                source={require('../android/app/src/asset/img/home_image_slide.jpg')}
+                                // size="large"
+                              />
+
+                              <Badge
+                                status="error"
+                                value={1}
+                                containerStyle={{ position: 'absolute', top: -4, right: -4 }}
+                              />
+                            </View>
                       </TouchableOpacity>
                     )}
                     keyExtractor={item => item.id}

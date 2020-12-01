@@ -33,13 +33,14 @@ const [dataUser,setDataUser] = useState({
   password: '',
 });
 
-async function createToken(token,data_hocsinh,data_user) {
+async function createToken(token,data_hocsinh,data_user,data_all_hs) {
   try{
     // await AsyncStorage.setItem('user_token',token);
-    let array = { token: token, data_hocsinh: data_hocsinh,data_user : data_user}
+    let array = { token: token, data_hocsinh: data_hocsinh, data_user : data_user , data_all_hs : data_all_hs}
     
     // await AsyncStorage.setItem('data_storge',JSON.stringify(array));
     await AsyncStorage.setItem('data_hs',JSON.stringify(data_hocsinh));
+    await AsyncStorage.setItem('data_all_hs',JSON.stringify(data_all_hs));
     await AsyncStorage.setItem('data_token',token);
     await AsyncStorage.setItem('data_user',JSON.stringify(data_user));
     // console.log('đã tạo token');
@@ -93,6 +94,7 @@ function onSubMit(){
           response.data.token_user.original.access_token,
           response.data.data_hocsinh,
           response.data.data_user,
+          response.data.data_all_hs,
           );
       })
       .catch(function (error) {

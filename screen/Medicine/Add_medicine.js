@@ -16,11 +16,22 @@ import { Input ,Button } from 'react-native-elements';
 import axios from "axios";
 import Modal_SubmitLoading from '../component/reuse/Modal_SubmitLoading';
 import { useSelector,useDispatch } from 'react-redux'
+import HeaderNotifiWhenClick from '../HeaderNotifiWhenClick';
 
 
 const Add_medicine =  ({ navigation , route }) => {
   // const { reloadAgain } = route.params;
-  // const { userToken } = route.params;
+    const { route_notifi } = route.params;
+      useEffect(() => {
+        if(route_notifi == 'add_medicine'){
+          navigation.setOptions({
+            headerTitle: () => <HeaderNotifiWhenClick navigation={navigation}/>,
+          })
+        }
+     }, []);
+
+
+
   const data_redux = useSelector(state => state)
   const du_lieu_hs = data_redux.hocsinh.data;
   const data_token = data_redux.token;

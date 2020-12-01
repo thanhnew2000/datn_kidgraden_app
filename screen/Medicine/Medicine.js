@@ -98,7 +98,7 @@ const Medicine =  ({ navigation }) => {
             <View >
                   <View  style={{width:'100%',marginTop:5}}>
                         <TouchableOpacity onPress={()=>{
-                                navigation.navigate('add_medicine',{reloadAgain : reloadAgain, userToken:userToken })
+                         navigation.navigate('add_medicine',{reloadAgain : reloadAgain, userToken:userToken,route_notifi:0  })
                             }} >
                               <AntDesign name="medicinebox" size={35} color="green" />
                         </TouchableOpacity>

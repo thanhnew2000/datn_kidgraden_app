@@ -40,6 +40,9 @@ const DrawerScreen =  ({props,navigation}) => {
   const [userToken, setUserToken] = useState(null);
   const [all_hs_user, setHsByUser] = useState({});
 
+  const [user_tk, setUserTk] = useState({});
+
+
   const getHocSinhIdUser = (token,user_id) => {
       ApiHocSinh.getHocSinhIdUser(token,user_id)
         .then(function (response) {
@@ -62,6 +65,7 @@ const DrawerScreen =  ({props,navigation}) => {
         let user =  JSON.parse(data_user);
         console.log(user.id);
         setUserToken(token)
+        setUserTk(user)
         getHocSinhIdUser(token,user.id)
         setShowLoading(false);
       }catch (e){

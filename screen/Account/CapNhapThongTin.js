@@ -25,23 +25,10 @@ const CapNhapThongTin =  ({ navigation ,route}) => {
     const lop_hs = student.hocsinh.data.get_lop;
     const du_lieu_hs = student.hocsinh.data;
 
-  
-  
-
 //   const [userToken, setUserToken] = useState(null);
 //   const [du_lieu_hs, setDuLieuHS] = useState([]);
 //   const [lop_hs, setLopHS] = useState([]);
   
-  
-
-    useEffect(() => {
-      function getOneHs(){
-            console.log('jjiji')
-            }
-            getOneHs();
-    },[]);
-
-
   return (
       <ScrollView>
             <View style={styles.container}>

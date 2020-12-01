@@ -1,7 +1,7 @@
 
 import React ,{ useState }from 'react';
 import { useSelector } from 'react-redux'
-const TabNumberNoti =  () => {
+function TabNumberNoti  ()  {
   const counter = useSelector(state => state)
   const abc = counter.notification;
   return (

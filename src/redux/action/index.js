@@ -81,3 +81,11 @@ export function fetchTokenAsyncStorage() {
       fetchToken();
 }
 }
+
+
+export function setRouteNotifi(route_notifi) {
+  return {
+    type: types.SET_ROUTE,
+    route_notifi,
+  }
+}
