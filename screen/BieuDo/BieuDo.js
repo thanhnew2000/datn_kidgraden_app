@@ -44,7 +44,7 @@ const BieuDo =  ({ navigation }) => {
       let data = response.data;
       setAllYear(data);
       let lengthIndexNam = data.length - 1;
-      console.log(id_hs);
+      console.log('lengthIndexNam',data);
       getAllSucKhoeOfHs(token,data[lengthIndexNam]['year'],id_hs);
     })
     .catch(function (error) {
@@ -80,9 +80,9 @@ async function getYear () {
       setData_suc_khoe_hs(data);
       let arr  =  data.filter((item) => new Date(item.thoi_gian).getFullYear() == yearNear)
       // setData_suc_khoe_hs_nam(arr);
-
+      setChoseNam(yearNear);
       changeDataSkNamToShow(arr,2020)
-
+      console.log('arr_bieudo',arr)
       let lengthData = arr.length - 1;
       setDataNearest({
         chieu_cao : arr[lengthData].chieu_cao,

@@ -8,3 +8,6 @@ export const TOKEN_ASYNC = 'TOKEN_ASYNC';
 export const DATA_TOKEN = 'DATA_TOKEN';
 
 export const SET_ROUTE = 'SET_ROUTE';
+
+export const SET_NUMBER_ARR_NOTIFI = 'SET_NUMBER_ARR_NOTIFI';
+

@@ -1,7 +1,7 @@
 
 import React ,{ useState, useEffect }from 'react';
 import axios from 'axios';
-import { View, Text, Image, TouchableOpacity, FlatList,StyleSheet, Button,Modal } from 'react-native'
+import { View, Text, Image, TouchableOpacity, FlatList,StyleSheet, Button,Modal,Alert } from 'react-native'
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import ListItem from './ListItem';
 import moment from "moment";
@@ -33,6 +33,9 @@ const DayOff =  ({ navigation,route }) => {
        })
        .catch(function (error) {
          console.log(error);
+          setShowLoading(false);
+         Alert.alert('Lỗi không lấy được dữ liệu ')
+
        });
    };
 

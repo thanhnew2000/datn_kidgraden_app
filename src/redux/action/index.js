@@ -38,6 +38,15 @@ export const setNumberNotification = (newNumber) =>{
 }
 
 
+export const setArrNotification = (arr) =>{
+  return {
+      type: types.SET_NUMBER_ARR_NOTIFI,
+      arr
+  }
+}
+
+
+
 
 
 export function fetchDataAsyncStorage() {
@@ -45,10 +54,8 @@ export function fetchDataAsyncStorage() {
        async function fetchData() {
             try{
               var hs = await AsyncStorage.getItem('data_hs');
-              if(hs !== null){
                 let data_HocSinh =  JSON.parse(hs);
                 dispatch(getDataSuccess(data_HocSinh))
-              }
             }catch (e){
               console.log(e);
             }
@@ -57,7 +64,32 @@ export function fetchDataAsyncStorage() {
   }
 }
 
-
+// export function fetchDataAsyncStorage(id_hs) {
+  //   return (dispatch) => {
+  //      async function fetchData() {
+  //           try{
+  //             var hs = await AsyncStorage.getItem('data_hs');
+  //             var json_all_hs = await AsyncStorage.getItem('data_hs');
+  //             let data_HocSinh =  JSON.parse(hs);
+  //             let data_all_hs =  JSON.parse(json_all_hs);
+  //             if(id_hs == null){
+  //               data_all_hs.forEach((item)=>{
+  //                 if(item.id == id_hs){
+  //                      dispatch(getDataSuccess(item))
+  //                      break;
+  //                    }
+  //                })
+  //             }else{
+  //               dispatch(getDataSuccess(data_HocSinh))
+  //             }
+  //           }catch (e){
+  //             console.log(e);
+  //           }
+  //       }
+  //     fetchData();
+  // }
+  // }
+  
 
 
 

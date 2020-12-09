@@ -23,31 +23,10 @@ const ThemDonHo =  ({ navigation , route}) => {
 
 
   const { reloadAgain } = route.params;
-  const [userToken, setUserToken] = useState(null);
-  // const [data_HS, setDataHS] = useState('date');
 
   const data_redux = useSelector(state => state)
   const du_lieu_hs = data_redux.hocsinh.data;
- 
-
-
-  useEffect(() => {
-    async function fetchData() {
-      try{
-        var token = await AsyncStorage.getItem('data_token');
-        // var hs = await AsyncStorage.getItem('data_hs');
-        // let data_hs = JSON.parse(hs);
-        if(token !== null){
-          setUserToken(token);
-          // setDataHS(data_hs);
-        }
-      }catch (e){
-        console.log(e);
-      }
-  }
-  fetchData();
-  },[]);
-
+  const data_token = data_redux.token;
 
   const [submitLoading, setSubmitLoading] = useState(false);
 
@@ -146,6 +125,19 @@ const ThemDonHo =  ({ navigation , route}) => {
             setSubmitLoading(false)
             Alert.alert(checkEd)
           }else{
+
+            // const formData = new FormData();
+            // formData.append("image", {type: 'image/jpg', uri:avatarSource.uri, name:'uploaded.jpg'});
+  
+            // axios.post('https://api.imgbb.com/1/upload?key=87b235f7be4c2a2271db6c21bbf93bda', formData)
+            // .then(function (response) {
+            //   let json_data = response.data;
+            //   let data = JSON.parse(JSON.stringify(json_data))
+            //   console.log('resd',data.data.url)
+            // })
+            // .catch(function (error) {
+            //   console.log(error);
+            // });
                   const formData = new FormData();
                     formData.append("ngay_bat_dau",dateFrom.getDate()+ '-' + parseInt(dateFrom.getMonth() + 1) +'-'+ dateFrom.getFullYear());
                     formData.append("ngay_ket_thuc",dateTo.getDate()+ '-' + parseInt(dateTo.getMonth() + 1) +'-'+ dateTo.getFullYear());
@@ -154,7 +146,7 @@ const ThemDonHo =  ({ navigation , route}) => {
                     formData.append("phone_number",valueInput.phone);
                     formData.append("ten_nguoi_don_ho",valueInput.name);
                     formData.append("ghi_chu",valueInput.ghi_chu);
-                      ApiDonHo.insertDonHo(userToken,du_lieu_hs.id,formData)
+                      ApiDonHo.insertDonHo(data_token.token,du_lieu_hs.id,formData)
                       .then(res => {
                           console.log(res.data);
                           setSubmitLoading(false)
@@ -163,6 +155,9 @@ const ThemDonHo =  ({ navigation , route}) => {
                       })
                       .catch(err => {
                           console.log(err);
+                          setSubmitLoading(false)
+                          Alert.alert('Lỗi không gửi được')
+
                       });
            }
 

@@ -76,7 +76,8 @@ const DiemDanh =  ({navigation}) => {
             setsubmitLoading(false);
         })
         .catch(function (error) {
-        console.log(error);
+            console.log(error);
+            setsubmitLoading(false);
         });
     }
 

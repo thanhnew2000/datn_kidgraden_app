@@ -35,7 +35,7 @@ const Add_medicine =  ({ navigation , route }) => {
   const data_redux = useSelector(state => state)
   const du_lieu_hs = data_redux.hocsinh.data;
   const data_token = data_redux.token;
-
+     console.log('du_lieu_hs.id_lop',du_lieu_hs.lop_id)
    const [submitLoading, setSubmitLoading] = useState(false);
 
 
@@ -51,16 +51,18 @@ const Add_medicine =  ({ navigation , route }) => {
           image:''
    });
 
-    const [listAddMedicine, setListAddMedicine] = useState([
-        {
-            name:'Sino',
-            lieu:'300',
-            donvi:'ml',
-            note:'Uống sau bữa ăn',
-            image:''
-        },
+   const [listAddMedicine, setListAddMedicine] = useState([]);
+
+    // const [listAddMedicine, setListAddMedicine] = useState([
+    //     {
+    //         name:'Sino',
+    //         lieu:'300',
+    //         donvi:'ml',
+    //         note:'Uống sau bữa ăn',
+    //         image:''
+    //     },
       
-    ]);
+    // ]);
 
 
     const [dateFrom, setDateFrom] = useState(new Date());
@@ -212,8 +214,8 @@ function submitAdd(){
                   formData.append("donthuoc["+i+"][donvi]",listAddMedicine[i].donvi);
                   formData.append("donthuoc["+i+"][note]",listAddMedicine[i].note);
           }
-          console.log(formData);
-          console.log(du_lieu_hs.lop_id);
+          // console.log(formData);
+          // console.log(du_lieu_hs.lop_id);
      
         ApiDonThuoc.insertDonThuoc(data_token.token,du_lieu_hs.id,formData)
         .then(res => {
@@ -238,8 +240,7 @@ function submitAdd(){
                 { cancelable: false }
               );
             }
-          
-            // // reloadAgain();
+            // reloadAgain();
             // navigation.navigate('Dặn thuốc');
         })
         .catch(err => {

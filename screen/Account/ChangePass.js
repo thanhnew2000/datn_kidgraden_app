@@ -19,7 +19,7 @@ import {
   
 
 const ChangePass = ({navigation}) => {
-
+ 
   const data_redux = useSelector(state => state)
   const data_token = data_redux.token;
  

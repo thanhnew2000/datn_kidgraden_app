@@ -9,7 +9,6 @@ import {
     Button,
     Modal,
     ImageBackground,
-    AsyncStorage,
     TouchableOpacity,
     Dimensions,
     Alert
@@ -20,6 +19,7 @@ import { AuthContext } from './context';
 import WaitLoading from './Wait_Loading';
 import ipApi from '../android/app/src/api/ipApi';
 import messaging from '@react-native-firebase/messaging';
+import AsyncStorage from '@react-native-community/async-storage';
 
 // import userApiRequest from '../android/app/src/api/users';
 
@@ -133,6 +133,7 @@ function onSubMit(){
                   secureTextEntry={true}
                 />
 
+{/* <Button title="Quen mat khau"  onPress={()=> navigation.navigate('ForgotPass_Step1')}/> */}
 
         <TouchableOpacity 
            style={{ 
@@ -149,7 +150,21 @@ function onSubMit(){
         </TouchableOpacity>
              
 
+        <TouchableOpacity 
+           style={{ 
+            borderColor:'red',
+            borderRadius:30,
+            paddingVertical:8,
+            justifyContent: 'center', 
+            alignItems:'center',
+            }}
+            onPress={()=> navigation.navigate('ForgotPass_Step1')}>
+            {/* onPress={()=> navigation.navigate('testPassWord')}> */}
 
+
+          <Text style={{color:'black',alignSelf:'flex-end'}}>Quên mật khẩu</Text>
+        </TouchableOpacity>
+             
 
 
                 <Modal
@@ -164,9 +179,9 @@ function onSubMit(){
                 </Modal>
 
 
-
-
-               <Text style={styles.textFooter}>Quen mat khau</Text>
+              {/* <TouchableOpacity onPress={()=> console.log('hisadsafd')}>
+                 <Text style={styles.textFooter}>Quen mat khau</Text>
+              </TouchableOpacity> */}
 
              </View>
              </ImageBackground>
@@ -189,9 +204,8 @@ const styles = StyleSheet.create({
     backgroundColor:"#fff",
     borderTopLeftRadius:30,
     borderTopRightRadius:30,
-    paddingVertical:50,
+    paddingVertical:40,
     paddingHorizontal:30,
-    height:'50%',
     borderBottomLeftRadius:30,
     borderBottomRightRadius:30,
   },

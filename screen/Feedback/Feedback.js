@@ -51,6 +51,9 @@ const Feedback = ({navigation}) => {
     })
     .catch(err => {
         console.log(err);
+        Alert.alert("Lỗi không gửi được dữ liệu")
+        setSubmitLoading(false);
+
     });
   }
       return (

@@ -9,11 +9,21 @@ const allNofiByIdUser = (token,id) => {
     return http.axiosAPItoken(token).get('/get-all-thong-bao-by-user/'+id);
 };
 
-const updateTypeOrBellHs = (token,id_hs,status) => {
-    return http.axiosAPItoken(token).post('/update-type-bell-hs/'+id_hs+'/'+status);
+const updateBellHs = (token,id_hs) => {
+    return http.axiosAPItoken(token).post('/update-bell-hs/'+id_hs);
+};
+
+const updateTypeOneNoti = (token,id_notification) => {
+    return http.axiosAPItoken(token).post('/update-type-one-notifi/'+id_notification);
+};
+
+const getArrNotifiNumberHs = (token,data) => {
+    return http.axiosAPItoken(token).post('/get-arr-notifi-hs-by-user/',data);
 };
 export default {
     getNofiByIdUser,
     allNofiByIdUser,
-    updateTypeOrBellHs
+    updateBellHs,
+    updateTypeOneNoti,
+    getArrNotifiNumberHs
 };

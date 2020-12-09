@@ -19,6 +19,7 @@ import 'moment/locale/vi';
 
 import HeaderNotifiWhenClick from '../HeaderNotifiWhenClick';
 
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 //quang add database firebase
 import database from '@react-native-firebase/database';
@@ -36,8 +37,9 @@ const Detail_medicine =  ({ route,navigation }) => {
       ApiDonThuoc.getDonThuocById(token,id)
         .then(function (response) {
           let data = response.data;
+          console.log('hihi',data)
           setDonThuoc(data);
-          setChiTietDon(data);
+          setChiTietDon(data.chi_tiet_don_dan_thuoc);
         })
         .catch(function (error) {
           console.log(error);
@@ -45,8 +47,13 @@ const Detail_medicine =  ({ route,navigation }) => {
     };
 
 
+
+    const scrollViewRef = useRef();
+
+
       // const { donthuoc } = route.params;
-      const { id_don_thuoc } = route.params;
+      const { id_ } = route.params;
+      const id_don_thuoc = id_;
       // console.log('dt',donthuoc)
       // // const { data_HS } = route.params;
       // const chitietdon = donthuoc.chi_tiet_don_dan_thuoc;
@@ -56,15 +63,17 @@ const Detail_medicine =  ({ route,navigation }) => {
     const du_lieu_hs = data_redux.hocsinh.data;
     const data_token = data_redux.token;
 
-    const [binhLuan,setBinhLuan] = useState({});
+    const [binhLuan,setBinhLuan] = useState([]);
     // const [data_HS, setData_HS] = useState({});
     const [Hscomment, setComment] = useState(null);
     const [submitLoading, setSubmitLoading] = useState(false);
+    const [chatLoad, setChatLoad] = useState(false);
 
 
     const [idShowTime, setIdShowTime] = useState(0);
 
     const HamGetBinhLuanDonThuoc = (token,id_don_thuoc) => {
+      console.log('runinggggggggggggggggggggggggggggggggggggggggg ----------------------------------------------');
         ApiPhanHoi.getBinhLuanOfDonThuoc(token,id_don_thuoc)
           .then(function (response) {
             let data = response.data;
@@ -76,33 +85,35 @@ const Detail_medicine =  ({ route,navigation }) => {
           });
       };
 
-      useEffect(() => {
-         async function fetchData() {
-             var token = await AsyncStorage.getItem('data_token');
+      // useEffect(() => {
+      //    async function fetchData() {
+      //        var token = await AsyncStorage.getItem('data_token');
 
-                const { donthuoc } = route.params;
-                if(donthuoc == undefined){
-                  getDonThuocById(token,id_don_thuoc)
-                }else{
-                  setDonThuoc(donthuoc);
-                  setChiTietDon(donthuoc.chi_tiet_don_dan_thuoc);
-                }
-                  HamGetBinhLuanDonThuoc(token,id_don_thuoc)
-          }
-          fetchData();
-          const { route_notifi } = route.params;
-          if(route_notifi == 'detail_medicine'){
-            navigation.setOptions({
-              headerTitle: () => <HeaderNotifiWhenClick navigation={navigation}/>,
-            })
-          }
+      //           const { donthuoc } = route.params;
+      //           if(donthuoc == undefined){
+      //             console.log('hhi');
+      //             getDonThuocById(token,id_don_thuoc)
+      //           }else{
+      //             setDonThuoc(donthuoc);
+      //             setChiTietDon(donthuoc.chi_tiet_don_dan_thuoc);
+      //           }
+      //             HamGetBinhLuanDonThuoc(token,id_don_thuoc)
+      //     }
+      //     fetchData();
+      //     const { route_notifi } = route.params;
+      //     if(route_notifi == 'detail_medicine'){
+      //       navigation.setOptions({
+      //         headerTitle: () => <HeaderNotifiWhenClick navigation={navigation}/>,
+      //       })
+      //     }
 
-        },[]);
+      //   },[]);
 
 
     useEffect(() => {
         const onValueChange = database()
           .ref('phan_hoi_don_thuoc')
+          .orderByChild('don_dan_thuoc_id').equalTo(id_don_thuoc)
           .on('value', snapshot => {
             console.log('User data: ', snapshot.val());
             HamGetBinhLuanDonThuoc(data_token.token,id_don_thuoc)
@@ -142,13 +153,14 @@ return    <View style={styles.listMedicine}>
 }
 
 const BinhLuanCuaGiaoVien = ({item}) => {
+  let dulieu_gv = item.user.giao_vien;
     return <View style={{flexDirection:'row',paddingVertical:5}}>
         <View style={{flexDirection:'column-reverse'}}>
         <Image style={{width:40,height:40,borderRadius:50}} source={IconKidsStudy}/>
         </View>
 
         <View style={{width:'50%'}}>
-        <Text style={{color:'gray'}}> GV: {item.user.giao_vien.ten} </Text>
+        <Text style={{color:'gray'}}> GV: {dulieu_gv.ten} </Text>
            <TouchableOpacity onPress={()=> {setIdShowTime(item.id)}}>
               <View style={{paddingLeft:10,backgroundColor:'#e6e5e3',paddingRight:10,borderBottomRightRadius:10,borderTopRightRadius:10,paddingVertical:5}}>
                 <Text style={{}}>{item.noi_dung}</Text>
@@ -182,6 +194,7 @@ const BinhLuanCuaHocSinh= ({item}) =>{
 
 const submitBinhLuan = () => {
     // setSubmitLoading(true);
+    setChatLoad(true);
             const formData = new FormData();
             formData.append("don_dan_thuoc_id",id_don_thuoc);
             formData.append("nguoi_phan_hoi_id",du_lieu_hs.id);
@@ -195,8 +208,9 @@ const submitBinhLuan = () => {
                     type : 1,
                     noi_dung : Hscomment
                 }])
-                setComment('');
-                setSubmitLoading(false);
+                setComment(null);
+                setChatLoad(false);
+
             })
             .catch(err => {
                 setSubmitLoading(false);
@@ -205,9 +219,30 @@ const submitBinhLuan = () => {
             });
 
 }
+
+
+function scrolltoendBinhLuan(){
+  scrollViewRef.current.scrollToEnd({animated: true})
+}
+
+function checkValueLenght(){
+  let regSpace= new RegExp(/\s/);
+  if(Hscomment == null){
+    return false;
+  }else if(regSpace.test(Hscomment)){
+    return false;
+  }else if(Hscomment == ''){
+    return false;
+  }else{return true}
+}
+
   return (
             <View style={styles.container}>
-               <ScrollView>
+               <ScrollView  ref={scrollViewRef}
+                //  onContentSizeChange={(contentWidth, contentHeight)=>{
+                //   set_scrollToBottomY(contentHeight)
+                //   }}
+                  >
                         {/* <View style={{flexDirection:'row'}}>
                             <View>
                             <Image style={{width:70,height:70}} source={{uri : ipApi+'storage/'+data_HS.avatar}}/>
@@ -241,7 +276,7 @@ const submitBinhLuan = () => {
                             </View>
                         </View> */}
                         
-                        <FlatList
+                        {/* <FlatList
                             data={chitietdon}
                             renderItem={({item,index})=>
                             <DetailMedicine  item={item} index={index} />
@@ -250,30 +285,23 @@ const submitBinhLuan = () => {
                              />
 
                         <View style={{paddingVertical:5,flexDirection:'row'}}>
-                            {/* <Text  style={{color:'green',fontSize:16}}>Đã cho con uống</Text> */}
                             <AntDesign name="check" size={20} color="green" />
                             <Text  style={{color:'green',fontSize:16}}>Đã cho con uống</Text>
-                        </View>
+                        </View> */}
+
+                          {/* <Button title="check" onPress={()=> clickCheck()}/> */}
 
 
+                       {/* <FlatList
+                          data={binhLuan}
+                          onContentSizeChange={()=>  scrolltoendBinhLuan() } 
 
-
-                       <FlatList
-                            data={binhLuan}
-                            renderItem={({item,index})=>
-                               item.type == 1 ? <BinhLuanCuaHocSinh item={item} /> : <BinhLuanCuaGiaoVien item={item}/> 
-                            // <View style={{flexDirection:'row',paddingVertical:5}}>
-                            //     <View>
-                            //     <Image style={{width:40,height:40}} source={IconKidsStudy}/>
-                            //     </View>
-                            //     <View style={{paddingLeft:10}}>
-                            //       <Text style={{fontSize:15,fontWeight:'bold'}}>{item.type ==1 ? 'Bạn :' :  'GV :'+item.user.giao_vien.ten }</Text>
-                            //         <Text style={{}}>{item.noi_dung} </Text>
-                            //     </View>
-                            // </View>
+                          renderItem={({item,index})=>
+                           item.type == 1 ? <BinhLuanCuaHocSinh item={item} /> : <BinhLuanCuaGiaoVien item={item}/> 
                             } 
                             keyExtractor={(item,index) => `${index}`} 
-                        />
+                            
+                        /> */}
 
 
                             {/* <View style={{flexDirection:'row',paddingVertical:5}}>
@@ -306,15 +334,29 @@ const submitBinhLuan = () => {
 
                 </ScrollView>
 
-                <View style={{flexDirection:'row',position: 'absolute', left: 0, right: 0, bottom: 0,flex:0.1,paddingBottom:10}}>
-                           <TextInput   style={{ width:'80%',height: 35, borderColor: 'gray', borderWidth: 1,backgroundColor:'white' }} 
-                           placeholder="Phản hồi cho giáo viên"
-                           value={Hscomment}
-                           onChangeText={text  => {setComment(text)}}
-                           
-                           />
-                          <View style={{width:'20%'}}>
-                             <Button title="Gui"  onPress={submitBinhLuan}/>
+                <View style={{flexDirection:'row',position: 'absolute', left: 0, right: 0, bottom: 0,flex:0.1,paddingBottom:10,alignItems:'center',alignContent:'center'}}>
+                           <TextInput   style={{ 
+                              width:'80%',height: 35,marginLeft:'8%',
+                              borderColor: 'gray',
+                               borderWidth: 1,
+                               borderRadius :50,
+                               paddingHorizontal:10,
+                               backgroundColor:'white',alignItems:'center' }} 
+                                  placeholder="Phản hồi cho giáo viên"
+                                  value={Hscomment}
+                                  onChangeText={text  => {setComment(text)}}
+                                  />
+
+
+                          <View style={chatLoad ? {display:'none'} : {display:'flex',width:'10%',marginLeft:'2%'} }>
+                              <TouchableOpacity style={checkValueLenght() ? {display:'flex'} : {display:'none'}}  onPress={()=>submitBinhLuan()}>
+                                {/* <Button title="Gui"  onPress={submitBinhLuan}/> */}
+                                <MaterialIcons name="send" size={30} color="#4dabf7"  />
+                            </TouchableOpacity>
+                          </View>
+
+                          <View style={chatLoad? {display:'flex',width:'10%',marginLeft:'2%'} : {display:'none'}}>
+                             <Image style={{width: 25 , height:25,borderRadius:100 }}      source={require('../../android/app/src/kOnzy.gif')}/>
                           </View>
                 </View>
 

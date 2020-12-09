@@ -42,7 +42,6 @@ const DrawerScreen =  ({props,navigation}) => {
 
   const [user_tk, setUserTk] = useState({});
 
-
   const getHocSinhIdUser = (token,user_id) => {
       ApiHocSinh.getHocSinhIdUser(token,user_id)
         .then(function (response) {
@@ -61,7 +60,6 @@ const DrawerScreen =  ({props,navigation}) => {
       try{
         var token = await AsyncStorage.getItem('data_token');
         var data_user = await AsyncStorage.getItem('data_user');
-        // console.log(token);
         let user =  JSON.parse(data_user);
         console.log(user.id);
         setUserToken(token)
@@ -103,29 +101,7 @@ const DrawerScreen =  ({props,navigation}) => {
 
   return (
   <View>
-     {/* <FlatList
-        data={all_hs_user}
-        renderItem={({item,index}) => 
-        <TouchableOpacity onPress={()=> changeDataHs(item.id)}>
-        <View style={styles.container}>
-              <View style={styles.box}>
-                <View style={{width:'30%'}}>
-                  <Image style={{width:55,height:55,borderRadius:50}} source={require('../android/app/src/kids_student.jpg')} />
-                </View>
-                <View style={{width:'70%',justifyContent:'center'}}>
-                  <Text style={{fontSize:16,fontWeight:'bold'}}>{item.ten}</Text>
-                  <Text style={{fontSize:14}}>{item.get_lop.ten_lop}</Text>
-                </View>
-              </View>
-        </View>
-        </TouchableOpacity>
-
-        
-        }
-        keyExtractor={(value, index) => index}
-    /> */}
-
-    {/*  <Modal_Loading showLoading = {showLoading} /> */}
+    
     <ImageBackground style={{width:'100%'}}  source={require('../android/app/src/asset/img/nen-navbar.jpg')}>
       <View style={styles.boxTren}>
             {/* <Image style={{width:65,height:65,borderRadius:100,alignSelf:'center',marginLeft:10}}  source={{uri: linkWeb + hs.avatar}} /> */}
@@ -133,7 +109,7 @@ const DrawerScreen =  ({props,navigation}) => {
             {/* <Text style={{marginLeft:'10%',fontWeight:'bold',fontSize:16}}> {hs.ten}</Text> */}
             <Text></Text>
             <Text></Text>
-            <Text style={{marginLeft:'10%',fontWeight:'bold',fontSize:16,color:'white'}}>TK: tuyettnph0281392</Text>
+            <Text style={{marginLeft:'10%',fontWeight:'bold',fontSize:16,color:'white'}}>TK: {user_tk.username}</Text>
           </View>
       </View>
       </ImageBackground>

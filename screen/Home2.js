@@ -27,11 +27,12 @@ import {
   import IconDonHo from '../android/app/src/asset/img/icon-don-ho.jpg';
   import AsyncStorage from '@react-native-community/async-storage';
   import ApiHocSinh from '../android/app/src/api/HocSinhApi';
+  import ApiNotification from '../android/app/src/api/NotificationApi';
   import apiRequest from '../android/app/src/api/users';
   import Header from './Header';
   import linkWeb from '../android/app/src/api/linkWeb/index';
   import Modal_Loading from './component/reuse/Modal_Loading'
-  import { getDataSuccess,setNumberNotification } from '../src/redux/action/index';
+  import { getDataSuccess,setNumberNotification,setArrNotification } from '../src/redux/action/index';
   import { AuthContext } from './context';
   import AntDesign from 'react-native-vector-icons/AntDesign';
 
@@ -52,6 +53,12 @@ const Home2 = ({ navigation }) =>
 
   const { signOut } = React.useContext(AuthContext);
 
+
+  const [all_hs_user, setHsByUser] = useState({});
+  const [showLoading, setShowLoading] = useState(false);
+  const [arr_id_hs_user, setArr_id_hs_user] = useState([]);
+
+
   const dispatch = useDispatch();
   // const lop_hs = '';
   const counter = useSelector(state => state)
@@ -59,15 +66,24 @@ const Home2 = ({ navigation }) =>
   const hs = counter.hocsinh.data;
   const notifi = counter.notification;
   const data_token = counter.token;
-  console.log('notifi', notifi);
 
+  const arr_notifi_hs = counter.arr_notification;
+
+  console.log('hs_first',hs.avatar);
+  console.log('array_notifi',arr_notifi_hs);
 
   async function  getHocSinhIdUser (token) {  
     var data_user = await AsyncStorage.getItem('data_user');
     let user =  JSON.parse(data_user);
     var json_data_all_hs = await AsyncStorage.getItem('data_all_hs');
     let all_hs =  JSON.parse(json_data_all_hs);
-    console.log('all_hs',all_hs)
+
+    let new_arr_id =[];
+    all_hs.forEach(element => {
+      new_arr_id.push(element.id)
+    });
+    setArr_id_hs_user(new_arr_id);
+    console.log('new_arr_id',new_arr_id)
     setHsByUser(all_hs);
     
       // ApiHocSinh.getHocSinhIdUser(token,user.id)
@@ -82,6 +98,52 @@ const Home2 = ({ navigation }) =>
   };
 
 
+  async function onValueChangeNumberNoti () { 
+    var hs = await AsyncStorage.getItem('data_hs');
+    let data_HocSinh = JSON.parse(hs)
+    database()
+    .ref('notification')
+     .orderByChild('id_hs').equalTo(data_HocSinh.id)
+      .on('value', function(snapshot) { 
+        var so_luong_thong_bao = 0;
+        var data_thong_bao = snapshot.val();
+        console.log(data_thong_bao);
+        for (const key in data_thong_bao) {
+          if (data_thong_bao.hasOwnProperty(key)) {
+            const element = data_thong_bao[key];
+                if (element.bell == 1) {
+                  so_luong_thong_bao++;
+                }
+          }
+        }
+       dispatch(setNumberNotification(so_luong_thong_bao));
+    },
+   );
+  }
+
+  const getArrNotifiNumberHs = () => {
+    ApiNotification.getArrNotifiNumberHs(data_token.token,{arr_id_hs : arr_id_hs_user})
+    .then(function (response) {
+        let data = response.data;
+        dispatch(setArrNotification(data));
+      })
+      .catch(function (error) {
+      console.log('update_bell_err',error);
+      });
+  };
+
+  async function firebaseChangeNumberNotifiAllHs () { 
+    var user_data = await AsyncStorage.getItem('data_user');
+    let user = JSON.parse(user_data)
+    database()
+    .ref('notification')
+     .orderByChild('user_id').equalTo(user.id)
+      .on('value', function(snapshot) { 
+        getArrNotifiNumberHs()
+        }
+   );
+  }
+
 
   useEffect(() => {
     function runStart(){
@@ -91,19 +153,22 @@ const Home2 = ({ navigation }) =>
 
         // getThisHocSinh(data_token.token,hs.id)
         getHocSinhIdUser(data_token.token)
-        dispatch(fetchDataAsyncStorage())
+        // dispatch(fetchDataAsyncStorage())
+      
         dispatch(fetchTokenAsyncStorage());
+        getArrNotifiNumberHs()
+
+
       }
       runStart();
+      onValueChangeNumberNoti();
+      firebaseChangeNumberNotifiAllHs();
 
    }, []);
 
 
 
   
-  const [all_hs_user, setHsByUser] = useState({});
-  const [showLoading, setShowLoading] = useState(false);
-
 
 
   // const getThisHocSinh = (token,id_hs) => {
@@ -121,34 +186,7 @@ const Home2 = ({ navigation }) =>
   //     });
   // };
 
-  //   useEffect(() => {
-  //     async function fetchData() {
-  //       try{
-  //         // var v = await AsyncStorage.getItem('data_storge');
-  //         var token = await AsyncStorage.getItem('data_token');
-  //         var hs = await AsyncStorage.getItem('data_hs');
-  //         var data_user = await AsyncStorage.getItem('data_user');
-  //         let user =  JSON.parse(data_user);
-
-  //         if(token !== null && hs !== null){
-  //           let data_HocSinh =  JSON.parse(hs);
-  //           setData_hocsinh(data_HocSinh)
-  //           // setData_lop(data_HocSinh.get_lop)
-  //           setData_user(data_user)
-  //           getHocSinhIdUser(token,user.id)
-  //           setUserToken(token)
-  //           getThisHocSinh(token,data_HocSinh.id)
-  //         }
-  //         dispatch(fetchDataAsyncStorage())
-  //         dispatch(fetchTokenAsyncStorage())
-
-  //       }catch (e){
-  //         console.log(e);
-  //       }
-  //   }
-  //   fetchData();
-  // },[]);
-
+ 
 
 
 
@@ -167,59 +205,85 @@ const Home2 = ({ navigation }) =>
   ])
 
 
-  useEffect(() => {
-  function fetchData() {
-   console.log('hihihaha')
+//   useEffect(() => {
+//   function fetchData() {
+//    console.log('hihihaha')
    
-  }
-  fetchData();
+//   }
+//   fetchData();
  
-},[hs]);
-  async function onValueChangeNumberNoti () { 
-    var hs = await AsyncStorage.getItem('data_hs');
-    let data_HocSinh = JSON.parse(hs)
-    database()
-    .ref('notification')
-     .orderByChild('user_id').equalTo(data_HocSinh.id)
-      .on('value', function(snapshot) { 
-        var so_luong_thong_bao = 0;
-        var data_thong_bao = snapshot.val();
-        console.log(data_thong_bao);
-        for (const key in data_thong_bao) {
-          if (data_thong_bao.hasOwnProperty(key)) {
-            const element = data_thong_bao[key];
-            if(element.role == 3){
-                if (element.bell == 1) {
-                  so_luong_thong_bao++;
-                }
-            }
-          }
-        }
-       dispatch(setNumberNotification(so_luong_thong_bao));
-    },
-   );
-  }
+// },[hs]);
+
+ 
+  
+  // async function onValueChangeNumberNoti () { 
+  //   var hs = await AsyncStorage.getItem('data_hs');
+  //   let data_HocSinh = JSON.parse(hs)
+  //   database()
+  //   .ref('notification')
+  //    .orderByChild('user_id').equalTo(data_HocSinh.id)
+  //     .on('value', function(snapshot) { 
+  //       var data_thong_bao = snapshot.val();
+  //       var arr_id=[1,2,3];
+  //       var value_arr = [];
+  //       for (const key in data_thong_bao) {
+  //         if (data_thong_bao.hasOwnProperty(key)) {
+  //           const element = data_thong_bao[key];
+
+  //           let number_noti = 0;
+  //           for(var i = 0 ; i < arr_id.length ; i++){
+  //                 if(element.user_id == arr_id[i]){
+  //                     if(element.role == 2){
+  //                       if (element.bell == 1) {
+  //                         number_noti++;
+  //                       }
+  //                     }
+  //                 }
+  //           }
+  //           value_arr[element.user_id]=number_noti;
+  //         }
+  //       }
+  //        var array_to_push = []
+  //         for (const key in value_arr) {
+  //           array_to_push.push({id_hs:key,number:value_arr})
+  //         }
+  //     //  dispatch(setNumberNotification(so_luong_thong_bao));
+  //   },
+  //  );
+  // }
+
   
   function changeDataHs(id){
     setShowLoading(true);
       ApiHocSinh.getOne(data_token.token,id)
-        .then(function (response) {
+        .then(
+         async function (response) {
           let data = response.data;
           console.log('data',data);
-           AsyncStorage.removeItem('data_hs');
-           AsyncStorage.setItem('data_hs',JSON.stringify(data));
-          dispatch(getDataSuccess(data));
-          onValueChangeNumberNoti()
-          setShowLoading(false);
-          navigation.closeDrawer();
+           await AsyncStorage.setItem('data_hs',JSON.stringify(data));
+            dispatch(fetchDataAsyncStorage());
+            onValueChangeNumberNoti()
+            setShowLoading(false);
+            navigation.closeDrawer();
           })
           .catch(function (error) {
             console.log(error);
           });
   }
 
-  
-   
+ 
+   function showNumberArrNotifi(id_hs){
+        const result = arr_notifi_hs.find(arr =>  arr.id_hs == id_hs );
+          if(result !== undefined){
+              if(result.number == 0){
+                return null
+              }else{
+                  return  <Badge status="error" value={ result.number  }
+                  containerStyle={{ position: 'absolute', top: -4, right: -4 }}
+                />
+              }
+          }
+   }
   return (
 <View>
 
@@ -236,6 +300,7 @@ const Home2 = ({ navigation }) =>
                     horizontal={true}
                     renderItem={({ item }) => (
                       <TouchableOpacity onPress={()=> changeDataHs(item.id)}>
+                      {/* <TouchableOpacity onPress={()=> showState()}> */}
                         {/* <Image style={{width: 37 , height:37,borderRadius:100,marginTop:5,marginLeft:10}}  source={{uri: linkWeb + item.avatar}}/> */}
                      
                         {/* <Image  source={require('../android/app/src/asset/img/home_image_slide.jpg')}/> */}
@@ -243,15 +308,13 @@ const Home2 = ({ navigation }) =>
                               <Avatar
                                 style={{width: 37 , height:37,borderRadius:100,marginLeft:10}} 
                                 rounded
-                                source={require('../android/app/src/asset/img/home_image_slide.jpg')}
-                                // size="large"
+                                source={require('../android/app/src/kids_student.jpg')}
                               />
 
-                              <Badge
-                                status="error"
-                                value={1}
-                                containerStyle={{ position: 'absolute', top: -4, right: -4 }}
-                              />
+
+                          { showNumberArrNotifi(item.id)  }
+                          
+
                             </View>
                       </TouchableOpacity>
                     )}
@@ -261,7 +324,7 @@ const Home2 = ({ navigation }) =>
 
                 <View style={{flexDirection:'row'}}>
                     <View style={{width:'20%',justifyContent:'center',marginLeft:'5%'}}>
-                        <Image style={{width: 70 , height:70,borderRadius:100 }}  source={{uri: 'http://34.122.241.19/upload/91a6a53632b7048e97e1e994d6662afb74.jpg'}}/>
+                        <Image style={{width: 70 , height:70,borderRadius:100 }}  source={{uri: hs.avatar}}/>
                     </View>
                     <View style={{width:'80%',marginLeft:'5%',justifyContent:'center'}}>
                       <Text style={{fontSize:16,fontWeight:'bold'}}>{hs.ten}</Text>

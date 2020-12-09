@@ -1,7 +1,7 @@
 
 import React ,{ useState, useEffect }from 'react';
 import axios from 'axios';
-import { View, Text, Image, TouchableOpacity, FlatList, StyleSheet,Button,Modal } from 'react-native'
+import { View, Text, Image, TouchableOpacity, FlatList, StyleSheet,Button,Modal ,Alert} from 'react-native'
 import IconNews from '../../android/app/src/asset/img/icon-news.png';
 import IconKidsExercise from '../../android/app/src/asset/img/icon-kids-exercise.jpg';
 import IconKidsStudy from '../../android/app/src/asset/img/icon-kids-study.jpg';
@@ -22,15 +22,14 @@ const DonHo =  ({ navigation }) => {
 
   const data_redux = useSelector(state => state)
   const du_lieu_hs = data_redux.hocsinh.data;
- 
 
   const [viewModel, setViewModel] = useState(false);
   const [userToken, setUserToken] = useState('');
-
   
-    const [showLoading, setShowLoading] = useState(false);
+  const [showLoading, setShowLoading] = useState(false);
 
-    const getListDonHo = (token) => {
+  const getListDonHo = (token) => {
+        setShowLoading(true);
         ApiDonHo.getNguoiDonHoByHs(token,du_lieu_hs.id)
         .then(function (response) {
           let data = response.data;
@@ -41,8 +40,11 @@ const DonHo =  ({ navigation }) => {
         })
         .catch(function (error) {
           console.log(error);
+          setShowLoading(false);
+          Alert.alert('Lỗi không lấy được dữ liệu ')
+
         });
-    };
+   };
 
     
     useEffect(() => {
@@ -98,8 +100,6 @@ const DonHo =  ({ navigation }) => {
   }
   
 
-  
-  
 
   const ListDonHoNew = ({itemDonHo}) => (
      <TouchableOpacity onPress={()=>showDetailNguoiDonHo(itemDonHo)} >

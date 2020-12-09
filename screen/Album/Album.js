@@ -22,14 +22,19 @@ const Album =  ({ navigation }) => {
 
   const [data_chieu_cao, setDataChieuCao] = useState([]); 
   const [listAlbum, setListAlbum] = useState([]); 
+  const [loadingHeader, setloadingHeader] = useState(false); 
+  
   
   const getListAlbum = (token,id_lop) => {
+    setloadingHeader(true);
     ApiAlbum.getAlbumByLop(token,id_lop)
       .then(function (response) {
         let data = response.data;
         setListAlbum(data);
+        setloadingHeader(false);
       })
       .catch(function (error) {
+        setloadingHeader(false);
         console.log(error);
       });
   };
@@ -38,8 +43,6 @@ const Album =  ({ navigation }) => {
   async function fetchData() {
     try{
       var token = await AsyncStorage.getItem('data_token');
-      // var hs = await AsyncStorage.getItem('data_hs');
-        // let data_HocSinh =  JSON.parse(hs);
         getListAlbum(token,du_lieu_hs.lop_id)
     }catch (e){
       console.log(e);
@@ -69,6 +72,12 @@ const Album =  ({ navigation }) => {
   
   return (
             <View style={styles.container}>
+
+            <View style={loadingHeader ? {display :'flex'} : {display:'none'}}>
+                <View style={{alignItems:'center'}}>
+                      <Image style={{width: 50 , height:30 }}  source={require('../../android/app/src/asset/img/loading-waiting.gif')}/>
+                  </View>
+              </View>
                 <FlatList
                   data={listAlbum}
                   renderItem={({item,index}) => 
