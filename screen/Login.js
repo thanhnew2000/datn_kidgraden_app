@@ -11,15 +11,19 @@ import {
     ImageBackground,
     TouchableOpacity,
     Dimensions,
+    TextInput,
     Alert
   } from 'react-native';
-import { Input } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { AuthContext } from './context';
 import WaitLoading from './Wait_Loading';
 import ipApi from '../android/app/src/api/ipApi';
 import messaging from '@react-native-firebase/messaging';
 import AsyncStorage from '@react-native-community/async-storage';
+
+import Swiper_Login from './Swiper_Login';
+
+import  color_app  from './color_app';
 
 // import userApiRequest from '../android/app/src/api/users';
 
@@ -35,41 +39,24 @@ const [dataUser,setDataUser] = useState({
 
 async function createToken(token,data_hocsinh,data_user,data_all_hs) {
   try{
-    // await AsyncStorage.setItem('user_token',token);
-    let array = { token: token, data_hocsinh: data_hocsinh, data_user : data_user , data_all_hs : data_all_hs}
     
-    // await AsyncStorage.setItem('data_storge',JSON.stringify(array));
     await AsyncStorage.setItem('data_hs',JSON.stringify(data_hocsinh));
     await AsyncStorage.setItem('data_all_hs',JSON.stringify(data_all_hs));
     await AsyncStorage.setItem('data_token',token);
     await AsyncStorage.setItem('data_user',JSON.stringify(data_user));
-    // console.log('đã tạo token');
-    // let v =  AsyncStorage.getItem('data_hocsinh');
-    // something()
+  
     signIn();
   }catch (e){
       console.log(e)
   }
 }
 
-// async function something() {
-//   try{
-//     // await AsyncStorage.setItem('user_token',token);
-//    let a = await AsyncStorage.getItem('data_storge');
-//    let c =  JSON.parse(a);
-//     console.log(c.token);
-//     // signIn();
-//   }catch (e){
-//       console.log(e)
-//   }
-// }
 useEffect(() => {
   // Get the device token
   messaging()
     .getToken()
     .then(token => {
       setDeviceMay(token);
-      // return saveTokenToDatabase(token);
     });
 
 }, []);
@@ -89,7 +76,6 @@ function onSubMit(){
         setSubmitLoading(false);
         console.log(response);
         console.log(response.data.token_user.original.access_token);
-        // $data = response.data;
         createToken(
           response.data.token_user.original.access_token,
           response.data.data_hocsinh,
@@ -109,63 +95,60 @@ function onSubMit(){
 
   return (
             <View style={styles.container}>
-              <ImageBackground  style={{width: '100%' , height:'100%'}}  source={require('../android/app/src/asset/img/hinh-nen-co-login.jpg')}>
 
-             <View style={{alignItems:'center'}}>
-
-                {/* <Image style={{width: 120 , height:100  }}  source={require('../android/app/src/logo.png')}/> */}
-                <Image style={{width: '100%' , height:280  }}  source={require('../android/app/src/asset/img/anh-bia-login.jpg')}/>
-
+             <View style={{flex:2}}>
+                <Swiper_Login/> 
              </View>
 
               <View style={styles.loginform}> 
 
-                <Input
-                  label="Tai khoan :"
+                <TextInput
                   onChangeText={text  => {setDataUser({...dataUser,username:text})}}
-                  placeholder='Nhap tai khoan'
+                  style={{borderRadius:20,borderWidth:1,paddingHorizontal:10,borderColor:'#8a8887',marginVertical:10}}
+                  placeholder='Tài khoản'
                 />
 
-                <Input
-                  label="Mat khau :"
+                <TextInput
                   onChangeText={text  => {setDataUser({...dataUser,password:text})}}
-                  placeholder='Nhap mat khau'
+                  style={{borderRadius:20,borderWidth:1,paddingHorizontal:10,borderColor:'#8a8887',marginVertical:10}}
+
+                  placeholder='Mật khẩu'
                   secureTextEntry={true}
                 />
 
-{/* <Button title="Quen mat khau"  onPress={()=> navigation.navigate('ForgotPass_Step1')}/> */}
 
-        <TouchableOpacity 
-           style={{ 
-            backgroundColor:'#0099ff',
-            borderColor:'red',
-            borderRadius:30,
-            paddingVertical:8,
-            justifyContent: 'center', 
-            alignItems:'center',
-            }}
-            onPress={() => onSubMit()}>
+                <TouchableOpacity 
+                  style={{ 
+                    backgroundColor:color_app,
+                    borderColor:'red',
+                    borderRadius:30,
+                    paddingVertical:8,
+                    justifyContent: 'center', 
+                    alignItems:'center',
+                    paddingTop:10,
+                    marginTop:20
+                    }}
+                    onPress={() => onSubMit()}>
 
-          <Text style={{color:'white'}}>Đăng nhập</Text>
-        </TouchableOpacity>
-             
+                  <Text style={{color:'white'}}>Đăng nhập</Text>
+                </TouchableOpacity>
+                    
 
-        <TouchableOpacity 
-           style={{ 
-            borderColor:'red',
-            borderRadius:30,
-            paddingVertical:8,
-            justifyContent: 'center', 
-            alignItems:'center',
-            }}
-            onPress={()=> navigation.navigate('ForgotPass_Step1')}>
-            {/* onPress={()=> navigation.navigate('testPassWord')}> */}
+                <TouchableOpacity 
+                  style={{ 
+                    borderColor:'red',
+                    borderRadius:30,
+                    paddingVertical:8,
+                    justifyContent: 'center', 
+                    alignItems:'center',
+                    marginTop:20
+
+                    }}
+                    onPress={()=> navigation.navigate('ForgotPass_Step1')}>
 
 
-          <Text style={{color:'black',alignSelf:'flex-end'}}>Quên mật khẩu</Text>
-        </TouchableOpacity>
-             
-
+                  <Text style={{color:'black',alignSelf:'flex-end'}}>Quên mật khẩu</Text>
+                </TouchableOpacity>
 
                 <Modal
                       animationType="slide"
@@ -178,13 +161,7 @@ function onSubMit(){
                    <WaitLoading />
                 </Modal>
 
-
-              {/* <TouchableOpacity onPress={()=> console.log('hisadsafd')}>
-                 <Text style={styles.textFooter}>Quen mat khau</Text>
-              </TouchableOpacity> */}
-
              </View>
-             </ImageBackground>
 
             </View>
 
@@ -200,7 +177,7 @@ const styles = StyleSheet.create({
   },
   loginform:{
     width:'100%',
-    marginTop:-20,
+    height:'50%',
     backgroundColor:"#fff",
     borderTopLeftRadius:30,
     borderTopRightRadius:30,

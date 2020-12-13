@@ -87,31 +87,46 @@ useEffect(() => {setDataUser()}, []);
   
       return (
             <View style={styles.containers}>
-               <Input 
-               label="Mật khẩu cũ"
+              {/* <Text style={{fontSize:17}}>Mật khẩu hiện tại :</Text> */}
+               <TextInput 
                onChangeText={text  => {setvalueChange({...valueChange,current_password:text})}}
+               placeholder="Mật khẩu hiện tại"
+               style={{borderRadius:20,borderWidth:1,paddingHorizontal:10,borderColor:'#8a8887',marginVertical:10}}
                secureTextEntry={true} 
                />
-               <Input 
-               label="Mật khẩu mới"
+
+              {/* <Text style={{fontSize:17}}>Mật khẩu mới :</Text> */}
+               <TextInput 
                onChangeText={text  => {setvalueChange({...valueChange,new_password:text})}}
+               placeholder="Mật khẩu mới "
+               style={{borderRadius:20,borderWidth:1,paddingHorizontal:10,borderColor:'#8a8887',marginVertical:10}}
                secureTextEntry={true} 
                />
-               <Input 
-               label="Nhập lại mật khẩu mới"
+              {/* <Text style={{fontSize:17}}>Nhập lại mật khẩu mới :</Text> */}
+               
+               <TextInput 
                onChangeText={text  => {setvalueChange({...valueChange,againPassword:text})}}
+               placeholder="Nhập lại mật khẩu mới "
+               style={{borderRadius:20,borderWidth:1,paddingHorizontal:10,borderColor:'#8a8887',marginVertical:10}}
                secureTextEntry={true} 
                />
-               <View style={{width:'30%',alignSelf:'flex-end',padding:10}}>
-                <Button title="Lưu" onPress={()=>{editSubmit()}} />
-               </View>
+               {/* <View style={{width:'30%',alignSelf:'flex-end',padding:10}}>
+                  <Button title="Lưu" onPress={()=>{editSubmit()}} />
+               </View> */}
+          <TouchableOpacity onPress={()=>{editSubmit()}} style={{backgroundColor:'#ffba30',borderRadius:50,marginTop:20}}>
+            <View style={{paddingHorizontal:10,paddingVertical:17,alignItems:'center'}}> 
+              <Text style={{color:'#ffff'}}>Cập nhập</Text>
+            </View>
+          </TouchableOpacity>
+               
             </View>
       )
   }
   const styles = StyleSheet.create({
     containers:{ 
         flex:1,
-        backgroundColor:'#fff'
+        backgroundColor:'#fff',
+        paddingHorizontal:15
     }
   });
 export default ChangePass

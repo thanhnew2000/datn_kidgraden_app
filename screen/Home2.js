@@ -1,4 +1,4 @@
-import React ,{ useState, useEffect,useLayoutEffect }from 'react';
+import React ,{ useState, useEffect,useLayoutEffect,useRef }from 'react';
 import {
     StyleSheet,
     View,
@@ -9,22 +9,27 @@ import {
     TouchableOpacity,
     ImageBackground,
     ScrollView,
-    Button
+    Button,
+    Alert
   } from 'react-native';
   import axios from 'axios';
   import CateListItem from './component/CateListItem';
-  import IconDon from '../android/app/src/kids_student.jpg';
-  import IconNews from '../android/app/src/asset/img/icon-news.png';
-  import IconImage from '../android/app/src/asset/img/icon-img.png';
-  import IconMoney from '../android/app/src/asset/img/icon-money.png';
-  import IconCalender from '../android/app/src/asset/img/icon-calendar.png';
-  import IconNatri from '../android/app/src/asset/img/icon-nutrition.png';
-  import IconChart from '../android/app/src/asset/img/icon-chart.png';
-  import IconDiemDanh from '../android/app/src/asset/img/icon-diem-danh.jpg';
-  import IconXinNghi from '../android/app/src/asset/img/icon-xin-nghi.jpg';
-  import IconMedicine from '../android/app/src/asset/img/icon-medicine.jpg';
-  import IconFeedBack from '../android/app/src/asset/img/icon-feedback.png';
-  import IconDonHo from '../android/app/src/asset/img/icon-don-ho.jpg';
+  import IconDon from '../android/app/src/diem_danh.png';
+  import IconNews from '../android/app/src/diem_danh.png';
+  import IconAlbum from '../android/app/src/album.png';
+  import IconImage from '../android/app/src/diem_danh.png';
+  import IconMoney from '../android/app/src/diem_danh.png';
+  import IconCalender from '../android/app/src/hoat-dong.jpg';
+  import IconNatri from '../android/app/src/nutri.jpg';
+  import IconChart from '../android/app/src/bieu-do.jpg';
+  import IconDiemDanh from '../android/app/src/diem-danh.jpg';
+  import IconXinNghi from '../android/app/src/vang.jpg';
+  import IconMedicine from '../android/app/src/dan_thuoc.jpg';
+  import IconFeedBack from'../android/app/src/danh-gia.jpg';
+  import IconDonHo from'../android/app/src/don-ho.jpg';
+
+
+
   import AsyncStorage from '@react-native-community/async-storage';
   import ApiHocSinh from '../android/app/src/api/HocSinhApi';
   import ApiNotification from '../android/app/src/api/NotificationApi';
@@ -44,6 +49,14 @@ import {
   import { fetchDataAsyncStorage,fetchTokenAsyncStorage } from '../src/redux/action/index';
   import { useSelector,useDispatch,useStore  } from 'react-redux'
 
+
+import slide_hs_1 from '../android/app/src/silde_hs_1.jpg';
+import slide_hs_2 from '../android/app/src/silde_hs_2.jpg';
+import slide_hs_3 from '../android/app/src/silde_hs_3.jpg';
+import slide_hs_4 from '../android/app/src/silde_hs_4.jpg';
+
+
+  
   //  firebase
   
 import messaging from '@react-native-firebase/messaging';
@@ -56,11 +69,11 @@ const Home2 = ({ navigation }) =>
 
   const [all_hs_user, setHsByUser] = useState({});
   const [showLoading, setShowLoading] = useState(false);
+  const [user_tk, setuser_tk] = useState({});
   const [arr_id_hs_user, setArr_id_hs_user] = useState([]);
 
 
   const dispatch = useDispatch();
-  // const lop_hs = '';
   const counter = useSelector(state => state)
   const lop_hs = counter.hocsinh.data.get_lop;
   const hs = counter.hocsinh.data;
@@ -69,12 +82,13 @@ const Home2 = ({ navigation }) =>
 
   const arr_notifi_hs = counter.arr_notification;
 
-  console.log('hs_first',hs.avatar);
-  console.log('array_notifi',arr_notifi_hs);
+  console.log('hs_first',hs);
+  console.log('array_notifi',data_token.token);
 
   async function  getHocSinhIdUser (token) {  
     var data_user = await AsyncStorage.getItem('data_user');
     let user =  JSON.parse(data_user);
+    setuser_tk(user)
     var json_data_all_hs = await AsyncStorage.getItem('data_all_hs');
     let all_hs =  JSON.parse(json_data_all_hs);
 
@@ -85,16 +99,6 @@ const Home2 = ({ navigation }) =>
     setArr_id_hs_user(new_arr_id);
     console.log('new_arr_id',new_arr_id)
     setHsByUser(all_hs);
-    
-      // ApiHocSinh.getHocSinhIdUser(token,user.id)
-      //   .then(function (response) {
-      //     let data = response.data;
-      //     console.log('data_hs_user',data);
-      //     setHsByUser(data);
-      //   })
-      //   .catch(function (error) {
-      //     console.log(error);
-      //   });
   };
 
 
@@ -150,7 +154,6 @@ const Home2 = ({ navigation }) =>
          navigation.setOptions({
           headerTitle: () => <Header navigation={navigation}/>,
         })
-
         // getThisHocSinh(data_token.token,hs.id)
         getHocSinhIdUser(data_token.token)
         // dispatch(fetchDataAsyncStorage())
@@ -168,36 +171,13 @@ const Home2 = ({ navigation }) =>
 
 
 
-  
-
-
-  // const getThisHocSinh = (token,id_hs) => {
-  //   ApiHocSinh.getOne(token,id_hs)
-  //     .then(function (response) {
-  //       let data = response.data;
-  //       console.log('data',data);
-  //       console.log('token',token);
-  //       setData_hocsinh(data);
-  //       AsyncStorage.setItem('data_hs',JSON.stringify(data));
-        
-  //     })
-  //     .catch(function (error) {
-  //       console.log(error);
-  //     });
-  // };
-
- 
-
-
-
-
   const [Category,setCategory] = useState([
     {id: 1, name : 'Điểm danh',image :IconDiemDanh , naviga:'Điểm danh'},
     {id: 2, name : 'Xin nghỉ',image :IconXinNghi , naviga:'tao_don_xin_nghi_hoc' },
-    {id: 3, name : 'Dặn thuốc',image :IconMedicine , naviga:'add_medicine'},
+    {id: 3, name : 'Dặn thuốc',image :IconMedicine , naviga:'Index_medicine'},
     {id: 8, name : 'Đón hộ',image :IconDonHo ,  naviga:'Đón hộ' },
     {id: 7, name : 'Đánh giá GV',image :IconFeedBack  ,  naviga:'Đánh giá GV'},
-    {id: 4, name : 'Album',image :IconNews, naviga:'Album' },
+    {id: 4, name : 'Album',image :IconAlbum, naviga:'Album' },
     {id: 5, name : 'Biểu đồ',image :IconChart , naviga:'Biểu đồ' },
     {id: 6, name : 'Hoạt động',image :IconCalender , naviga:'Hoạt động'},
     {id: 9, name : 'Học phí',image :IconMoney , naviga:'Học phí'},
@@ -252,25 +232,88 @@ const Home2 = ({ navigation }) =>
   //  );
   // }
 
+  const scrollViewRef = useRef();
   
-  function changeDataHs(id){
+  async function changeDataHs(id){
     setShowLoading(true);
-      ApiHocSinh.getOne(data_token.token,id)
+        ApiHocSinh.getHocSinhIdUser(data_token.token,user_tk.id)
         .then(
          async function (response) {
+
+           scrollViewRef.current.scrollToIndex({ index: 0,animated: true})
+
           let data = response.data;
-          console.log('data',data);
-           await AsyncStorage.setItem('data_hs',JSON.stringify(data));
+          let arr_all_hs_user_new = [];
+          let arr_no_id_chose = [];
+          // console.log('data',data);
+           data.forEach(element => {
+                if(element.id == id){
+                  arr_all_hs_user_new.push(element);
+                }else{
+                  arr_no_id_chose.push(element);
+                }
+           });
+            let arr_new = arr_all_hs_user_new.concat(arr_no_id_chose);
+            setHsByUser(arr_new);
+           await AsyncStorage.removeItem('data_hs');
+           await AsyncStorage.setItem('data_hs',JSON.stringify(arr_all_hs_user_new[0]));
+           await AsyncStorage.removeItem('data_all_hs');
+           await AsyncStorage.setItem('data_all_hs',JSON.stringify(data));
             dispatch(fetchDataAsyncStorage());
-            onValueChangeNumberNoti()
+            onValueChangeNumberNoti();
+
+
             setShowLoading(false);
-            navigation.closeDrawer();
+            // navigation.closeDrawer();
           })
           .catch(function (error) {
             console.log(error);
-          });
-  }
+            Alert.alert('Học sinh hiện tại chưa thể chuyển ');
+            setShowLoading(false);
 
+          });
+
+
+      // let arr_all_hs_user_new = [];
+      // let arr_no_id_chose = [];
+
+      // all_hs_user.forEach((element) => {
+      //   if(element.id == id){
+      //     arr_all_hs_user_new.push(element);
+      //   }else{
+      //     arr_no_id_chose.push(element);
+      //   }
+      // });
+
+
+      // await AsyncStorage.removeItem('data_hs' );
+      // await AsyncStorage.setItem('data_hs',JSON.stringify(arr_all_hs_user_new[0]));
+      //  dispatch(fetchDataAsyncStorage());
+      //  onValueChangeNumberNoti();
+      // let arr_new = arr_all_hs_user_new.concat(arr_no_id_chose);
+      // setHsByUser(arr_new);
+      // setShowLoading(false);
+      //  navigation.closeDrawer();
+       
+      // ApiHocSinh.getOne(data_token.token,id)
+      //   .then(
+      //    async function (response) {
+      //     let data = response.data;
+      //     console.log('data',data);
+      //      await AsyncStorage.removeItem('data_hs' );
+      //      await AsyncStorage.setItem('data_hs',JSON.stringify(data));
+      //       dispatch(fetchDataAsyncStorage());
+      //       onValueChangeNumberNoti()
+      //       setShowLoading(false);
+      //       navigation.closeDrawer();
+      //     })
+      //     .catch(function (error) {
+      //       console.log(error);
+      //     });
+  }
+function checkScroll(){
+  scrollViewRef.current.scrollToIndex({ index: 0,animated: true})
+}
  
    function showNumberArrNotifi(id_hs){
         const result = arr_notifi_hs.find(arr =>  arr.id_hs == id_hs );
@@ -284,11 +327,75 @@ const Home2 = ({ navigation }) =>
               }
           }
    }
+
+   function generateRandomNumber (max,min) { 
+    const random = (Math.floor(Math.random() * (max - min + 1)) + min);
+    return random
+   }
+
+   function optionRanImage(number_randam){
+      if(number_randam == 1){
+        return require('../android/app/src/silde_hs_1.jpg')
+      }else if (number_randam == 2){
+        return require('../android/app/src/silde_hs_2.jpg')
+      } else if (number_randam == 3){
+        return require('../android/app/src/silde_hs_3.jpg')
+      }else if (number_randam == 4){
+        return require('../android/app/src/silde_hs_4.jpg')
+      }else {
+        return require('../android/app/src/silde_hs_5.jpg')
+      }
+   }
+
+
+
+   
   return (
 <View>
-
+<ScrollView>
     <View style={{height:'100%',backgroundColor:'#fff'}}>
-          <ImageBackground style={{width: '100%' }}   source={require('../android/app/src/asset/img/home_image_slide.jpg')}>
+   
+      <View style={{flexDirection:'row-reverse'}}>
+      <ImageBackground style={{width: '100%',height:'100%' }}    source={require('../android/app/src/blue-sky.png')}>
+
+          <FlatList
+                    ref={scrollViewRef}
+                    style={styles.flexDirectionRowReverse}
+                    data={all_hs_user}
+                    horizontal={true}
+                    renderItem={({ item,index }) => {
+                   return   <View style={{paddingTop:10,marginRight:25,paddingBottom:10}}>
+                      <TouchableOpacity onPress={()=> changeDataHs(item.id)}>
+                            <View style={{width:240,height:150,marginLeft:10,borderRadius:15}}>
+                              <ImageBackground style={{width: '100%',height:'100%',borderRadius: 25 }}   imageStyle={{ borderRadius: 25 }}  source={optionRanImage(generateRandomNumber(5,1))}>
+
+                                <View style={{flexDirection:'row',paddingTop:70}}>
+                                  <View style={{width:'65%'}}>
+                                      <View style={{justifyContent:'center',paddingLeft:10}}>
+                                        <Text style={{fontSize:18,fontWeight:'bold'}}>{item.ten}</Text>
+                                        <Text>Lớp : {item.get_lop == null ? '' : item.get_lop.ten_lop} </Text>
+                                      </View>
+                                  </View>
+
+                                    <View style={{width:'30%'}}>
+                                      <Image style={{width: 70 , height:70,borderRadius:100,marginRight:10 }}   source={require('../android/app/src/asset/img/home_image_slide.jpg')}/>
+                                    </View>
+                                  </View>
+                              </ImageBackground>
+                            </View>
+                            </TouchableOpacity>
+
+
+                       </View>
+                    }}
+                    keyExtractor={item => item.id}
+                  />
+    </ImageBackground>
+
+            </View>
+
+                  
+          {/* <ImageBackground style={{width: '100%' }}   source={require('../android/app/src/asset/img/home_image_slide.jpg')}>
 
               <View style={{backgroundColor:'rgba(221, 221, 222, 0.39)',paddingVertical:5}}>
 
@@ -300,10 +407,7 @@ const Home2 = ({ navigation }) =>
                     horizontal={true}
                     renderItem={({ item }) => (
                       <TouchableOpacity onPress={()=> changeDataHs(item.id)}>
-                      {/* <TouchableOpacity onPress={()=> showState()}> */}
-                        {/* <Image style={{width: 37 , height:37,borderRadius:100,marginTop:5,marginLeft:10}}  source={{uri: linkWeb + item.avatar}}/> */}
-                     
-                        {/* <Image  source={require('../android/app/src/asset/img/home_image_slide.jpg')}/> */}
+          
                         <View style={{marginTop:10}}>
                               <Avatar
                                 style={{width: 37 , height:37,borderRadius:100,marginLeft:10}} 
@@ -334,20 +438,18 @@ const Home2 = ({ navigation }) =>
             
 
             </View>
-        </ImageBackground>
+        </ImageBackground> */}
 
 
-    <View style={styles.container}>
+    <View style={styles.containerList}>
           <View>
               <FlatList
                 data={Category}
                 renderItem={({item})=>
-                    <View style={styles.wrapper}>
                           <CateListItem category={item} navigation={navigation} />
-                    </View>
                 } 
                 keyExtractor={(item,index) => `${index}`}
-                numColumns={3}
+                numColumns={2}
               />
           </View>
 
@@ -382,17 +484,19 @@ const Home2 = ({ navigation }) =>
 
 
     </View>
+    </ScrollView>
     </View>
 
   );
 };
 
 const styles = StyleSheet.create({
-    container: {
+    containerList: {
         backgroundColor:'#fff',
         justifyContent:'center',
-        paddingVertical:5,
-        paddingHorizontal:5
+        paddingHorizontal:5,
+        marginBottom:170,
+        marginTop:10,
       },
       wrapper:{
         paddingHorizontal:8,
@@ -432,7 +536,6 @@ const styles = StyleSheet.create({
         position: 'relative',
       },
       flexDirectionRowReverse:{
-        flexDirection:'row-reverse'
       }
     
 });

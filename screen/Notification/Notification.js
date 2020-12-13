@@ -20,6 +20,7 @@ import database from '@react-native-firebase/database';
 // import messaging from '@react-native-firebase/messaging';
 
 import { useSelector,useDispatch } from 'react-redux'
+import { Divider } from 'react-native-elements';
 
 // import AwesomeAlert from 'react-native-awesome-alerts';
 
@@ -29,10 +30,10 @@ const Notification = ({navigation}) => {
   const data_token = data_redux.token;
 
   const [dataNotification, setDataNotification] = useState([]);
-
+  const [isFetching, setisFetching] = useState(false);
   const [showLoadingWait, setshowLoadingWait] = useState(false);
 
-
+  console.log('du-liei-hs_noti',du_lieu_hs);
 
 
   function timeCurrent(time){
@@ -55,11 +56,11 @@ const Notification = ({navigation}) => {
   }
 
   async function onValueChangeNumberNoti (){ 
-        var hs = await AsyncStorage.getItem('data_hs');
-        let data_HocSinh = JSON.parse(hs);
+        // var hs = await AsyncStorage.getItem('data_hs');
+        // let data_HocSinh = JSON.parse(hs);
         database()
         .ref('notification')
-        .orderByChild('id_hs').equalTo(data_HocSinh.id)
+        .orderByChild('id_hs').equalTo(du_lieu_hs.id)
           .on('value', function(snapshot) { 
             getNotification();
         },
@@ -68,11 +69,11 @@ const Notification = ({navigation}) => {
 
   async function getNotification()  {
       setshowLoadingWait(true);
-      var hs = await AsyncStorage.getItem('data_hs');
-      var token = await AsyncStorage.getItem('data_token');
-      let data_HocSinh = JSON.parse(hs);
-      console.log(data_HocSinh.id)
-      ApiNotification.getNofiByIdUser(token,data_HocSinh.id)
+      // var hs = await AsyncStorage.getItem('data_hs');
+      // var token = await AsyncStorage.getItem('data_token');
+      // let data_HocSinh = JSON.parse(hs);
+      // console.log(data_HocSinh.id)
+      ApiNotification.getNofiByIdUser(data_token.token,du_lieu_hs.id)
       .then(function (response) {
           let data = response.data;
           setDataNotification(data);
@@ -84,9 +85,27 @@ const Notification = ({navigation}) => {
         });
   };
 
- useEffect(() => {onValueChangeNumberNoti()}, []);
+ useEffect(() => {onValueChangeNumberNoti()}, [du_lieu_hs.id]);
 
   
+
+ function functionOnRefresh(){
+  setisFetching(true);
+  ApiNotification.getNofiByIdUser(data_token.token,du_lieu_hs.id)
+  .then(function (response) {
+      let data = response.data;
+      console.log('functionOnRefresh',data)
+      setDataNotification(data);
+      setisFetching(false);
+    })
+    .catch(function (error) {
+      console.log('err-data_noti',error);
+      setisFetching(false);
+    });
+
+ }
+
+
 
   const updateTypeOneNoti= (id_notification) => {
     ApiNotification.updateTypeOneNoti(data_token.token,id_notification)
@@ -105,9 +124,28 @@ const Notification = ({navigation}) => {
 //       updateBellNotification(token,du_lieu_hs.id,1);
 //  }
 //  useEffect(() => {fetchData()}, []);
-function clickNotifi(name_route,id,id_notification){
+function clickNotifi(item){
+
+  // nhà trường 
+  // chung
+  // hoc phi (route_chi_tiet)
+
+  // giao vien
+  // chung 
+  // dan thuoc  ( route_chi_tiet )
+  // diem danh ve
+  // don nghi hoc (xác nhận) ( route_chi_tiet)
   // updateTypeOneNoti(id_notification);
-  navigation.navigate(name_route,{ id_ : id });
+  let route_get = JSON.parse(item.route);
+  if(route_get.name_route == 'DotCuaThang'){
+    navigation.navigate('DotCuaThang',{ id_thang_thu_tien : route_get.id , thang_thu : route_get.so_thang });
+  }else if(route_get.name_route == 'detail_medicine'){
+    navigation.navigate('detail_medicine',{ id_ : route_get.id });
+  }else if(route_get.name_route == 'ShowThongBao'){
+    navigation.navigate('ShowThongBao',{ id_noi_dung_tb : route_get.id });
+  }
+
+
 }
 
       return (
@@ -120,11 +158,13 @@ function clickNotifi(name_route,id,id_notification){
     
          <FlatList
                   data={dataNotification}
+                  
                   renderItem={({item,index}) =>
                   {
                    let route_this = JSON.parse(item.route);
                    
-                   return( <TouchableOpacity onPress={()=> clickNotifi(route_this.name_route , route_this.id ,item.id)}  >
+                  //  return( <TouchableOpacity onPress={()=> clickNotifi(route_this.name_route , route_this.id ,item)}  >
+                   return( <TouchableOpacity onPress={()=> clickNotifi(item)}  >
                         <View style={item.type == 1 ? styles.boxNotifiNoRead : styles.boxNotifiRead}>
                             <View style={{width:"30%",alignItems:'center'}}>
                               <Image style={styles.image} source={IconKidsStudy}/>
@@ -140,6 +180,8 @@ function clickNotifi(name_route,id,id_notification){
                   }
 
                   }
+                  onRefresh={() => functionOnRefresh()}
+                  refreshing={isFetching}
                   keyExtractor={(value, index) => index}
          /> 
 

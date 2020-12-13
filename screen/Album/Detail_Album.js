@@ -1,7 +1,8 @@
 
 import React ,{ useState,useEffect }from 'react';
 import { View, Text, Image,
-    TouchableOpacity, ScrollView,StyleSheet, Button,FlatList,Modal
+    TouchableOpacity, ScrollView,StyleSheet, Button,FlatList,Modal,
+    Dimensions
  } from 'react-native'
 
  import ApiBieuDoSucKhoe from '../../android/app/src/api/BieuDoSucKhoeApi';
@@ -9,10 +10,13 @@ import { View, Text, Image,
  import AntDesign from 'react-native-vector-icons/AntDesign';
  import linkGiaoVien from '../../android/app/src/api/linkWeb/linkGiaoVien';
  import moment from 'moment';
+ const { width } = Dimensions.get('window');
+ const { height } = Dimensions.get('window');
 
 const Album =  ({ navigation,route }) => {
     
     const { data_album } = route.params;
+    console.log('ablum',data_album)
 
     const image_album =  JSON.parse(data_album.item_images);
     const [showModal, setShowModal] = useState(false); 
@@ -40,6 +44,7 @@ const Album =  ({ navigation,route }) => {
                         renderItem={({item,index}) => 
                         //  <Text>{linkGiaoVien + item}</Text>
                         <View style={{width:'45%',height:100,margin:'3%'}}>
+                            {/* <Text>{linkGiaoVien + item}</Text> */}
                             <TouchableOpacity onPress={()=>{setValueModal(item)}}>
                                 <Image style={{width: '100%',height:'100%',borderRadius:10 }}  source={{ uri: linkGiaoVien + item}}/>
                             </TouchableOpacity>
@@ -69,7 +74,7 @@ const Album =  ({ navigation,route }) => {
                                 <AntDesign name="closesquareo" size={30} color="#ddd" />
                             </TouchableOpacity>
 
-                           <Image style={{width: '100%' , height:'100%'}}  source={{ uri: linkGiaoVien + imageModal}}/>
+                           <Image style={styles.image}  source={{ uri: linkGiaoVien + imageModal}}/>
 
                           </View>
                 
@@ -90,7 +95,13 @@ const styles = StyleSheet.create({
   },
   box:{
     flexDirection:'row',height:60,borderBottomWidth:1,paddingBottom:5
-  }
+  },
+  image: {
+    flex: 1,
+    maxWidth: width,
+    maxHeight:height,
+    resizeMode: 'contain',
+},
  
 });
 

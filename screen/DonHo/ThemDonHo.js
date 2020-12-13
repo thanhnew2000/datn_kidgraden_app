@@ -19,14 +19,13 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import Modal_SubmitLoading from '../component/reuse/Modal_SubmitLoading';
 import { useSelector,useDispatch } from 'react-redux'
 
+import color_app from '../color_app'
 const ThemDonHo =  ({ navigation , route}) => {
-
-
-  const { reloadAgain } = route.params;
 
   const data_redux = useSelector(state => state)
   const du_lieu_hs = data_redux.hocsinh.data;
   const data_token = data_redux.token;
+  const lop_hs = data_redux.hocsinh.data.get_lop;
 
   const [submitLoading, setSubmitLoading] = useState(false);
 
@@ -118,26 +117,14 @@ const ThemDonHo =  ({ navigation , route}) => {
          }
      }
 
-        function submitFrom (){
+   function submitFrom (){
+    if(lop_hs !== null){
          setSubmitLoading(true)
           let checkEd = Checkvalidation(dateFrom,dateTo,valueInput);
           if(checkEd !== true){
             setSubmitLoading(false)
             Alert.alert(checkEd)
           }else{
-
-            // const formData = new FormData();
-            // formData.append("image", {type: 'image/jpg', uri:avatarSource.uri, name:'uploaded.jpg'});
-  
-            // axios.post('https://api.imgbb.com/1/upload?key=87b235f7be4c2a2271db6c21bbf93bda', formData)
-            // .then(function (response) {
-            //   let json_data = response.data;
-            //   let data = JSON.parse(JSON.stringify(json_data))
-            //   console.log('resd',data.data.url)
-            // })
-            // .catch(function (error) {
-            //   console.log(error);
-            // });
                   const formData = new FormData();
                     formData.append("ngay_bat_dau",dateFrom.getDate()+ '-' + parseInt(dateFrom.getMonth() + 1) +'-'+ dateFrom.getFullYear());
                     formData.append("ngay_ket_thuc",dateTo.getDate()+ '-' + parseInt(dateTo.getMonth() + 1) +'-'+ dateTo.getFullYear());
@@ -150,7 +137,6 @@ const ThemDonHo =  ({ navigation , route}) => {
                       .then(res => {
                           console.log(res.data);
                           setSubmitLoading(false)
-                          reloadAgain();
                           navigation.navigate('Đón hộ');
                       })
                       .catch(err => {
@@ -159,20 +145,22 @@ const ThemDonHo =  ({ navigation , route}) => {
                           Alert.alert('Lỗi không gửi được')
 
                       });
-           }
-
-      }
+             }
+        }else{
+          Alert.alert('Không thể thực hiện thao tác','Do học sinh hiện chưa có lớp lên không thể thực hiện thao tác này!')
+        }
+    }
 
 
 
   return (
     <ScrollView style={styles.container}>
-      <View style={{flexDirection:'row'}}>
+      <View style={{flexDirection:'row', paddingHorizontal:10}}>
                     <View style={{width:'65%'}}>
                     <Text style={{fontWeight:'bold',fontSize:15}}>Bắt đầu ngày :</Text>
                              <View style={{flexDirection:'row'}}>
                                    <Text style={{fontSize:15,marginRight:10}}>{dateFrom.getDate()}/{dateFrom.getMonth() + 1}/{dateFrom.getFullYear()}</Text>
-                                   <AntDesign name="calendar" size={30} color="green" onPress={showDatepickerFrom} />
+                                   <AntDesign name="calendar" size={30} color={color_app} onPress={showDatepickerFrom} />
 
                                    {showDateFrom && (
                                         <DateTimePicker
@@ -185,7 +173,7 @@ const ThemDonHo =  ({ navigation , route}) => {
                                         onChange={onChangeDateFrom}
                                         />
                                    )}
-                                   <Entypo  style={{marginLeft:36,marginTop:-10}} name="arrow-bold-right" size={35} color="green"  />
+                                   <Entypo  style={{marginLeft:36,marginTop:-10}} name="arrow-bold-right" size={35} color={color_app}  />
 
                             </View>
 
@@ -195,7 +183,7 @@ const ThemDonHo =  ({ navigation , route}) => {
                     <Text Text style={{fontWeight:'bold',fontSize:15}}  >Đến ngày :</Text>
                              <View style={{flexDirection:'row'}}>
                              <Text style={{fontSize:15,marginRight:10}}>{dateTo.getDate()}/{dateTo.getMonth() + 1}/{dateTo.getFullYear()}</Text>
-                                   <AntDesign name="calendar" size={30} color="green" onPress={showDatepickerTo} />
+                                   <AntDesign name="calendar" size={30} color={color_app}onPress={showDatepickerTo} />
 
                                    {showDateTo && (
                                         <DateTimePicker

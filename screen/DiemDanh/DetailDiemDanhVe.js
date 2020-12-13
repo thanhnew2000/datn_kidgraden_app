@@ -16,8 +16,7 @@ import IconChart from '../../android/app/src/asset/img/icon-chart.png';
 
 const DetailDiemDanhVe =  ({navigation, route}) => {
     const { item } = route.params ;
-  
-    
+    const nguoidonho = item.data.nguoi_don_ho;  
   return (
             <View style={styles.container}>
                 <View style={{flexDirection:'row'}}>
@@ -33,7 +32,7 @@ const DetailDiemDanhVe =  ({navigation, route}) => {
                     <Text style={{width:'70%'}}>{item.data.chu_thich}</Text>
                 </View>
 
-                { item.data.nguoi_don_ho !== null ? 
+                { nguoidonho !== null ? 
                 <View style={{paddingVertical:10}}>
                  <View style={{borderTopWidth:1,paddingVertical:10}}>
                     <Text style={{fontWeight:'bold'}}>Người đón hộ:</Text>
@@ -45,19 +44,20 @@ const DetailDiemDanhVe =  ({navigation, route}) => {
                     <View>
                         <View style={{flexDirection:'row'}}>
                             <Text style={{fontWeight:'bold'}}>Tên  : </Text>
-                            <Text style={{width:'50%'}}>hihihihi</Text>
+                            <Text style={{width:'50%'}}>{nguoidonho.ten_nguoi_don_ho}</Text>
                        </View>
                        <View style={{flexDirection:'row'}}>
                             <Text style={{fontWeight:'bold'}}>CMTND : </Text>
-                            <Text style={{width:'50%'}}> 987654326</Text>
+                            <Text style={{width:'50%'}}> {nguoidonho.cmtnd}</Text>
                        </View>
                        <View style={{flexDirection:'row'}}>
                             <Text style={{fontWeight:'bold'}}>Sđt : </Text>
-                            <Text style={{width:'50%'}}> 0894382479</Text>
+                            <Text style={{width:'50%'}}> {nguoidonho.phone_number}</Text>
                        </View>
                        <View style={{flexDirection:'row'}}>
                             <Text style={{fontWeight:'bold'}}>Ghi chú : </Text>
-                            <Text style={{width:'50%'}}> say something my friend</Text>
+                            <Text style={{width:'50%'}}> {nguoidonho.ghi_chu}</Text>
+
                        </View>
                     </View>
                 </View>

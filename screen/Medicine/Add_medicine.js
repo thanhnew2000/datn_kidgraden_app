@@ -18,24 +18,27 @@ import Modal_SubmitLoading from '../component/reuse/Modal_SubmitLoading';
 import { useSelector,useDispatch } from 'react-redux'
 import HeaderNotifiWhenClick from '../HeaderNotifiWhenClick';
 
+import color_app from '../color_app'
 
 const Add_medicine =  ({ navigation , route }) => {
   // const { reloadAgain } = route.params;
-    const { route_notifi } = route.params;
-      useEffect(() => {
-        if(route_notifi == 'add_medicine'){
-          navigation.setOptions({
-            headerTitle: () => <HeaderNotifiWhenClick navigation={navigation}/>,
-          })
-        }
-     }, []);
+    // const { route_notifi } = route.params;
+    //   useEffect(() => {
+    //     if(route_notifi == 'add_medicine'){
+    //       navigation.setOptions({
+    //         headerTitle: () => <HeaderNotifiWhenClick navigation={navigation}/>,
+    //       })
+    //     }
+    //  }, []);
 
 
 
   const data_redux = useSelector(state => state)
   const du_lieu_hs = data_redux.hocsinh.data;
   const data_token = data_redux.token;
-     console.log('du_lieu_hs.id_lop',du_lieu_hs.lop_id)
+  const lop_hs = data_redux.hocsinh.data.get_lop;
+
+    //  console.log('du_lieu_hs.id_lop',du_lieu_hs.lop_id)
    const [submitLoading, setSubmitLoading] = useState(false);
 
 
@@ -195,60 +198,64 @@ const Add_medicine =  ({ navigation , route }) => {
 }
 
 function submitAdd(){
-  if(listAddMedicine.length <= 0 ){
-    Alert.alert('Bạn chưa nhập thuốc')
-  }else{
-    setSubmitLoading(true)
-        const formData = new FormData();
-        
-          formData.append("dateFrom",dateFrom.getDate()+ '-' + parseInt(dateFrom.getMonth() + 1) +'-'+ dateFrom.getFullYear());
-          formData.append("dateTo",dateTo.getDate()+ '-' + parseInt(dateTo.getMonth() + 1) +'-'+ dateTo.getFullYear());
-          formData.append("loinhan",loiNhan);
-          formData.append("lop_id",du_lieu_hs.lop_id);
-          for (var i = 0; i < listAddMedicine.length; i++) {
-              if(listAddMedicine[i].image.uri){
-                  formData.append("donthuoc["+i+"][anhImage]", {type: 'image/jpg', uri:listAddMedicine[i].image.uri, name:'uploaded.jpg'});
+  if(lop_hs !== null){
+      if(listAddMedicine.length <= 0 ){
+        Alert.alert('Bạn chưa nhập thuốc')
+      }else{
+        setSubmitLoading(true)
+            const formData = new FormData();
+            
+              formData.append("dateFrom",dateFrom.getDate()+ '-' + parseInt(dateFrom.getMonth() + 1) +'-'+ dateFrom.getFullYear());
+              formData.append("dateTo",dateTo.getDate()+ '-' + parseInt(dateTo.getMonth() + 1) +'-'+ dateTo.getFullYear());
+              formData.append("loinhan",loiNhan);
+              formData.append("lop_id",du_lieu_hs.lop_id);
+              for (var i = 0; i < listAddMedicine.length; i++) {
+                  if(listAddMedicine[i].image.uri){
+                      formData.append("donthuoc["+i+"][anhImage]", {type: 'image/jpg', uri:listAddMedicine[i].image.uri, name:'uploaded.jpg'});
+                  }
+                      formData.append("donthuoc["+i+"][name]",listAddMedicine[i].name);
+                      formData.append("donthuoc["+i+"][lieu]",listAddMedicine[i].lieu);
+                      formData.append("donthuoc["+i+"][donvi]",listAddMedicine[i].donvi);
+                      formData.append("donthuoc["+i+"][note]",listAddMedicine[i].note);
               }
-                  formData.append("donthuoc["+i+"][name]",listAddMedicine[i].name);
-                  formData.append("donthuoc["+i+"][lieu]",listAddMedicine[i].lieu);
-                  formData.append("donthuoc["+i+"][donvi]",listAddMedicine[i].donvi);
-                  formData.append("donthuoc["+i+"][note]",listAddMedicine[i].note);
+              // console.log(formData);
+              // console.log(du_lieu_hs.lop_id);
+        
+              
+            ApiDonThuoc.insertDonThuoc(data_token.token,du_lieu_hs.id,formData)
+            .then(res => {
+                console.log('returen',res.data);
+                setSubmitLoading(false)
+                if(res.data == 'NoGiaoVien'){
+                  Alert.alert(
+                    "Lớp hiện chưa có giáo viên chưa thể gửi đơn được",
+                    "",
+                    [
+                      { text: "OK", onPress: () => navigation.navigate('Home') }
+                    ],
+                    { cancelable: false }
+                  ); 
+                }else{
+                  Alert.alert(
+                    "Đã gửi đơn thuốc thành công",
+                    "",
+                    [
+                      { text: "OK", onPress: () => navigation.navigate('Home') }
+                    ],
+                    { cancelable: false }
+                  );
+                }
+                // reloadAgain();
+                // navigation.navigate('Dặn thuốc');
+            })
+            .catch(err => {
+                console.log(err);
+            });
+
           }
-          // console.log(formData);
-          // console.log(du_lieu_hs.lop_id);
-     
-        ApiDonThuoc.insertDonThuoc(data_token.token,du_lieu_hs.id,formData)
-        .then(res => {
-            console.log(res.data);
-            setSubmitLoading(false)
-            if(res.data == 'NoGiaoVien'){
-              Alert.alert(
-                "Lớp hiện chưa có giáo viên chưa thể gửi đơn được",
-                "",
-                [
-                  { text: "OK", onPress: () => navigation.navigate('Home') }
-                ],
-                { cancelable: false }
-              ); 
-            }else{
-              Alert.alert(
-                "Đã gửi đơn thuốc thành công",
-                "",
-                [
-                  { text: "OK", onPress: () => navigation.navigate('Home') }
-                ],
-                { cancelable: false }
-              );
-            }
-            // reloadAgain();
-            // navigation.navigate('Dặn thuốc');
-        })
-        .catch(err => {
-            console.log(err);
-        });
-
-      }
-
+     }else{
+       Alert.alert('Không thể thực hiện thao tác','Do học sinh hiện chưa có lớp lên không thể thực hiện thao tác này!')
+     }
  
 }
 
@@ -256,14 +263,14 @@ function submitAdd(){
 
   return (
             <View style={styles.containers}>
-                <View style={{flexDirection:'row'}}>
+                {/* <View style={{flexDirection:'row'}}>
                   <View style={{width:'70%'}}>
-                   <Text style={{fontSize:16,fontWeight:'bold',paddingVertical:7}}>NỘI DUNG DẶN THUỐC :</Text>
+                   <Text style={{fontSize:16,fontWeight:'bold',color:'#706f6e',paddingVertical:7}}>NỘI DUNG DẶN THUỐC :</Text>
                   </View>
                   <View style={{width:'30%'}}>
                    <Button title="Xem lịch sử"  type="outline" onPress={()=> navigation.navigate('Dặn thuốc')} />
                   </View>
-                </View>
+                </View> */}
 
 
                 <View style={styles.formUp}>
@@ -272,7 +279,7 @@ function submitAdd(){
                                 <Text style={styles.fontTitleHeader}>Bắt đầu ngày :</Text>
                                         <View style={{flexDirection:'row'}}>
                                             <Text style={{fontSize:15,marginRight:10}}>{dateFrom.getDate()}/{dateFrom.getMonth() + 1}/{dateFrom.getFullYear()}</Text>
-                                            <AntDesign name="calendar" size={30} color="green" onPress={showDatepickerFrom} />
+                                            <AntDesign name="calendar" size={30} color={color_app} onPress={showDatepickerFrom} />
 
                                             {showDateFrom && (
                                                     <DateTimePicker
@@ -285,7 +292,7 @@ function submitAdd(){
                                                     onChange={onChangeDateFrom}
                                                     />
                                             )}
-                                            <Entypo  style={{marginLeft:40,marginTop:-10}} name="arrow-bold-right" size={35} color="green"  />
+                                            <Entypo  style={{marginLeft:40,marginTop:-10}} name="arrow-bold-right" size={35} color={color_app}  />
 
                                         </View>
 
@@ -295,7 +302,7 @@ function submitAdd(){
                                 <Text Text style={styles.fontTitleHeader}  >Đến ngày :</Text>
                                         <View style={{flexDirection:'row'}}>
                                         <Text style={{fontSize:15,marginRight:10}}>{dateTo.getDate()}/{dateTo.getMonth() + 1}/{dateTo.getFullYear()}</Text>
-                                            <AntDesign name="calendar" size={30} color="green" onPress={showDatepickerTo} />
+                                            <AntDesign name="calendar" size={30} color={color_app} onPress={showDatepickerTo} />
 
                                             {showDateTo && (
                                                     <DateTimePicker
@@ -327,9 +334,9 @@ function submitAdd(){
 
 
                 <View style={{flexDirection:'row'}}>
-                    <Text style={{fontSize:17,fontWeight:'bold',paddingVertical:15,width:'80%'}}>Danh sách thuốc</Text>
+                    <Text style={{fontSize:17,fontWeight:'bold',paddingVertical:15,width:'80%',color:'#706f6e'}}>Danh sách thuốc</Text>
                     <TouchableOpacity onPress={() =>modelShow(true)} >
-                    <AntDesign name="pluscircleo" size={30} color="green" style={{paddingTop:12}} />
+                    <AntDesign name="pluscircleo" size={30} color={color_app} style={{paddingTop:12}} />
                     </TouchableOpacity>
                 </View>
 
@@ -346,7 +353,7 @@ function submitAdd(){
 
                         <View style={styles.headerModel}>
                             <View style={{width:'90%',alignSelf:'center',padding:5}}>
-                                 <Text style={{fontWeight:'bold',fontSize:17}}>Thêm thuốc</Text>
+                                 <Text style={{fontWeight:'bold',fontSize:17,color:'#706f6e'}}>Thêm thuốc</Text>
                             </View>
                             <View style={{width:'10%'}}>
                                 <TouchableOpacity onPress={() =>modelShow(false)} >
@@ -490,7 +497,7 @@ const styles = StyleSheet.create({
         paddingBottom:10,
     },
     fontTitleHeader:{
-        fontWeight:'bold',fontSize:15,paddingVertical:5
+        fontWeight:'bold',fontSize:15,paddingVertical:5,color:'#706f6e'
     }
    
   });

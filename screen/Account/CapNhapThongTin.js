@@ -42,38 +42,36 @@ const CapNhapThongTin =  ({ navigation ,route}) => {
 //   const [lop_hs, setLopHS] = useState([]);
   
   return (
-      <ScrollView 
-    //   ref={scrollViewRef}
-    //   onContentSizeChange={() => scrollViewRef.current.scrollToEnd({ animated: true })}
-      >
+      <ScrollView>
           
-            <View style={styles.container}>
+        <View style={{flex:1}}>
+            <ImageBackground style={{width: '100%' }}   source={require('../../android/app/src/nen.png')}>
+                <View >
 
-            {/* <ImageBackground style={{width: '100%' }}   source={require('../../android/app/src/info-avatar.png')}> */}
-            <View style={{backgroundColor:'#fff',borderRadius:10,shadowColor: "#000",
-                shadowOffset: {
-                    width: 0,
-                    height: 7,
-                },
-                shadowOpacity: 1.70,
-                shadowRadius: 6.27,
-                
-                elevation: 15,
-                }}>
-              <View style={styles.sectionAvatar}>
-                  <View style={{height:120,justifyContent:'center',paddingLeft:10}}>
-                     <Image style={styles.showAvatar}  source={require('../../android/app/src/asset/img/home_image_slide.jpg')} />
-                  </View>
-                  <View style={{width:'50%',alignSelf:'center',marginLeft:15}}>
-                     <Text style={{fontSize:18,color:'black'}}>{du_lieu_hs.ten}</Text>
-                  </View>
-              </View>     
-              </View>
-              {/* </ImageBackground> */}
+                {/* <View style={{backgroundColor:'#fff',
+                shadowColor: "#000",
+                shadowColor: '#000',
+                shadowOffset: { width: 1, height: 5 },
+                shadowOpacity:  0.4,
+                shadowRadius: 10,
+                elevation: 5,
+                    }}> */}
+                <View style={styles.sectionAvatar}>
+                    <View style={{height:130,justifyContent:'center',paddingLeft:10}}>
+                        <Image style={styles.showAvatar}  source={require('../../android/app/src/asset/img/home_image_slide.jpg')} />
+                    </View>
+                    <View style={{width:'50%',alignSelf:'center',marginLeft:15,paddingTop:20}}>
+                        <Text style={{fontSize:18,color:'#fcfafa',fontWeight:"bold"}}>{du_lieu_hs.ten}</Text>
+                    </View>
+                </View>     
+                </View>
+              </ImageBackground>
+         </View>
 
 
 {/* Thông tin bé */}
-
+            <View   style={styles.container} >
+                
                 <View style={styles.oneBoxSection}>
                         <View style={{flexDirection:'row',paddingTop:10}}>
                                 <View style={{width:'80%',alignSelf:'center'}}>
@@ -86,27 +84,27 @@ const CapNhapThongTin =  ({ navigation ,route}) => {
                         
                 <View style={{flexDirection:'row',paddingTop:10}}>
                     <FontAwesome name="child" size={20} color={du_lieu_hs.gioi_tinh == 0 ? '#006699' : "#ff6699" }/>
-                    <Text style={{}}> Tên: {du_lieu_hs.ten}</Text>
+                    <Text style={{paddingLeft:15}}> Tên: {du_lieu_hs.ten}</Text>
                 </View>
                 
                 <View style={{flexDirection:'row',paddingTop:10}}>
                     <AntDesign name="carryout" size={20} color="#ffcc00" />
-                    <Text style={{}}> Mã : {du_lieu_hs.ma_hoc_sinh}</Text>
+                    <Text style={{paddingLeft:10}}> Mã : {du_lieu_hs.ma_hoc_sinh}</Text>
                 </View>
                 <View style={{flexDirection:'row',paddingTop:10}}>
                     <FontAwesome name="signal" size={20} color="#66ccff" />
-                    <Text style={{}}> Tuổi: 4</Text>
+                    <Text style={{paddingLeft:10}}> Tuổi: 4</Text>
                 </View>
 
 
                 <View style={{flexDirection:'row',paddingTop:10}}>
                     <FontAwesome name="venus-mars" size={20} color={du_lieu_hs.gioi_tinh == 0 ? '#006699' : "#ff6699" } />
-                    <Text style={{}}> Giới tính: {du_lieu_hs.gioi_tinh == 0 ? 'Nam' : 'Nữ'}</Text>
+                    <Text style={{paddingLeft:8}}> Giới tính: {du_lieu_hs.gioi_tinh == 0 ? 'Nam' : 'Nữ'}</Text>
                 </View>
 
                 <View style={{flexDirection:'row',paddingTop:10}}>
                     <FontAwesome name="black-tie" size={20} color="#0066ff" />
-                    <Text style={{}}> Lớp: {lop_hs == undefined ? ' ' : lop_hs.ten_lop}</Text>
+                    <Text style={{paddingLeft:15}}> Lớp: {lop_hs == undefined ? ' ' : lop_hs.ten_lop}</Text>
                 </View>
             </View>
                 
@@ -131,17 +129,17 @@ const CapNhapThongTin =  ({ navigation ,route}) => {
 
                 <View style={{flexDirection:'row',paddingTop:10}}>
                     <AntDesign name="user" size={20} color="#0066cc" />
-                    <Text style={{}}> {du_lieu_hs.ten_cha}</Text>
+                    <Text style={{paddingLeft:15}}> {du_lieu_hs.ten_cha}</Text>
                 </View>
 
                 <View style={{flexDirection:'row',paddingTop:10}}>
                     <AntDesign name="phone" size={20} color="#00cc00" />
-                    <Text style={{}}> {du_lieu_hs.dien_thoai_cha}</Text>
+                    <Text style={{paddingLeft:15}}> {du_lieu_hs.dien_thoai_cha}</Text>
                 </View>
 
                 <View style={{flexDirection:'row',paddingTop:10}}>
                     <AntDesign name="creditcard" size={20} color="#339933" />
-                    <Text style={{}}> CMND: {du_lieu_hs.cmtnd_cha}</Text>
+                    <Text style={{paddingLeft:15}}> CMND: {du_lieu_hs.cmtnd_cha}</Text>
                 </View>
             {/*      */}
             {/* Thông tin mẹ */}
@@ -153,17 +151,17 @@ const CapNhapThongTin =  ({ navigation ,route}) => {
 
                 <View style={{flexDirection:'row',paddingTop:10}}>
                     <AntDesign name="user" size={20} color="#ff3399" />
-                    <Text style={{}}> {du_lieu_hs.ten_me}</Text>
+                    <Text style={{paddingLeft:15}}> {du_lieu_hs.ten_me}</Text>
                 </View>
 
                 <View style={{flexDirection:'row',paddingTop:10}}>
                     <AntDesign name="phone" size={20} color="#00cc00" />
-                    <Text style={{}}> {du_lieu_hs.dien_thoai_me}</Text>
+                    <Text style={{paddingLeft:15}}> {du_lieu_hs.dien_thoai_me}</Text>
                 </View>
 
                 <View style={{flexDirection:'row',paddingTop:10}}>
                     <AntDesign name="creditcard" size={20} color="#339933" />
-                    <Text style={{}}> CMND: {du_lieu_hs.cmtnd_me}</Text>
+                    <Text style={{paddingLeft:15}}> CMND: {du_lieu_hs.cmtnd_me}</Text>
                 </View>
 
               </View>    
@@ -178,7 +176,7 @@ const CapNhapThongTin =  ({ navigation ,route}) => {
 const styles = StyleSheet.create({
     container:{
       flex:1,
-      padding:10,
+      paddingHorizontal:10,
       backgroundColor:"#fff",
     },
     sectionAvatar:{
@@ -190,7 +188,7 @@ const styles = StyleSheet.create({
     },
     oneBoxSection:{
         borderBottomWidth:1,
-        borderColor:'gray',
+        borderColor:'#bfbebd',
         paddingVertical:10
     }
   });

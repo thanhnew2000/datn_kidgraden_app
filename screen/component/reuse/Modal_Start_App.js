@@ -14,7 +14,7 @@ const Modal_Start_App =  ({ showLoading }) => {
                 >
                         <View style={styles.container}>
                             <View style={styles.content}>
-                             <Image style={{}} source={require('../../../android/app/src/asset/img/coolkids.png')}/>
+                            <Image style={{flex:1,  width:'70%', resizeMode: 'contain' }}  source={require('../../../android/app/src/logo.png')}/>
                             </View>
                         </View>
                 </Modal>
@@ -23,7 +23,7 @@ const Modal_Start_App =  ({ showLoading }) => {
 const styles = StyleSheet.create({
     container: {
         flex:1,
-       backgroundColor:'#fff',
+        backgroundColor:'#edac13',
     },
     content:{
         height:'100%',

@@ -11,17 +11,17 @@ import ApiXinNghi from '../../android/app/src/api/XinNghiHocApi';
 import Modal_Loading from '../component/reuse/Modal_Loading'
 import { useSelector,useDispatch } from 'react-redux'
 
+import color_app from '../color_app'
 const DayOff =  ({ navigation,route }) => {
-  const { token } = route.params;
-  const { du_lieu_hs } = route.params;
-
   const [showLoading, setShowLoading] = useState(true);
   const [listDonXinNghi, setListDonXinNghi] = useState([]);
+  const [isFetching, setisFetching] = useState(false);
 
-  // const [data_HS, setData_HS] = useState({});
   
-  // const data_redux = useSelector(state => state)
-  // const du_lieu_hs = data_redux.hocsinh.data;
+  const data_redux = useSelector(state => state)
+  const du_lieu_hs = data_redux.hocsinh.data;
+
+  const data_token = data_redux.token;
 
   const getListDonXinNghi = (token) => {
       ApiXinNghi.getAllByHs(token,du_lieu_hs.id)
@@ -40,19 +40,25 @@ const DayOff =  ({ navigation,route }) => {
    };
 
 
-   
-  // async function fetchData(){
-  //   let token  = await AsyncStorage.getItem('data_token');
-  //   // let data_HocSinh  = await AsyncStorage.getItem('data_hs');
-  //   // let dulieu_hs = JSON.parse(data_HocSinh);
-  //   // console.log(dulieu_hs.id);
-  //   setUserToken(token);
-  //   getListDonXinNghi(token);
-  //   // setData_HS(dulieu_hs)
-  // }
-  useEffect(() => {getListDonXinNghi(token)}, []);
+  useEffect(() => {getListDonXinNghi(data_token.token)}, []);
 
 
+  function functionOnRefresh(){
+    setisFetching(true);
+    ApiXinNghi.getAllByHs(data_token.token,du_lieu_hs.id)
+       .then(function (response) {
+         let data = response.data;
+         console.log(data);
+         setListDonXinNghi(data);
+         setisFetching(false);
+       })
+       .catch(function (error) {
+         console.log(error);
+         setisFetching(false);
+         Alert.alert('Lỗi không lấy được dữ liệu ')
+
+       });
+   }
 
 
   //  function reloadAgain(){
@@ -62,19 +68,26 @@ const DayOff =  ({ navigation,route }) => {
 
   return (
             <View style={styles.containers}>
-       
-       
+               <View style={showLoading ? {display:'flex'} : {display:'none'}}>
+                  <Image style={{width: 100 , height:100,alignSelf:'center'}}   source={require('../../android/app/src/tenor.gif')}/>
+                </View>
 
                 <FlatList
                   data={listDonXinNghi}
+
+
+                  onRefresh={() => functionOnRefresh()}
+                  refreshing={isFetching}
                   renderItem={({item,index}) => <ListItem item = {item}/>}
+                  
                   keyExtractor={(value, index) => index}
+
                />
 
 
 
                
-                <Modal_Loading showLoading = {showLoading} />
+                {/* <Modal_Loading showLoading = {showLoading} /> */}
 
            
             </View>

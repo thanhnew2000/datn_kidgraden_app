@@ -12,6 +12,8 @@ import DrawerScreen from './screen/DrawerScreen';
 
 import Header from './screen/Header';
 import Login from './screen/Login';
+
+
 // Quên mật khẩu
 import ForgotPass_Step1 from './screen/Quenmatkhau/ForgotPass_Step1';
 import ForgotPass_Step2 from './screen/Quenmatkhau/ForgotPass_Step2';
@@ -40,9 +42,11 @@ import Detail_new from './screen/News/Detail_new';
 
 import Medicine from './screen/Medicine/Medicine';
 import Detail_medicine from './screen/Medicine/Detail_medicine';
+import Index_medicine from './screen/Medicine/Index_medicine';
 import Add_medicine from './screen/Medicine/Add_medicine';
 
 import DayOff from './screen/DayOff/DayOff';
+import Index_XinNghi from './screen/DayOff/Index_XinNghi';
 import ThemDonNghi from './screen/DayOff/ThemDonNghi';
 
 import HoatDong from './screen/HoatDong/HoatDong';
@@ -54,6 +58,7 @@ import DiemDanh from './screen/DiemDanh/DiemDanh';
 import DetailDiemDanhVe from './screen/DiemDanh/DetailDiemDanhVe';
 
 import DonHo from './screen/DonHo/DonHo';
+import Index_DonHo from './screen/DonHo/Index_DonHo';
 import ThemDonHo from './screen/DonHo/ThemDonHo';
 
 import BieuDo from './screen/BieuDo/BieuDo';
@@ -65,10 +70,11 @@ import EditInfoParent from './screen/Account/EditInfoParent';
 
 import Notification from './screen/Notification/Notification';
 import HistoryNotification from './screen/Notification/HistoryNotification';
+import ShowThongBao from './screen/Notification/ShowThongBao';
 
 import HocPhi from './screen/HocPhi/HocPhi';
 import ChiTietHocPhi from './screen/HocPhi/ChiTietHocPhi';
-
+import   DotCuaThang from './screen/HocPhi/DotCuaThang';
 
 import Feedback from './screen/Feedback/Feedback';
 
@@ -87,6 +93,8 @@ import { setNumberNotification, fetchDataAsyncStorage, fetchTokenAsyncStorage, g
 
 import TabNumberNoti from './screen/TabNumberNoti';
 
+import  color_app  from './screen/color_app';
+import { color } from 'react-native-reanimated';
 
 
 
@@ -150,69 +158,73 @@ function App() {
 
   const HomeStackScreen = () => (
     <>
-      <StatusBar backgroundColor="#78bbe6" />
+      <StatusBar backgroundColor={color_app} color="black" />
       <HomeStack.Navigator initialRouteName={route_notifi}>
 
 
         <HomeStack.Screen name="loading" component={Loading} options={{ headerShown: false }} />
         <HomeStack.Screen name="Home" component={Home}
           options={{
-            headerStyle: {
-              backgroundColor: '#78bbe6'
-            },
-            headerTintColor: '#fff',
+            headerStyle: { backgroundColor: color_app },
             headerTitleStyle: {
               textAlign: 'center',
             },
             headerLeft: null
-
           }}
         />
 
 
 
-        <HomeStack.Screen name="Bản tin" component={News} options={{ title: "Tin tức", headerStyle: { backgroundColor: '#78bbe6' }, headerTintColor: '#fff' }} />
-        <HomeStack.Screen name="detail_new" component={Detail_new} options={{ title: "Tin chi tiết", headerStyle: { backgroundColor: '#78bbe6' }, headerTintColor: '#fff' }} />
+        <HomeStack.Screen name="Bản tin" component={News} options={{ title: "Tin tức",     headerStyle: { backgroundColor: color_app }, headerTintColor: '#fff' }} />
+        <HomeStack.Screen name="detail_new" component={Detail_new} options={{ title: "Tin chi tiết",  headerStyle: { backgroundColor: color_app }, headerTintColor: '#fff' }} />
 
         <HomeStack.Screen name="Dặn thuốc" component={Medicine} options={{
           //  headerStyle : { backgroundColor: 'rgba(11, 75, 120, 0.82)' },
-          headerStyle: { backgroundColor: '#78bbe6' },
+          headerStyle: { backgroundColor: color_app },
           headerTintColor: '#fff',
           title: "Dặn thuốc"
         }} />
         <HomeStack.Screen name="detail_medicine" component={Detail_medicine}
           initialParams={{ id_don_thuoc: id_don_thuoc, route_notifi: route_notifi }}
           options={{
-            headerStyle: { backgroundColor: '#78bbe6' },
+            headerStyle: { backgroundColor: color_app },
             headerTintColor: '#fff',
             title: "Chi tiết dặn thuốc"
           }} />
         <HomeStack.Screen name="add_medicine" component={Add_medicine}
-          initialParams={{ route_notifi: route_notifi }}
           options={{
-            headerStyle: { backgroundColor: '#78bbe6' },
+            headerStyle: { backgroundColor: color_app },
             headerTintColor: '#fff',
-            title: "Thêm đơn thuốc"
+            title: "Thêm đơn thuốc",
+
           }} />
 
+        <HomeStack.Screen name="Index_medicine" component={Index_medicine} 
+          initialParams={{ route_notifi: route_notifi }}
+          options={{
+          headerStyle: { backgroundColor: color_app },
+          headerTintColor: '#fff',
+          title: "Dặn thuốc"
+        }} />
+{/* 
         <HomeStack.Screen name="Xin nghỉ" component={DayOff}
           options={{
             //  headerStyle : {backgroundColor: 'rgba(11, 75, 120, 0.82)' },
-            headerStyle: { backgroundColor: '#78bbe6' },
+            headerStyle: { backgroundColor: color_app },
             headerTintColor: '#fff',
             title: "Xin nghỉ học"
-          }} />
+          }} /> */}
 
-        <HomeStack.Screen name="tao_don_xin_nghi_hoc" component={ThemDonNghi}
+        <HomeStack.Screen name="tao_don_xin_nghi_hoc" component={Index_XinNghi}
           options={{
-            headerStyle: { backgroundColor: '#78bbe6' },
+            headerStyle: { backgroundColor: color_app },
             headerTintColor: '#fff',
-            title: "Tạo đơn nghỉ"
+            title: "Đơn nghỉ học",
           }} />
 
         <HomeStack.Screen name="Hoạt động" component={HoatDong} options={{ title: "Hoạt động" }}
           options={{
-            headerStyle: { backgroundColor: '#78bbe6' },
+            headerStyle: { backgroundColor: color_app },
             headerTintColor: '#fff',
           }} />
 
@@ -220,70 +232,71 @@ function App() {
         <HomeStack.Screen name="Điểm danh" component={DiemDanh}
           options={{
             //  headerStyle : { backgroundColor: 'rgba(11, 75, 120, 0.82)' },
-            headerStyle: { backgroundColor: '#78bbe6' },
-
+            headerStyle: { backgroundColor: color_app },
             headerTintColor: '#fff',
             title: "Điểm Danh"
           }} />
 
-        <HomeStack.Screen name="Đón hộ" component={DonHo}
+        <HomeStack.Screen name="Đón hộ" component={Index_DonHo}
           options={{
-            headerStyle: { backgroundColor: '#78bbe6' },
+            headerStyle: { backgroundColor: color_app },
             headerTintColor: '#fff',
             title: "Đón hộ"
           }} />
 
-        <HomeStack.Screen name="add_donho" component={ThemDonHo}
-          options={{
-            headerStyle: { backgroundColor: '#78bbe6' },
-            headerTintColor: '#fff',
-            title: "Thêm đón họ"
-          }} />
-
+   
         <HomeStack.Screen name="Biểu đồ" component={BieuDo}
           options={{
-            headerStyle: { backgroundColor: '#78bbe6' },
+            headerStyle: { backgroundColor: color_app },
             headerTintColor: '#fff',
             title: "Biểu đồ tăng trưởng của bé"
           }} />
 
         <HomeStack.Screen name="Học phí" component={HocPhi}
           options={{
-            headerStyle: { backgroundColor: '#78bbe6' },
+            headerStyle: { backgroundColor: color_app },
             headerTintColor: '#fff',
             title: "Học phí"
           }} />
 
+        <HomeStack.Screen name="DotCuaThang" component={DotCuaThang}
+          options={{
+            headerStyle: { backgroundColor: color_app },
+            headerTintColor: '#fff',
+            title: "Các đợt của tháng"
+          }} />
+
+
         <HomeStack.Screen name="ChiTietHocPhi" component={ChiTietHocPhi}
           options={{
-            headerStyle: { backgroundColor: '#78bbe6' },
+            headerStyle: { backgroundColor: color_app },
             headerTintColor: '#fff',
             title: "Chi tiết học phí"
           }} />
 
         <HomeStack.Screen name="Đánh giá GV" component={Feedback}
           options={{
-            headerStyle: { backgroundColor: '#78bbe6' },
+            headerStyle: { backgroundColor: color_app },
             headerTintColor: '#fff',
             title: "Đánh giá giáo viên"
           }} />
 
         <HomeStack.Screen name="edit_info_parent" component={EditInfoParent}
           options={{
-            headerStyle: { backgroundColor: '#78bbe6' },
+            headerStyle: { backgroundColor: color_app },
             headerTintColor: '#fff',
             title: "Thông tin phụ huynh"
           }} />
 
         <HomeStack.Screen name="Album" component={Album}
           options={{
-            headerStyle: { backgroundColor: '#78bbe6' },
+            headerStyle: { backgroundColor: color_app },
             headerTintColor: '#fff',
           }} />
 
         <HomeStack.Screen name="Detail_Album" component={Detail_Album}
           options={{
-            headerStyle: { backgroundColor: '#78bbe6' },
+            headerStyle: { backgroundColor: color_app },
             headerTintColor: '#fff',
           }} />
 
@@ -292,12 +305,15 @@ function App() {
         <HomeStack.Screen name="detail_diem_danh_ve" component={DetailDiemDanhVe}
           initialParams={{ itemId: 42 }}
           options={{
-            headerStyle: { backgroundColor: '#78bbe6' },
+            headerStyle: { backgroundColor: color_app },
             headerTintColor: '#fff',
             title: "Chi tiết điểm danh về"
           }} />
 
-        <HomeStack.Screen name="ChangePass" component={ChangePass} options={{ title: ' Đổi mật khẩu' }} />
+        <HomeStack.Screen name="ChangePass" component={ChangePass} options={{  
+          headerStyle: { backgroundColor: color_app },
+            headerTintColor: '#fff',
+            title: "Đổi mật khẩu"}} />
 
       </HomeStack.Navigator>
     </>
@@ -307,7 +323,8 @@ function App() {
     <AccountStack.Navigator initialRouteName="CapNhapThongTin">
       <AccountStack.Screen name="Account" component={Account} options={{ headerShown: false }} />
       <AccountStack.Screen name="CapNhapThongTin" component={CapNhapThongTin} options={{
-        headerStyle: { backgroundColor: '#78bbe6' },
+        // headerShown: false
+      headerStyle: { backgroundColor: color_app },
         headerTintColor: '#fff',
         title: "Thông tin"
       }} />
@@ -316,8 +333,13 @@ function App() {
 
   const NotificationScreen = () => (
     <NotificationStack.Navigator initialRouteName="Notification">
-      <NotificationStack.Screen name="Notification" component={Notification} options={{ title: 'Thông báo' }} />
-      <NotificationStack.Screen name="HistoryNotification" component={HistoryNotification} options={{ title: 'Tất cả thông báo' }} />
+      <NotificationStack.Screen name="Notification" component={Notification} options={{headerShown: false }} />
+      <NotificationStack.Screen name="ShowThongBao" component={ShowThongBao} options={{headerShown: false }} />
+
+      <NotificationStack.Screen name="HistoryNotification" component={HistoryNotification} options={{ 
+        title: 'Tất cả thông báo',
+        headerStyle: { backgroundColor: color_app }
+      }} />
     </NotificationStack.Navigator>
   )
 
@@ -389,47 +411,52 @@ function App() {
   };
 
 
-  let number_Noti_Show = 0;
-  store.subscribe(function () {
-    return number_Noti_Show = store.getState().notification;
-  });
+  // let number_Noti_Show = 0;
+  // store.subscribe(function () {
+  //   return number_Noti_Show = store.getState().notification;
+  // });
+
   const UserGreeting = () => (
     <Tabs.Navigator style={styles.tabbutton} initialRouteName="Kids" screenOptions={({ route }) => ({
       tabBarIcon: ({ focused, color, size }) => {
         let iconName;
-        // let iconColor;
+        let iconColor;
+        let iconSize;
         if (route.name === 'Kids') {
           iconName = 'home';
-          // iconColor = focused ? 'blue' : 'gray';
+          iconColor = focused ? color_app : 'gray';
+          iconSize = focused ? 35 : 25;
         } else if (route.name === 'Account') {
-          iconName = 'perm-contact-calendar';
-          // iconColor = focused ? 'blue' : 'gray';
+          iconName = 'perm-identity';
+          iconColor = focused ? color_app : 'gray';
+          iconSize = focused ? 35 : 25;
+
         } else if (route.name === 'Thông báo') {
+          iconColor = focused ? color_app : 'gray';
+          iconSize = focused ? 35 : 25;
           iconName = 'volume-down';
         }
         else if (route.name === 'DanhBa') {
           iconName = 'camera-front';
         }
-        return <MaterialIcons name={iconName} size={size} color={color} />;
+        return <MaterialIcons name={iconName} size={iconSize} color={iconColor} />;
       },
     })}
       tabBarOptions={{
-        activeTintColor: 'tomato',
-        inactiveTintColor: 'white',
-        style: {
-          backgroundColor: '#78bbe6',
-          // backgroundColor: 'rgba(11, 75, 120, 0.82)',
-        },
         labelStyle: {
           fontSize: 13,
         },
+         showLabel: false,
+        //  showIcon:true,
       }}
     >
-      <Tabs.Screen name="Kids" component={HomeStackScreen} options={{ title: "Home" }} />
-      <Tabs.Screen name="Account" component={AccountScreen} options={{ title: "Thông tin" }} />
+      <Tabs.Screen name="Kids" component={HomeStackScreen}
+  
+       />
+      <Tabs.Screen name="Account" component={AccountScreen} />
       {/* <Tabs.Screen name="DanhBa" component={DanhBaScreen}   options={{title : "Danh bạ"}} /> */}
       <Tabs.Screen name="Thông báo" component={NotificationScreen}
-        options={{ title: "Thông báo", tabBarBadge: <TabNumberNoti /> }}
+        options={{  tabBarBadge: <TabNumberNoti /> }}
         listeners={{
           tabPress: e => {
             updateBellNotification();
@@ -478,9 +505,7 @@ function App() {
       });
   }, []);
 
-  // if (loading) {
-  //   return null;
-  // }
+ 
 
   async function dangXuat() {
     var token = await AsyncStorage.getItem('data_token');
@@ -496,6 +521,7 @@ function App() {
         await AsyncStorage.removeItem('data_token');
         setCheckHaveUserToken(false);
         setId_hs_set_home(null);
+
       })
       .catch(function (error) {
         console.log(error);
@@ -508,7 +534,21 @@ function App() {
   const getHsIdUser = (token, id_hs) => {
     ApiHocSinh.getHocSinhIdUser(token, id_hs)
       .then(function (response) {
-        console.log('token su dung')
+        console.log('token su dung');
+        if (id_hs_set_home == null) {
+          store.dispatch(fetchDataAsyncStorage());
+        } else {
+          data_all_hs.forEach(
+            async (item) => {
+              if (item.id == id_hs_set_home) {
+                await AsyncStorage.setItem('data_hs', JSON.stringify(item));
+                store.dispatch(fetchDataAsyncStorage());
+              }
+            })
+        }
+        store.dispatch(fetchTokenAsyncStorage());
+        setShowLoading(false);
+        setCheckHaveUserToken(true);
       })
       .catch(function (error) {
         console.log(error);
@@ -548,25 +588,8 @@ function App() {
         var json_all_hs = await AsyncStorage.getItem('data_all_hs');
         let user = JSON.parse(data_user);
         let data_all_hs = JSON.parse(json_all_hs);
-        console.log('user_app', user)
-        if (token !== null) {
-          setCheckHaveUserToken(true);
-          await getHsIdUser(token, user.id);
-          if (id_hs_set_home == null) {
-            store.dispatch(fetchDataAsyncStorage());
-          } else {
-            data_all_hs.forEach(
-              async (item) => {
-                if (item.id == id_hs_set_home) {
-                  await AsyncStorage.setItem('data_hs', JSON.stringify(item));
-                  store.dispatch(fetchDataAsyncStorage());
-                }
-              })
-          }
-          store.dispatch(fetchTokenAsyncStorage());
-          // store.dispatch(fetchDataAsyncStorage());+
-        }
-        setShowLoading(false)
+        // check token dùng được hay khonong qua function getHsIdUser
+        getHsIdUser(token, user.id);
       } catch (e) {
         console.log(e);
       }
@@ -581,6 +604,7 @@ function App() {
       if (data_token.token !== null) {
         setCheckHaveUserToken(true)
         store.dispatch(fetchTokenAsyncStorage());
+        store.dispatch(fetchDataAsyncStorage());
       }
     } catch (e) {
       console.log(e);
@@ -613,31 +637,24 @@ function App() {
 
     <Provider store={store}>
       <AuthContext.Provider value={authContext}>
+
+    {showLoading  == true ? 
+              (   <Modal_Start_App showLoading={showLoading} />  )
+     :
         <NavigationContainer>
-          {/* {checkHaveUserToken ? (
-              <UserGreeting />
-            ) : (
-              <GuestGreeting />
-            )} */}
-
-          {/* <Greeting isLoggedIn={true} /> */}
-          {
-            checkHaveUserToken ? (
-              <Drawer.Navigator drawerContent={props => <DrawerScreen {...props} />} >
-                {/* <Drawer.Screen name="Home"  component={() => UserGreeting(soLuongThongBao)}    /> */}
-                <Drawer.Screen name="Home" component={UserGreeting} />
-              </Drawer.Navigator>
-            ) : (
-                <GuestGreeting />
+         {
+              checkHaveUserToken == true ? (
+                  <Drawer.Navigator drawerContent={props => <DrawerScreen {...props} />} >
+                    <Drawer.Screen name="UserGreeting" component={UserGreeting} />
+                  </Drawer.Navigator>
+              ) : (
+                  <GuestGreeting />
               )
-
           }
-
-
-          <Modal_Start_App showLoading={showLoading} />
-
-
         </NavigationContainer>
+
+    }
+
       </AuthContext.Provider>
     </Provider>
 

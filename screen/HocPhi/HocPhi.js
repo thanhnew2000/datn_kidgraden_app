@@ -9,42 +9,108 @@ import IconKidsOutSide from '../../android/app/src/asset/img/icon-kids-outside.j
 import { ScrollView } from 'react-native-gesture-handler';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 
+
+import ApiHocPhi from '../../android/app/src/api/HocPhiApi';
+import { useSelector,useDispatch } from 'react-redux'
+
 const HocPhi =  ({ navigation }) => {
+
+    const data_redux = useSelector(state => state)
+    const du_lieu_hs = data_redux.hocsinh.data;
+
+    const [data_hp, setDataHp] = useState([]);
+    const [arr_nam, setArrNam] =  useState([]);
+
+    const [listDataThang, setlistDataThang] =  useState([]);
+
+    const [namClick, setnamClick] =  useState('');
+
+
+    const getHoatDong = () => {
+        ApiHocPhi.getNamThangOfHocPhiHs('data_token',du_lieu_hs.id)
+        .then(function (response) {
+          let data = response.data;
+          setDataHp(data);
+          Object.keys(data).forEach(function(key) {
+            setArrNam([{...arr_nam,key}])
+                console.log('data_hoat_dong',data);
+          });
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    };
+    useEffect(() => {getHoatDong()}, []);
+
+    // function clickTest(){
+    //       set
+    // }
+
+    function onClick2(nam){
+        setnamClick(nam);
+        Object.keys(data_hp).forEach(function(key) {
+                if(nam == key){
+                    setlistDataThang(data_hp[key])
+                }
+          });
+     }
+
+     function colorCss(item){
+      return  item.item.trang_thai == 2 ? {color:'green'} : item.item.trang_thai ==  1 ? {color:'#fcb321'}   : {color:'#fa3228'}
+     }
   return (
     <ScrollView style={styles.container}>
             <View>
                 {/*  chọn năm hiện */}
                   <View  style={{width:'100%',marginTop:5,flexDirection:'row'}}>
-                      <View>
-                          <Button title="2018" />
-                      </View>
-                      <View  style={{paddingLeft:10}}>
-                          <Button title="2019" />
-                      </View>
+                      <FlatList  
+                       data={arr_nam}
+                        renderItem={(item)=>{
+                            return   <TouchableOpacity onPress={() => onClick2(item.item.key)}>
+                                      <View style={namClick == item.item.key ? styles.bottomNamClick : styles.bottomNam}>
+                                            <Text style={namClick == item.item.key ? {color:'#f2f6fc'} : {color:'#0a0a0a'}}>{item.item.key}</Text>
+                                       </View>
+                                    </TouchableOpacity>
+                        }}
+                        keyExtractor={(item,index) => index}
+                    />
+                
                    </View>
                 {/*  list danh sách học phí */}
+     
+                        
+                {/* <TouchableOpacity  onPress={()=>{ navigation.navigate('ChiTietHocPhi',{ hocphi: 'something', }) }}> */}
+                <FlatList  
+                       data={listDataThang}
+                        renderItem={(item)=>{
 
-            
+                            return   <TouchableOpacity  onPress={()=> navigation.navigate('DotCuaThang',{id_thang_thu_tien: item.item.id , thang_thu : item.item.thang_thu})}>
+                                        <View style={styles.boxList}>
+                                                <View style={{width:'20%'}}>
+                                                {item.item.trang_thai == 2 ? <AntDesign name="checkcircle" size={35}color='green' />
+                                                 : item.item.trang_thai ==  1 ? <AntDesign name="checkcircle" size={35}color='#fcb321' />
+                                                  :  <AntDesign name="closecircle" size={35}color='#eb1d13' /> }
 
-                <TouchableOpacity  onPress={()=>{ navigation.navigate('ChiTietHocPhi',{ hocphi: 'something', }) }}>
 
-                    <View style={styles.boxList}>
-                            <View style={{width:'20%'}}>
-                                <AntDesign name="checkcircle" size={35} color='#32AE16' />
-                            </View>
-                            <View style={{width:'50%'}}>
-                                    <Text style={{fontWeight:'bold'}}>Tháng 5</Text>
-                                    <Text style={{color:'green'}}>Đã hoàn thành</Text>
-                            </View>
-                            <View style={{width:'30%'}}>
-                                <Text style={{color:'green'}}>5,000,000 vnđ</Text>
-                            </View>
-                    </View>
-
-                </TouchableOpacity>
+                                                </View>
+                                                <View style={{width:'50%'}}>
+                                                    <Text style={{fontSize:15}}>Tháng {item.item.thang_thu}</Text>
+                                                        <Text style={colorCss(item)}>
+                                                            {item.item.trang_thai == 2 ? 'Đã hoàn thành' : item.item.trang_thai ==  1 ? 'Đang hoàn thành'  : 'Chưa đóng'}
+                                                         </Text>
+                                                </View>
+                                                <View style={{width:'30%'}}>
+                                                    <Text style={colorCss(item)}>{item.item.tong_tien_phai_dong} vnđ</Text>
+                                                </View>
+                                        </View>
+                                 </TouchableOpacity>
+                        }}
+                        keyExtractor={(item,index) => index}
+                    />
+                     
                 
 
-                <View style={styles.boxList}>
+                {/* <View style={styles.boxList}>
                       <View style={{width:'20%'}}>
                           <AntDesign name="closecircle" size={35} color='#ee5d40' />
                       </View>
@@ -55,7 +121,7 @@ const HocPhi =  ({ navigation }) => {
                       <View style={{width:'30%'}}>
                           <Text style={{color:'red'}}>5,400,000 vnđ</Text>
                       </View>
-                </View>
+                </View> */}
 
             </View>
 
@@ -71,6 +137,15 @@ const styles = StyleSheet.create({
     },
     boxList:{
         flexDirection:'row',padding:10,borderWidth:1,marginVertical:10,borderRadius:5,borderColor:'#D9D9DA'
+    },
+    bottomNam:{
+        width:'30%',marginHorizontal:5,marginVertical:5,paddingHorizontal:5
+        ,paddingVertical:5,borderColor:'#ffc233',borderWidth:1,borderRadius:5,alignItems:'center'
+    },
+    bottomNamClick:{
+        width:'30%',marginHorizontal:5,marginVertical:5,paddingHorizontal:5,
+        backgroundColor:'#ffc233',
+        paddingVertical:5,borderColor:'#ffc233',borderWidth:1,borderRadius:5,alignItems:'center',
     }
    
    

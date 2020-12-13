@@ -3,7 +3,7 @@ import React ,{ useState,useEffect }from 'react';
 import {
     StyleSheet,
     View,
-    FlatList,Text,Image,Button,Dimensions, ImageBackground,Modal,TouchableOpacity, Alert
+    FlatList,Text,Image,Button,Dimensions, ImageBackground,Modal,TouchableOpacity, Alert, ScrollView
     
   } from 'react-native';
   import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -19,7 +19,9 @@ const DiemDanh =  ({navigation}) => {
     
   const data_redux = useSelector(state => state)
   const du_lieu_hs = data_redux.hocsinh.data;
+  const data_token = data_redux.token;
  
+  console.log('id_hs',du_lieu_hs.id)
   const [submitLoading, setsubmitLoading] = useState(true);
   
   const [SangChieu, setSangChieu] = useState(false);
@@ -29,14 +31,11 @@ const DiemDanh =  ({navigation}) => {
   var year = new Date().getFullYear()
   const [thangNam, setThangNam] = useState(month+' / '+year);
   const [arrDate, setArrDate] = useState([]);
-  const [token, setToken] = useState('');
   const [dataDiemDanhDen, setDataDiemDanhDen] = useState([]);
   const [dataDiemDanhVe, setDataDiemDanhVe] = useState([]);
 
      async function  getArrDate () {
-       var get_token = await AsyncStorage.getItem('data_token');
-        setToken(get_token);
-        ApiDiemDanh.getThangNamOfNamHocHienTai(get_token)
+        ApiDiemDanh.getThangNamOfNamHocHienTai(data_token.token)
         .then(function (response) {
             let data = response.data;
             let indexEnd = (data.length - 1);
@@ -44,9 +43,10 @@ const DiemDanh =  ({navigation}) => {
             // choseDateShow(month+' / '+year,data_HocSinh.id)
             setThangNam(month+' / '+year);
             const formData = new FormData();
-            formData.append("date",month+' / '+year);
+            let dateChoose = month+' / '+year ;
+            formData.append("date",dateChoose);
             formData.append("id_hs",du_lieu_hs.id);
-            HamGetDataByThangNam(get_token,formData)
+            HamGetDataByThangNam(data_token.token,formData,dateChoose)
 
         })
         .catch(function (error) {
@@ -63,15 +63,17 @@ const DiemDanh =  ({navigation}) => {
         }
     }
 
-    function HamGetDataByThangNam(token,formData){
+    function HamGetDataByThangNam(token,formData,dateChoose){
         ApiDiemDanh.getDataByThangNam(token,formData)
         .then(function (response) {
             let data = response.data;
+            console.log('data_diem_danh',dateChoose);
             if(data == 'NoHaveData'){
-                Alert.alert('Tháng ngày hiện không có dữ liệu')
+                Alert.alert('Dữ liệu chưa có','Tháng này hiện tại chưa có dữ liệu !')
             }else{
             setDataDiemDanhDen(data.diem_danh_den);
             setDataDiemDanhVe(data.diem_danh_ve);
+            setThangNam(dateChoose);
             }
             setsubmitLoading(false);
         })
@@ -83,13 +85,11 @@ const DiemDanh =  ({navigation}) => {
 
 
     function choseDateShow(date){
-        setThangNam(date);
         setsubmitLoading(true);
-        console.log('date',date)
         const formData = new FormData();
         formData.append("date",date);
         formData.append("id_hs",du_lieu_hs.id);
-        HamGetDataByThangNam(token,formData)
+        HamGetDataByThangNam(data_token.token,formData,date)
         setShowModal(false)
     }
 
@@ -120,6 +120,7 @@ const DiemDanh =  ({navigation}) => {
 
   
   return (
+      <ScrollView>
             <View style={styles.container}>
                  <View style={styles.calender}>
                     <ImageBackground  style={{width:'100%' ,height:'100%',flexDirection:'row'}} source={require('../../android/app/src/asset/img/hoa-dao.gif')}>
@@ -131,6 +132,8 @@ const DiemDanh =  ({navigation}) => {
 
                         <AntDesign name="calendar" size={30} color="green" onPress={()=>{ setShowModal(true)} } />
 
+
+                {/*  bắt đầu model */}
                 <Modal
                     animationType="slide"
                     transparent={true}
@@ -141,11 +144,10 @@ const DiemDanh =  ({navigation}) => {
                     >
                             <View style={{backgroundColor:'#dddd',flex:1,justifyContent:'center',alignItems:'center'}}>
                                 <View style={styles.boxModel}>
-                                    <View style={{flexDirection:'row',width:100,paddingVertical:5}}>
+                                    <View style={{flexDirection:'row',width:150,paddingVertical:5}}>
                                         <View style={{width:'80%'}}>
                                              <Text style={{fontSize:17,fontWeight:'bold'}}>Tháng</Text>
                                         </View>
-                                        
 
                                         <View style={{width:'20%'}}>
                                             <TouchableOpacity onPress={()=>{setShowModal(false)}} >
@@ -161,19 +163,21 @@ const DiemDanh =  ({navigation}) => {
                                             data={arrDate}
                                             renderItem={({item}) =>
                                                 <TouchableOpacity onPress={()=> choseDateShow(item)} >
-                                                    <View style={{borderBottomWidth:1,padding:5,paddingHorizontal:15}}>
+                                                    <View style={{borderBottomWidth:1,borderColor:'#737272',height:37,width:130,alignItems:'center',justifyContent:'center'}}>
                                                         <Text style={thangNam == item ? styles.choseDate : styles.datePickerNormal}>{item}</Text>
                                                     </View>
                                                 </TouchableOpacity>
                                             }
                                             keyExtractor={(value, index) => index}
-                                    />
+                                         />
                                 </View>
                             </View>
 
                      </Modal>
-                        </View>
+                    {/*  kết thúc model */}
 
+
+                    </View>
                     </ImageBackground>
 
                 </View>
@@ -188,15 +192,17 @@ const DiemDanh =  ({navigation}) => {
                     </View>
                 </View>
 
-                <View style={{borderWidth:1,borderColor: SangChieu ? '#2daaed' : '#F7C261', marginVertical:15,height:'75%'}}>
-
+                <View style={{borderColor: SangChieu ? '#2daaed' : '#F7C261', marginTop:10}}>
 
 
                     <View style={SangChieu ? styles.titleDiemDanhSang : styles.titleDiemDanhChieu}>
                       <Text style={{color:'#fff',fontSize:16}}>Thông tin điểm danh</Text>
                     </View>
 
+
                         {/* sáng */}
+
+
                         <View style={SangChieu ? styles.displayFlex : styles.displayNone}>
 
                             <View style={styles.table}>
@@ -215,32 +221,39 @@ const DiemDanh =  ({navigation}) => {
                                         </View>
                                 </View>
                                 </View>
+                         {/* <View style={{height:'85%'}}> */}
                         
                              <FlatList
                                 data={SangChieu ? dataDiemDanhDen : dataDiemDanhVe }
                                 renderItem={({item,index}) =>  
                                         <View style={styles.listDiemDanh}>
-                                                <View style={{width:'25%',paddingLeft:5,borderColor:'#2daaed',borderWidth:1}}>
+                                                <View style={styles.viewTextOSang}>
                                                     <Text>{item.ngay}</Text>
                                                 </View>
-                                                <View style={{width:'25%',paddingLeft:5,borderColor:'#2daaed',borderWidth:1}}>
+                                                <View style={styles.viewTextOSang}>
                                                     <Text style={item.sang  == 1 ? {color:'green'} : {color:'red'}}
-                                                    >{item.sang  == 1 ? 'Có' :  item.chieu == 2 ? 'Vắng' : null }</Text>
+                                                    >{item.sang  == 1 ? 'Đi học' :  item.sang == 2 ? 'Vắng' : null }</Text>
                                                 </View> 
-                                                <View style={{width:'25%',paddingLeft:5,borderColor:'#2daaed',borderWidth:1}}>
-                                                    <Text  style={item.sang  == 1 ? {color:'green'} : {color:'red'}}>{item.chieu  == 1 ? 'Có' :  item.chieu ==  2 ? 'Vắng'  : null }</Text>
+                                                <View style={styles.viewTextOSang}>
+                                                    <Text  style={item.sang  == 1 ? {color:'green'} : {color:'red'}}>
+                                                        {item.chieu  == 1 ? 'Có' :  item.chieu ==  2 ? 'Vắng'  : null }
+                                                     </Text>
                                                 </View>
-                                                <View style={{width:'25%',paddingLeft:5,borderColor:'#2daaed' ,borderWidth:1}}>
+                                                <View style={styles.viewTextOSang}>
                                                     <Text >{item.an == 1 ? 'Ăn' :   item.an ==  2 ? 'Không ăn'  : null}</Text>
                                                 </View>
-                                        </View> }
+                                        </View> 
+                                        }
                                 keyExtractor={(value, index) => index}
                                 /> 
                                 </View>
+                                {/* </View> */}
 
                         {/* sáng */}
 
-                            {/* Chiều */}
+
+
+                        {/* Chiều */}
                             <View style={SangChieu ? styles.displayNone : styles.displayFlex}>
                                 <View style={styles.table}>
                                     <View style={{flexDirection:'row'}}>
@@ -254,16 +267,16 @@ const DiemDanh =  ({navigation}) => {
                                             <Text style={styles.textTitleTableChieu}>Ghi chú </Text>
                                         </View>
                                     </View>
-                                <View style={{height:'85%'}}>
+                                {/* <View style={{height:'90%'}}> */}
                                     <FlatList
                                             data={dataDiemDanhVe}
                                             renderItem={({item,index}) =>  
                                                   <TouchableOpacity onPress={()=>{ item.data !== 0 ? navigation.navigate('detail_diem_danh_ve' , {item :item}) : null }}>
                                                     <View style={styles.listDiemDanh}>
-                                                            <View style={styles.contentChieu}>
+                                                            <View style={styles.viewTextOChieu}>
                                                                 <Text>{item.ngay}</Text>
                                                             </View>
-                                                            <View style={styles.contentChieu}>
+                                                            <View style={styles.viewTextOChieu}>
                                                                 <Text style={textColorTrangThai(item.data.trang_thai)}>{item.data  == 0 ? '' : showStatusDiemDanh(item.data.trang_thai)}</Text>
                                                             </View> 
                                                             <View style={{width:'45%',paddingLeft:5,borderColor: '#F7C261',borderWidth:1}}>
@@ -276,7 +289,7 @@ const DiemDanh =  ({navigation}) => {
                                             keyExtractor={(value, index) => index}
                                     /> 
 
-                                </View>
+                                {/* </View> */}
                             </View>
                             
                             {/* Chiều */}
@@ -299,6 +312,7 @@ const DiemDanh =  ({navigation}) => {
            
            
             </View>
+            </ScrollView>
   );
 };
 
@@ -330,8 +344,24 @@ const styles = StyleSheet.create({
         borderColor:'#2daaed',
         marginVertical:15,
     },
+    viewTextOSang:{
+        width:'25%',paddingLeft:5,borderColor:'#2daaed',
+        borderWidth:1,alignItems:'center',
+        justifyContent:'center'
+
+    },
 
 
+    viewTextOChieu:{
+        width:'25%',
+        alignItems:'center',
+        paddingVertical:2,
+        borderWidth:1,
+        borderColor:'#F7C261',
+        justifyContent:'center'
+    },
+
+    
     titleDiemDanhSang:{
         backgroundColor:'#2daaed',
         padding:10,
@@ -346,11 +376,7 @@ const styles = StyleSheet.create({
     displayFlex:{
         display:'flex'
     },
-    // titleTable:{
-    //     width: (Dimensions.get('screen').width - 60) / 3,
-    //     alignItems:'center',
-    //     paddingVertical:2,
-    // },
+   
     titleTable:{
         width: (Dimensions.get('screen').width - 60) / 4,
         alignItems:'center',
@@ -362,54 +388,15 @@ const styles = StyleSheet.create({
         alignItems:'center',
         paddingVertical:2,
     },
-    // contentSang:{
-    //     width:'30%',
-    //     alignItems:'center',
-    //     paddingVertical:2,
-    //     // borderRightWidth:1,
-    //     borderWidth:1,
-    //     borderColor:'#2daaed',
-    //     justifyContent:'center'
-
-    // },
     listDiemDanh:{
         flexDirection:'row',
+        height:30
     },
 
     titleDiemDanhChieu:{
         backgroundColor:'#F7C261',
         padding:10,
     },
-    // contentChieu:{
-    //     width:'30%',
-    //     alignItems:'center',
-    //     paddingVertical:2,
-    //     borderWidth:1,
-    //     borderColor:'#F7C261',
-    //     justifyContent:'center'
-    // },
-
-
-    contentSang:{
-        width:'25%',
-        alignItems:'center',
-        paddingVertical:2,
-        // borderRightWidth:1,
-        borderWidth:1,
-        borderColor:'#2daaed',
-        justifyContent:'center'
-
-    },
-
-    contentChieu:{
-        width:'25%',
-        alignItems:'center',
-        paddingVertical:2,
-        borderWidth:1,
-        borderColor:'#F7C261',
-        justifyContent:'center'
-    },
-
     textTitleTableChieu:{
         fontSize:15,color:'#F7C261',fontWeight:'bold'
     },
@@ -429,7 +416,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 1.70,
         shadowRadius: 6.27,
         elevation: 15,
-        height:200
+        height:350
     },
 
     datePickerNormal:{

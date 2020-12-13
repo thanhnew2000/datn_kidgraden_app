@@ -39,7 +39,7 @@ const BieuDo =  ({ navigation }) => {
  
 
   function layNamAndGetAllSkHs(token,id_hs){
-    ApiBieuDoSucKhoe.getYear(token)
+    ApiBieuDoSucKhoe.getYear(token,id_hs)
     .then(function (response) {
       let data = response.data;
       setAllYear(data);
@@ -54,8 +54,6 @@ const BieuDo =  ({ navigation }) => {
 
 async function getYear () {
    var token = await AsyncStorage.getItem('data_token');
-  //  var hs = await AsyncStorage.getItem('data_hs');
-  //  let data_HocSinh = JSON.parse(hs)
    await layNamAndGetAllSkHs(token,du_lieu_hs.id)
  };
 
@@ -238,7 +236,7 @@ const styles = StyleSheet.create({
   },
   oTop:{
     padding:10,
-    borderRadius:4,
+    borderRadius:5,
     backgroundColor:'#fff',
     shadowColor: "#000",
     alignItems:'center',
@@ -247,9 +245,8 @@ const styles = StyleSheet.create({
         height: 7,
     },
     shadowOpacity: 1.70,
-    shadowRadius: 6.27,
-    
-    elevation: 15,
+    shadowRadius: 4,
+    elevation: 8,
   },
   choseYear:{
     backgroundColor:'#ff6699',

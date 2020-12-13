@@ -12,13 +12,25 @@ import Loading from '../Loading';
 import ipApi from '../../android/app/src/api/ipApi';
 import ApiDonThuoc from '../../android/app/src/api/DonThuocApi';
 import AsyncStorage from '@react-native-community/async-storage';
-import Modal_Loading from '../component/reuse/Modal_Loading'
+import Modal_Loading from '../component/reuse/Modal_Loading';
+
+import { useSelector,useDispatch } from 'react-redux'
+
 const Medicine =  ({ navigation }) => {
 
 
   const [danhSachThuoc, setDanhSachThuoc] = useState([])
   const [showLoading, setShowLoading] = useState(true);
   const [data_HS, setData_HS] = useState({});
+  const [isFetching, setisFetching] = useState(false);
+  const [userToken, setUserToken] = useState(null);
+
+
+  const data_redux = useSelector(state => state)
+  const du_lieu_hs = data_redux.hocsinh.data;
+  const data_token = data_redux.token;
+
+
 
   const getListThuoc = (token,id_hs) => {
        ApiDonThuoc.getAllByHs(token,id_hs)
@@ -29,35 +41,32 @@ const Medicine =  ({ navigation }) => {
          setShowLoading(false);
        })
        .catch(function (error) {
+         setShowLoading(false);
+         Alert.alert('Khong lay duoc du lieu')
          console.log(error);
        });
    };
 
-   const [userToken, setUserToken] = useState(null);
-      useEffect(() => {
-        async function fetchData() {
-          try{
-            var token = await AsyncStorage.getItem('data_token');
-            var hs = await AsyncStorage.getItem('data_hs');
-            let data_HocSinh = JSON.parse(hs)
-            if(token !== null){
-              setUserToken(token) 
-              getListThuoc(token,data_HocSinh.id)
-              setData_HS(data_HocSinh)
-            }
-            console.log(data_HocSinh.id)
-          }catch (e){
-            console.log(e);
-          }
-      }
-      fetchData();
-    },[]);
+      useEffect(() => { getListThuoc(data_token.token,du_lieu_hs)},[]);
 
-   function reloadAgain(){
-    setShowLoading(true);
-    getListThuoc(userToken);
+  //  function reloadAgain(){
+  //   setShowLoading(true);
+  //   getListThuoc(userToken);
+  //  }
+   function functionOnRefresh(){
+    setisFetching(true);
+    ApiDonThuoc.getAllByHs(data_token.token,du_lieu_hs.id)
+       .then(function (response) {
+         let data = response.data;
+         console.log(data);
+         setDanhSachThuoc(data);
+         setisFetching(false);
+       })
+       .catch(function (error) {
+         setisFetching(false);
+         console.log(error);
+       });
    }
-
 
 
   const ListMedicineNew = ({itemDon,index}) => (
@@ -94,27 +103,31 @@ const Medicine =  ({ navigation }) => {
     </View>
 )
   return (
-    <ScrollView style={styles.container}>
-            <View >
-                  <View  style={{width:'100%',marginTop:5}}>
+    <View style={styles.container}>
+                  {/* <View  style={{width:'100%',marginTop:5}}>
                         <TouchableOpacity onPress={()=>{
                          navigation.navigate('add_medicine',{reloadAgain : reloadAgain, userToken:userToken,route_notifi:0  })
                             }} >
                               <AntDesign name="medicinebox" size={35} color="green" />
                         </TouchableOpacity>
-                   </View>
+                   </View> */}
+              <View style={showLoading ? {display:'flex'} : {display:'none'}}>
+                  <Image style={{width: 100 , height:100,alignSelf:'center'}}   source={require('../../android/app/src/tenor.gif')}/>
+                </View>
 
+                
                    <FlatList
                       data={danhSachThuoc}
                       renderItem={({item}) =>
                          <ListMedicineNew itemDon={item}  />
                       }
+                      onRefresh={() => functionOnRefresh()}
+                      refreshing={isFetching}
                     />
-            </View>
                 
-            <Modal_Loading showLoading = {showLoading} />
+            {/* <Modal_Loading showLoading = {showLoading} /> */}
 
-     </ScrollView>
+     </View>
   );
 };
 

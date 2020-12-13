@@ -22,11 +22,14 @@ const DonHo =  ({ navigation }) => {
 
   const data_redux = useSelector(state => state)
   const du_lieu_hs = data_redux.hocsinh.data;
+  const data_token = data_redux.token;
 
   const [viewModel, setViewModel] = useState(false);
   const [userToken, setUserToken] = useState('');
   
   const [showLoading, setShowLoading] = useState(false);
+  const [isFetching, setisFetching] = useState(false);
+
 
   const getListDonHo = (token) => {
         setShowLoading(true);
@@ -42,7 +45,6 @@ const DonHo =  ({ navigation }) => {
           console.log(error);
           setShowLoading(false);
           Alert.alert('Lỗi không lấy được dữ liệu ')
-
         });
    };
 
@@ -82,6 +84,22 @@ const DonHo =  ({ navigation }) => {
     getListDonHo(userToken);
    }
 
+   function functionOnRefresh(){
+    setisFetching(true);
+    ApiDonHo.getNguoiDonHoByHs(data_token.token,du_lieu_hs.id)
+        .then(function (response) {
+          console.log('run_data');
+          let data = response.data;
+          setDanhSachDonHo(data);
+          setisFetching(false);
+
+        })
+        .catch(function (error) {
+          console.log(error);
+          setisFetching(false);
+          Alert.alert('Lỗi không lấy được dữ liệu ')
+        });
+   }
   function modelDetailShow(value){
     setViewModel(value)
   }
@@ -189,19 +207,18 @@ const DonHo =  ({ navigation }) => {
 
   return (
             <View style={styles.container}>
-                  <View  style={{width:'100%',marginTop:5}}>
-                        <TouchableOpacity onPress={()=>{
-                                navigation.navigate('add_donho',{reloadAgain:reloadAgain,userToken : userToken})
-                            }} >
-                              <FontAwesome5 name="user-plus" size={35} color="green" />
-                        </TouchableOpacity>
-                   </View>
-                                 
+               <View style={showLoading ? {display:'flex'} : {display:'none'}}>
+                  <Image style={{width: 100 , height:100,alignSelf:'center'}}   source={require('../../android/app/src/tenor.gif')}/>
+                </View>
+
+
                    <FlatList
                       data={danhSachDonHo}
                       renderItem={({item}) =>
                          <ListDonHoNew itemDonHo={item} />
                       }
+                      onRefresh={() => functionOnRefresh()}
+                      refreshing={isFetching}
                     />
 
 
@@ -266,7 +283,7 @@ const DonHo =  ({ navigation }) => {
 
     
 
-                <Modal_Loading showLoading = {showLoading} />
+                {/* <Modal_Loading showLoading = {showLoading} /> */}
 
 
             </View>

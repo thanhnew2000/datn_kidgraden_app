@@ -226,10 +226,10 @@ function scrolltoendBinhLuan(){
 }
 
 function checkValueLenght(){
-  let regSpace= new RegExp(/\s/);
+  // let regSpace= new RegExp(/\s/);
   if(Hscomment == null){
     return false;
-  }else if(regSpace.test(Hscomment)){
+  }else if(Hscomment == ' '){
     return false;
   }else if(Hscomment == ''){
     return false;
@@ -259,7 +259,7 @@ function checkValueLenght(){
                                 <Text>"{donthuoc.noi_dung}"</Text>
                         </View>
 
-                        {/* <View style={styles.listMedicine}>
+                      <View style={styles.listMedicine}>
                             <View style={{flexDirection:'row'}}> 
                                     <View style={{width:'70%'}}>
                                         <Text style={{fontWeight:'bold',fontSize:15}}> Sino </Text>
@@ -274,9 +274,9 @@ function checkValueLenght(){
                                        <Image style={{width:60,height:60}} source={IconKidsStudy}/>
                                     </View>
                             </View>
-                        </View> */}
+                        </View> 
                         
-                        {/* <FlatList
+                       <FlatList
                             data={chitietdon}
                             renderItem={({item,index})=>
                             <DetailMedicine  item={item} index={index} />
@@ -287,21 +287,20 @@ function checkValueLenght(){
                         <View style={{paddingVertical:5,flexDirection:'row'}}>
                             <AntDesign name="check" size={20} color="green" />
                             <Text  style={{color:'green',fontSize:16}}>Đã cho con uống</Text>
-                        </View> */}
+                        </View>
 
                           {/* <Button title="check" onPress={()=> clickCheck()}/> */}
 
 
-                       {/* <FlatList
+                      <FlatList
                           data={binhLuan}
                           onContentSizeChange={()=>  scrolltoendBinhLuan() } 
-
                           renderItem={({item,index})=>
                            item.type == 1 ? <BinhLuanCuaHocSinh item={item} /> : <BinhLuanCuaGiaoVien item={item}/> 
                             } 
                             keyExtractor={(item,index) => `${index}`} 
                             
-                        /> */}
+                        /> 
 
 
                             {/* <View style={{flexDirection:'row',paddingVertical:5}}>
