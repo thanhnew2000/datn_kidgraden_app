@@ -175,11 +175,7 @@ function clickNotifi(item){
   }else if(route_get.name_route == 'ShowThongBao'){
     navigation.navigate('ShowThongBao',{ id_noi_dung_tb : route_get.id });
   }
-
-
 }
-
-
 
       return (
         <View style={styles.containers}>
