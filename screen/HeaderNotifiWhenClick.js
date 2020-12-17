@@ -9,17 +9,17 @@ import {
   import AntDesign from 'react-native-vector-icons/AntDesign';
   import { AuthContext } from './context';
 
-const HeaderNotifiWhenClick =  ({navigation}) => {
+const HeaderNotifiWhenClick =  ({navigation,name_header_tab}) => {
     const { changeRoute } = React.useContext(AuthContext);
 
   return (
             <View style={styles.container}>
               <View style={{flexDirection:'row'}}>
                  <TouchableOpacity onPress={()=> changeRoute()}>
-                       <AntDesign name="arrowleft" size={25} color="green" />
+                       <AntDesign name="arrowleft" size={25} color="#ffff" />
                  </TouchableOpacity>      
 
-                 <Text style={{fontSize:17,fontWeight:'bold'}}> Them moi hihih</Text>
+                 <Text style={{fontSize:17,color:'#ffff'}}> {name_header_tab}</Text>
 
               </View>
             </View>

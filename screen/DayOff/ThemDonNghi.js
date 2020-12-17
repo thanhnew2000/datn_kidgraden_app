@@ -181,7 +181,7 @@ const ThemDonNghi =  ({ navigation , route}) => {
 
                       
               </View>
-              <View style={{flexDirection:'row'}}>
+              {/* <View style={{flexDirection:'row'}}>
                   <View style={{width:'70%'}}>
                   </View>
                   <View style={{width:'30%',flexDirection:'row',marginTop:17}}>
@@ -189,11 +189,19 @@ const ThemDonNghi =  ({ navigation , route}) => {
                         <Button title="Gửi đơn" onPress={submitFrom}/>
                       </View>
                       
+
+
                   </View>
 
 
-              </View>
+              </View> */}
 
+
+              <TouchableOpacity onPress={()=>{submitFrom()}} style={{backgroundColor:'#fab20a',borderRadius:50,marginTop:20,marginBottom:50}}>
+                        <View style={{paddingHorizontal:10,paddingVertical:15,alignItems:'center'}}> 
+                          <Text style={{color:'#ffff',fontSize:17}}>Tạo đơn</Text>
+                        </View>
+               </TouchableOpacity>
 
 
 

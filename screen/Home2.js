@@ -39,7 +39,7 @@ import {
   import Modal_Loading from './component/reuse/Modal_Loading'
   import { getDataSuccess,setNumberNotification,setArrNotification } from '../src/redux/action/index';
   import { AuthContext } from './context';
-  import AntDesign from 'react-native-vector-icons/AntDesign';
+  import Entypo from 'react-native-vector-icons/Entypo';
 
 
   import { Avatar, Badge, Icon, withBadge } from 'react-native-elements'
@@ -61,6 +61,7 @@ import slide_hs_4 from '../android/app/src/silde_hs_4.jpg';
   
 import messaging from '@react-native-firebase/messaging';
 import database from '@react-native-firebase/database';
+import { set } from 'react-native-reanimated';
 const Home2 = ({ navigation }) => 
 {
 
@@ -83,44 +84,27 @@ const Home2 = ({ navigation }) =>
   const arr_notifi_hs = counter.arr_notification;
 
   console.log('hs_first',hs);
-  console.log('array_notifi',data_token.token);
+  console.log('array_notifi',notifi);
 
-  async function  getHocSinhIdUser (token) {  
-    var data_user = await AsyncStorage.getItem('data_user');
-    let user =  JSON.parse(data_user);
-    setuser_tk(user)
-    var json_data_all_hs = await AsyncStorage.getItem('data_all_hs');
-    let all_hs =  JSON.parse(json_data_all_hs);
-
-    let new_arr_id =[];
-    all_hs.forEach(element => {
-      new_arr_id.push(element.id)
-    });
-    setArr_id_hs_user(new_arr_id);
-    console.log('new_arr_id',new_arr_id)
-    setHsByUser(all_hs);
+  const getNumberNotifiNumberHs = () => {
+    ApiNotification.getNumberNotifiNumberOneHs(data_token.token,hs.id)
+    .then(function (response) {
+        let data = response.data;
+        console.log('number',data);
+        dispatch(setNumberNotification(data));
+      })
+      .catch(function (error) {
+      console.log('number_bell_err',error);
+      });
   };
-
+ 
 
   async function onValueChangeNumberNoti () { 
-    var hs = await AsyncStorage.getItem('data_hs');
-    let data_HocSinh = JSON.parse(hs)
     database()
     .ref('notification')
-     .orderByChild('id_hs').equalTo(data_HocSinh.id)
+     .orderByChild('id_hs').equalTo(hs.id).limitToLast(1)
       .on('value', function(snapshot) { 
-        var so_luong_thong_bao = 0;
-        var data_thong_bao = snapshot.val();
-        console.log(data_thong_bao);
-        for (const key in data_thong_bao) {
-          if (data_thong_bao.hasOwnProperty(key)) {
-            const element = data_thong_bao[key];
-                if (element.bell == 1) {
-                  so_luong_thong_bao++;
-                }
-          }
-        }
-       dispatch(setNumberNotification(so_luong_thong_bao));
+        getNumberNotifiNumberHs()
     },
    );
   }
@@ -136,16 +120,19 @@ const Home2 = ({ navigation }) =>
       });
   };
 
+
+  
   async function firebaseChangeNumberNotifiAllHs () { 
-    var user_data = await AsyncStorage.getItem('data_user');
-    let user = JSON.parse(user_data)
-    database()
-    .ref('notification')
-     .orderByChild('user_id').equalTo(user.id)
-      .on('value', function(snapshot) { 
-        getArrNotifiNumberHs()
-        }
-   );
+  //   var user_data = await AsyncStorage.getItem('data_user');
+  //   let user = JSON.parse(user_data);
+  //   console.log('firebaseChangeNumberNotifiAllHs',user.id)
+  //   database()
+  //   .ref('notification')
+  //    .orderByChild('user_id').equalTo(user.id)
+  //     .on('value', function(snapshot) { 
+  //       getArrNotifiNumberHs()
+  //       }
+  //  );
   }
 
 
@@ -157,11 +144,8 @@ const Home2 = ({ navigation }) =>
         // getThisHocSinh(data_token.token,hs.id)
         getHocSinhIdUser(data_token.token)
         // dispatch(fetchDataAsyncStorage())
-      
         dispatch(fetchTokenAsyncStorage());
         getArrNotifiNumberHs()
-
-
       }
       runStart();
       onValueChangeNumberNoti();
@@ -231,6 +215,22 @@ const Home2 = ({ navigation }) =>
   //   },
   //  );
   // }
+
+
+  async function  getHocSinhIdUser (token) {  
+    var data_user = await AsyncStorage.getItem('data_user');
+    let user =  JSON.parse(data_user);
+    setuser_tk(user)
+    var json_data_all_hs = await AsyncStorage.getItem('data_all_hs');
+    let data_all_hs =  JSON.parse(json_data_all_hs);
+    let new_arr_id = [];
+    data_all_hs.forEach(element => {
+      new_arr_id.push(element.id);
+    });
+
+    setHsByUser(data_all_hs);
+    setArr_id_hs_user(new_arr_id);
+  };
 
   const scrollViewRef = useRef();
   
@@ -348,7 +348,12 @@ function checkScroll(){
    }
 
 
-
+// function onlicktest(){
+//   console.log('da click')
+//   database()
+//   .ref('notification')
+//   .orderByChild('id_hs').equalTo(23).update({ "bell" : 2})
+// }
    
   return (
 <View>
@@ -365,11 +370,21 @@ function checkScroll(){
                     horizontal={true}
                     renderItem={({ item,index }) => {
                    return   <View style={{paddingTop:10,marginRight:25,paddingBottom:10}}>
-                      <TouchableOpacity onPress={()=> changeDataHs(item.id)}>
+                      {/* <TouchableOpacity onPress={()=> changeDataHs(item.id)}> */}
                             <View style={{width:240,height:150,marginLeft:10,borderRadius:15}}>
                               <ImageBackground style={{width: '100%',height:'100%',borderRadius: 25 }}   imageStyle={{ borderRadius: 25 }}  source={optionRanImage(generateRandomNumber(5,1))}>
+                        
+                                        <View style={{height:10,alignItems:'flex-end',marginRight:10,marginTop:10}}>
 
-                                <View style={{flexDirection:'row',paddingTop:70}}>
+                                          <TouchableOpacity onPress={()=> changeDataHs(item.id)} >
+                                                          <View style={{backgroundColor:'#fff',borderRadius:10,paddingHorizontal:5}}>
+                                                            <Entypo name="swap" size={30} color="#fca31c" />
+                                                          </View>
+                                            </TouchableOpacity>
+
+                                        </View>
+
+                                <View style={{flexDirection:'row',paddingTop:40}}>
                                   <View style={{width:'65%'}}>
                                       <View style={{justifyContent:'center',paddingLeft:10}}>
                                         <Text style={{fontSize:18,fontWeight:'bold'}}>{item.ten}</Text>
@@ -383,13 +398,14 @@ function checkScroll(){
                                   </View>
                               </ImageBackground>
                             </View>
-                            </TouchableOpacity>
+                            {/* </TouchableOpacity> */}
 
 
                        </View>
                     }}
                     keyExtractor={item => item.id}
                   />
+              
     </ImageBackground>
 
             </View>
@@ -439,10 +455,13 @@ function checkScroll(){
 
             </View>
         </ImageBackground> */}
-
+  {/* <TouchableOpacity onPress={()=> onlicktest()} style={{backgroundColor:'green',width:100,height:100}}>
+              <Text>Click test</Text>
+            </TouchableOpacity> */}
 
     <View style={styles.containerList}>
           <View>
+          
               <FlatList
                 data={Category}
                 renderItem={({item})=>

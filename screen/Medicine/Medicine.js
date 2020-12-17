@@ -33,6 +33,7 @@ const Medicine =  ({ navigation }) => {
 
 
   const getListThuoc = (token,id_hs) => {
+    setShowLoading(true);
        ApiDonThuoc.getAllByHs(token,id_hs)
        .then(function (response) {
          let data = response.data;
@@ -47,7 +48,7 @@ const Medicine =  ({ navigation }) => {
        });
    };
 
-      useEffect(() => { getListThuoc(data_token.token,du_lieu_hs)},[]);
+      useEffect(() => { getListThuoc(data_token.token,du_lieu_hs.id)},[]);
 
   //  function reloadAgain(){
   //   setShowLoading(true);
@@ -73,7 +74,7 @@ const Medicine =  ({ navigation }) => {
     
     <View style={styles.oDonThuc}>
           <TouchableOpacity onPress={()=>{
-              navigation.navigate('detail_medicine',{donthuoc : itemDon , id_: itemDon.id ,data_HS: data_HS, userToken:userToken })
+              navigation.navigate('detail_medicine',{dl_donthuoc : itemDon , id_: itemDon.id ,data_HS: data_HS, userToken:userToken })
               }} >
                 <View style={{paddingVertical:10,flexDirection:'row'}}>
                   <Text style={{fontSize:16,fontWeight:'bold'}}>Ngày : </Text>
@@ -112,7 +113,7 @@ const Medicine =  ({ navigation }) => {
                         </TouchableOpacity>
                    </View> */}
               <View style={showLoading ? {display:'flex'} : {display:'none'}}>
-                  <Image style={{width: 100 , height:100,alignSelf:'center'}}   source={require('../../android/app/src/tenor.gif')}/>
+                  <Image style={{width: 50 , height:50,alignSelf:'center'}}   source={require('../../android/app/src/tenor.gif')}/>
                 </View>
 
                 
@@ -147,12 +148,12 @@ const styles = StyleSheet.create({
       shadowColor: "#000",
       shadowOffset: {
           width: 0,
-          height: 7,
+          height: 1,
       },
-      shadowOpacity: 1.70,
-      shadowRadius: 6.27,
+      shadowOpacity: 5,
+      shadowRadius: 3.27,
       
-      elevation: 15,
+      elevation: 7,
     },
     chia2thanh:{
       flexDirection:'row',

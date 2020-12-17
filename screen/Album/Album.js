@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
     backgroundColor:"#fff",
   },
   box:{
-    flexDirection:'row',height:60,borderBottomWidth:1,paddingBottom:5
+    flexDirection:'row',height:60,borderBottomWidth:1,paddingBottom:5,borderColor:'#91908e'
   }
  
 });

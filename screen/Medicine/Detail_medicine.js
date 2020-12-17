@@ -29,101 +29,155 @@ const Detail_medicine =  ({ route,navigation }) => {
     //quang add get database firebase start
 
     //quang add get database firebase end
-
+    const data_redux = useSelector(state => state)
+    const du_lieu_hs = data_redux.hocsinh.data;
+    const data_token = data_redux.token;
+  console.log('token_data',data_token.token)
     const [chitietdon, setChiTietDon] = useState({});
     const [donthuoc, setDonThuoc] = useState({});
 
-    const getDonThuocById = (token,id) => {
-      ApiDonThuoc.getDonThuocById(token,id)
-        .then(function (response) {
-          let data = response.data;
-          console.log('hihi',data)
-          setDonThuoc(data);
-          setChiTietDon(data.chi_tiet_don_dan_thuoc);
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
-    };
-
-
+   
 
     const scrollViewRef = useRef();
 
 
-      // const { donthuoc } = route.params;
+      const { dl_donthuoc } = route.params;
+
       const { id_ } = route.params;
+      const { route_notifi } = route.params;
+
       const id_don_thuoc = id_;
       // console.log('dt',donthuoc)
       // // const { data_HS } = route.params;
       // const chitietdon = donthuoc.chi_tiet_don_dan_thuoc;
 
 
-    const data_redux = useSelector(state => state)
-    const du_lieu_hs = data_redux.hocsinh.data;
-    const data_token = data_redux.token;
-
     const [binhLuan,setBinhLuan] = useState([]);
     // const [data_HS, setData_HS] = useState({});
     const [Hscomment, setComment] = useState(null);
     const [submitLoading, setSubmitLoading] = useState(false);
     const [chatLoad, setChatLoad] = useState(false);
+    const [showLoading, setShowLoading] = useState(false);
 
+    const [chooseShowTest,setchooseShowTest] = useState(false);
 
     const [idShowTime, setIdShowTime] = useState(0);
 
-    const HamGetBinhLuanDonThuoc = (token,id_don_thuoc) => {
+
+
+      useEffect(() => {
+            if(route_notifi == 'detail_medicine'){
+              navigation.setOptions({
+                headerTitle: () => <HeaderNotifiWhenClick navigation={navigation} name_header_tab="Chi tiết dặn thuốc"/>,
+              })
+            }
+     }, []);
+
+     
+   async function HamGetBinhLuanDonThuoc (token,id_don_thuoc) {
       console.log('runinggggggggggggggggggggggggggggggggggggggggg ----------------------------------------------');
-        ApiPhanHoi.getBinhLuanOfDonThuoc(token,id_don_thuoc)
+      setShowLoading(true);
+      var data_token = await AsyncStorage.getItem('data_token');
+      console.log('data_token',data_token)
+        ApiPhanHoi.getBinhLuanOfDonThuoc(data_token,id_don_thuoc)
+          .then(function (response) {
+            let data_json = response.data;
+            // let data = Object.values(data_json);
+            setBinhLuan(data_json);
+            setShowLoading(false);
+            console.log('binh_luan',data_json)
+          })
+          .catch(function (error) {
+            setShowLoading(false);
+            console.log(error);
+          });
+      };
+
+
+
+      async function getDonThuocById (id) {
+        var data_token = await AsyncStorage.getItem('data_token');
+        ApiDonThuoc.getDonThuocById(data_token,id)
           .then(function (response) {
             let data = response.data;
-            setBinhLuan(data);
-             console.log(data)
+            console.log('hihi',data)
+            setDonThuoc(data);
+            setChiTietDon(data.chi_tiet_don_dan_thuoc);
           })
           .catch(function (error) {
             console.log(error);
           });
       };
+  
+  
+      useEffect(() => {
+         async function fetchData() {
+             var token = await AsyncStorage.getItem('data_token');
+                const { donthuoc } = route.params;
+          if(dl_donthuoc == undefined){
+            getDonThuocById(id_don_thuoc)
+          }else{
+            setDonThuoc(dl_donthuoc);
+            setChiTietDon(dl_donthuoc.chi_tiet_don_dan_thuoc);
+          }
+                 
+          }
+          fetchData();
 
-      // useEffect(() => {
-      //    async function fetchData() {
-      //        var token = await AsyncStorage.getItem('data_token');
+          // check neu tat ap an click thong bao nen thi lay header khac
+          const { route_notifi } = route.params;
+          if(route_notifi == 'detail_medicine'){
+              navigation.setOptions({
+                headerTitle: () => <HeaderNotifiWhenClick navigation={navigation}/>,
+              })
+            }
 
-      //           const { donthuoc } = route.params;
-      //           if(donthuoc == undefined){
-      //             console.log('hhi');
-      //             getDonThuocById(token,id_don_thuoc)
-      //           }else{
-      //             setDonThuoc(donthuoc);
-      //             setChiTietDon(donthuoc.chi_tiet_don_dan_thuoc);
-      //           }
-      //             HamGetBinhLuanDonThuoc(token,id_don_thuoc)
-      //     }
-      //     fetchData();
-      //     const { route_notifi } = route.params;
-      //     if(route_notifi == 'detail_medicine'){
-      //       navigation.setOptions({
-      //         headerTitle: () => <HeaderNotifiWhenClick navigation={navigation}/>,
-      //       })
-      //     }
+            // firebase get 1 gia tri khi co ban ghi moi 
+            database()
+            .ref('phan_hoi_don_thuoc')
+            .orderByChild('don_dan_thuoc_id').equalTo(id_don_thuoc).limitToLast(1)
+            .on('child_added', snapshot => {
+                console.log('arr_data_firebase', snapshot.val())
+               HamGetBinhLuanDonThuoc(data_token.token,id_don_thuoc)
+            });
 
-      //   },[]);
+        },[]);
+    
+// function clickTest(){
+// database()
+//   .ref('phan_hoi_don_thuoc')
+//   .orderByChild('don_dan_thuoc_id').equalTo(id_don_thuoc).limitToLast(1)
+//   .on('child_added', snapshot => {
+//     var arr = [];
+//      var data_firebase = snapshot.val();
+//       arr.push(data_firebase)
+//       console.log('arr_data_firebase',data_firebase)
+//   });
+
+// }
+   
+
+ 
+ 
+  // console.log('set____________________')
+  //     database()
+  //     .ref('phan_hoi_don_thuoc')
+  //     .orderByChild('don_dan_thuoc_id').equalTo(id_don_thuoc)
+  //     .once('value', snapshot => {
+  //       setchooseShowTest(true);
+  //     });
+
+    // HamGetBinhLuanDonThuoc(data_token.token,id_don_thuoc)
+    // if(dl_donthuoc == undefined){
+    //   getDonThuocById(id_don_thuoc)
+    // }else{
+    //   setDonThuoc(dl_donthuoc);
+    //   setChiTietDon(dl_donthuoc.chi_tiet_don_dan_thuoc);
+    // }
 
 
-    useEffect(() => {
-        const onValueChange = database()
-          .ref('phan_hoi_don_thuoc')
-          .orderByChild('don_dan_thuoc_id').equalTo(id_don_thuoc)
-          .on('value', snapshot => {
-            console.log('User data: ', snapshot.val());
-            HamGetBinhLuanDonThuoc(data_token.token,id_don_thuoc)
-          });
-        // Stop listening for updates when no longer required
-        // return () =>
-        //   database()
-        //     .ref('phan_hoi_don_thuoc')
-        //     .off('value', onValueChange);
-      }, []);
+
+   
     
             
        
@@ -145,22 +199,21 @@ return    <View style={styles.listMedicine}>
                     </View>
                     <View style={{width:'30%',alignItems:'center',alignSelf:'center'}}>
                     {/* <Image style={{width:60,height:60}} source={IconKidsStudy}/> */}
-                    <Image  style={{width:60,height:60}} source={{uri : ipApi + 'storage/'+item.anh}}/>
+                    <Image  style={{width:60,height:60}} source={{uri : item.anh}}/>
                    </View>
             </View>
         </View>
 
 }
 
-const BinhLuanCuaGiaoVien = ({item}) => {
-  let dulieu_gv = item.user.giao_vien;
-    return <View style={{flexDirection:'row',paddingVertical:5}}>
+const BinhLuanCuaGiaoVien = ({item}) => (
+<View style={{flexDirection:'row',paddingVertical:5}}>
         <View style={{flexDirection:'column-reverse'}}>
         <Image style={{width:40,height:40,borderRadius:50}} source={IconKidsStudy}/>
         </View>
 
         <View style={{width:'50%'}}>
-        <Text style={{color:'gray'}}> GV: {dulieu_gv.ten} </Text>
+        <Text style={{color:'gray'}}> GV: {item.user.giao_vien.ten} </Text>
            <TouchableOpacity onPress={()=> {setIdShowTime(item.id)}}>
               <View style={{paddingLeft:10,backgroundColor:'#e6e5e3',paddingRight:10,borderBottomRightRadius:10,borderTopRightRadius:10,paddingVertical:5}}>
                 <Text style={{}}>{item.noi_dung}</Text>
@@ -173,23 +226,23 @@ const BinhLuanCuaGiaoVien = ({item}) => {
 
         </View>
     </View>
-}
+)
 
-const BinhLuanCuaHocSinh= ({item}) =>{
-    return   <View style={{flexDirection:'row',justifyContent:'flex-end',paddingVertical:5}}>
-    <View style={{flexDirection:'column'}}>
-      <TouchableOpacity onPress={()=> {setIdShowTime(item.id)}}>
-          <View style={{paddingLeft:10,backgroundColor:'#5a95fa',paddingRight:10,paddingVertical:5,borderBottomLeftRadius:10,borderTopLeftRadius:10}}>
-            <Text style={{fontSize:15,color:'#0a0a0a'}}>{item.noi_dung} </Text>
-          </View>
-      </TouchableOpacity>
-      <View style={idShowTime == item.id ? styles.displayShow : styles.displayHide}>
-        <Text style={{alignSelf:'flex-end',color:'black',fontSize:12}}> {moment(item.created_at).format('MMMM Do YYYY, h:mm')}</Text>
+const BinhLuanCuaHocSinh= ({item}) =>(
+    <View style={{flexDirection:'row',justifyContent:'flex-end',paddingVertical:5}}>
+      <View style={{flexDirection:'column'}}>
+        <TouchableOpacity onPress={()=> {setIdShowTime(item.id)}}>
+            <View style={{paddingLeft:10,backgroundColor:'#5a95fa',paddingRight:10,paddingVertical:5,borderBottomLeftRadius:10,borderTopLeftRadius:10}}>
+              <Text style={{fontSize:15,color:'#0a0a0a'}}>{item.noi_dung} </Text>
+            </View>
+        </TouchableOpacity>
+        <View style={idShowTime == item.id ? styles.displayShow : styles.displayHide}>
+          <Text style={{alignSelf:'flex-end',color:'black',fontSize:12}}> {moment(item.created_at).format('MMMM Do YYYY, h:mm')}</Text>
+        </View>
+
       </View>
-
     </View>
-    </View>
-}
+)
 
 
 const submitBinhLuan = () => {
@@ -253,13 +306,13 @@ function checkValueLenght(){
                                 <Text style={{}}>17/9/2020</Text>
                             </View>
                         </View> */}
-
+                 <TouchableOpacity onPress={()=> clickTest()}>
                         <View style={{paddingVertical:5}}>
                             <Text style={{fontWeight:'bold',backgroundColor:'green',width:'20%',color:'white',textAlign:'center'}}>Lời nhắn</Text>
                                 <Text>"{donthuoc.noi_dung}"</Text>
                         </View>
-
-                      <View style={styles.listMedicine}>
+                        </TouchableOpacity>
+                      {/* <View style={styles.listMedicine}>
                             <View style={{flexDirection:'row'}}> 
                                     <View style={{width:'70%'}}>
                                         <Text style={{fontWeight:'bold',fontSize:15}}> Sino </Text>
@@ -274,7 +327,7 @@ function checkValueLenght(){
                                        <Image style={{width:60,height:60}} source={IconKidsStudy}/>
                                     </View>
                             </View>
-                        </View> 
+                        </View>  */}
                         
                        <FlatList
                             data={chitietdon}
@@ -282,7 +335,7 @@ function checkValueLenght(){
                             <DetailMedicine  item={item} index={index} />
                             } 
                             keyExtractor={(item,index) => `${index}`} 
-                             />
+                        />
 
                         <View style={{paddingVertical:5,flexDirection:'row'}}>
                             <AntDesign name="check" size={20} color="green" />
@@ -291,16 +344,24 @@ function checkValueLenght(){
 
                           {/* <Button title="check" onPress={()=> clickCheck()}/> */}
 
+                  <View>
 
+                  <View style={showLoading ? {display:'flex'} : {display:'none'}}>
+                     <Image style={{width: 50 , height:50,alignSelf:'center'}}   source={require('../../android/app/src/tenor.gif')}/>
+                  </View>
                       <FlatList
                           data={binhLuan}
                           onContentSizeChange={()=>  scrolltoendBinhLuan() } 
-                          renderItem={({item,index})=>
+                          renderItem={ ({item})=>  (
+                            // <Text> ahihi </Text>
+                      
                            item.type == 1 ? <BinhLuanCuaHocSinh item={item} /> : <BinhLuanCuaGiaoVien item={item}/> 
+                           )
                             } 
                             keyExtractor={(item,index) => `${index}`} 
                             
                         /> 
+                  </View>
 
 
                             {/* <View style={{flexDirection:'row',paddingVertical:5}}>

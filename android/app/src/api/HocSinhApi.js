@@ -11,10 +11,12 @@ const editInfoHS = (token,id,data) => {
 const getHocSinhIdUser = (token,id) => {
     return http.axiosAPItoken(token).get('/get-hoc-sinh-id-user/'+id);
 }
-
-
+const checkHaveHsByIdUser = (token,id_user) => {
+    return http.axiosAPItoken(token).get('/check-token-have-hs-by-id-user/'+id_user);
+}
 export default {
     getOne,
     editInfoHS,
-    getHocSinhIdUser
+    getHocSinhIdUser,
+    checkHaveHsByIdUser
 };

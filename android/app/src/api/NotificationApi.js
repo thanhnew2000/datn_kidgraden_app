@@ -20,10 +20,15 @@ const updateTypeOneNoti = (token,id_notification) => {
 const getArrNotifiNumberHs = (token,data) => {
     return http.axiosAPItoken(token).post('/get-arr-notifi-hs-by-user/',data);
 };
+
+const getNumberNotifiNumberOneHs = (token,id_hs) => {
+    return http.axiosAPItoken(token).get('/get-number-notifition-hs/'+id_hs);
+};
 export default {
     getNofiByIdUser,
     allNofiByIdUser,
     updateBellHs,
     updateTypeOneNoti,
-    getArrNotifiNumberHs
+    getArrNotifiNumberHs,
+    getNumberNotifiNumberOneHs
 };

@@ -39,12 +39,14 @@ const ThemDonHo =  ({ navigation , route}) => {
 
     const [avatarSource , setAvatarSource] =  useState(ImageAavatar)
     const options = {
-      title: 'Select Avatar', 
-      cameraType: 'front',
-      mediaType: 'photo' ,
-      storageOptions: {
-      skipBackup: true,
-      path: 'images',
+         title: 'Ảnh', 
+        cameraType: 'front',
+        mediaType: 'photo',
+        takePhotoButtonTitle: "Chụp ảnh",
+        chooseFromLibraryButtonTitle: "Chọn ảnh thư viện",
+        storageOptions: {
+        skipBackup: true,
+        path: 'images',
       },
       };
 
@@ -157,7 +159,7 @@ const ThemDonHo =  ({ navigation , route}) => {
     <ScrollView style={styles.container}>
       <View style={{flexDirection:'row', paddingHorizontal:10}}>
                     <View style={{width:'65%'}}>
-                    <Text style={{fontWeight:'bold',fontSize:15}}>Bắt đầu ngày :</Text>
+                    <Text style={{fontWeight:'bold',fontSize:15,color:'#505354'}}>Bắt đầu ngày :</Text>
                              <View style={{flexDirection:'row'}}>
                                    <Text style={{fontSize:15,marginRight:10}}>{dateFrom.getDate()}/{dateFrom.getMonth() + 1}/{dateFrom.getFullYear()}</Text>
                                    <AntDesign name="calendar" size={30} color={color_app} onPress={showDatepickerFrom} />
@@ -180,7 +182,7 @@ const ThemDonHo =  ({ navigation , route}) => {
                             
                     </View>
                     <View style={{width:'35%'}}>
-                    <Text Text style={{fontWeight:'bold',fontSize:15}}  >Đến ngày :</Text>
+                    <Text Text style={{fontWeight:'bold',fontSize:15,color:'#505354'}}  >Đến ngày :</Text>
                              <View style={{flexDirection:'row'}}>
                              <Text style={{fontSize:15,marginRight:10}}>{dateTo.getDate()}/{dateTo.getMonth() + 1}/{dateTo.getFullYear()}</Text>
                                    <AntDesign name="calendar" size={30} color={color_app}onPress={showDatepickerTo} />
@@ -205,17 +207,17 @@ const ThemDonHo =  ({ navigation , route}) => {
             <View style={{paddingTop:25}}>
                     <Input 
                       onChangeText={text  => {setValueInput({...valueInput,name:text})}}
-                      style={{width:'100%',height:50}}      
-                      label="Tên người đón hộ"
-                      leftIcon={{ type: 'font-awesome', name: 'user' }}
+                      style={{width:'100%',height:50,fontSize:15}}      
+                      placeholder="Tên người đón hộ"
+                      leftIcon={{ type: 'font-awesome', name: 'user',color:'#505354' }}
                       />
                       
                       
                       <Input 
                       onChangeText={text  => {setValueInput({...valueInput,cmnd:text})}}
-                      style={{width:'100%',height:50}}      
-                      label="Số CMND:"
-                      leftIcon={{ type: 'font-awesome', name: 'address-card-o' }}
+                      style={{width:'100%',height:50,fontSize:15}}  
+                      placeholder="Số CMND"    
+                      leftIcon={{ type: 'font-awesome', name: 'address-card-o' ,color:'#505354'}}
 
                       />
 
@@ -231,26 +233,30 @@ const ThemDonHo =  ({ navigation , route}) => {
 
                       <Input 
                       onChangeText={text  => {setValueInput({...valueInput,phone:text})}}
-                      style={{width:'100%',height:50}}      
-                      label="Số điện thoại :"
-                      leftIcon={{ type: 'font-awesome', name: 'tablet' }}
+                      style={{width:'100%',height:50,fontSize:15}}  
+                      placeholder="Số điện thoại "
+                      leftIcon={{ type: 'font-awesome', name: 'tablet' ,color:'#505354' }}
                       />
 
 
                     <Input 
                       onChangeText={text  => {setValueInput({...valueInput,ghi_chu:text})}}
-                      style={{width:'100%',height:50}}      
-                      label="Note :"
+                      style={{width:'100%',height:50,fontSize:15}}      
+                      placeholder="Ghi chú"
                       multiline={true}
                       numberOfLines={3}
                       textAlignVertical = "top"
                       />
 
 
-                      <View style={{width:150,alignSelf:'flex-end',paddingBottom:15,}}>
+                      {/* <View style={{width:150,alignSelf:'flex-end',paddingBottom:15,}}>
                        <Button title='Thêm' color="green" onPress={submitFrom } />
-                      </View>
-
+                      </View> */}
+                      <TouchableOpacity onPress={()=>{submitFrom()}} style={{backgroundColor:'#fab20a',borderRadius:50,marginTop:20,marginBottom:50}}>
+                        <View style={{paddingHorizontal:10,paddingVertical:15,alignItems:'center'}}> 
+                          <Text style={{color:'#ffff',fontSize:17}}>Tạo đơn</Text>
+                        </View>
+                     </TouchableOpacity>
 
 
               <Modal_SubmitLoading submitLoading={submitLoading} />

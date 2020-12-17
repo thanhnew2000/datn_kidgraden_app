@@ -13,8 +13,13 @@ const getAll = (token) => {
 const getAllByHs = (token,id_hs) => {
     return http.axiosAPItoken(token).get('/get-don-xin-nghi-hs/'+id_hs);
 };
+const getOne = (token,id) => {
+    return http.axiosAPItoken(token).get('/get-one-don-dayoff/'+id);
+};
+
 export default {
     insertXinNghiHoc,
     getAll,
-    getAllByHs
+    getAllByHs,
+    getOne
 };

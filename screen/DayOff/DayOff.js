@@ -78,7 +78,7 @@ const DayOff =  ({ navigation,route }) => {
 
                   onRefresh={() => functionOnRefresh()}
                   refreshing={isFetching}
-                  renderItem={({item,index}) => <ListItem item = {item}/>}
+                  renderItem={({item,index}) => <ListItem item = {item} navigation={navigation} />}
                   
                   keyExtractor={(value, index) => index}
 

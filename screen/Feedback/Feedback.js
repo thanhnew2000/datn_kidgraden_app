@@ -71,7 +71,11 @@ const Feedback = ({navigation}) => {
                        numberOfLines={4} />
                 </View>
                 <View style={{width:'40%',alignSelf:'flex-end'}}>
-                    <Button  title="Gửi" onPress={submitFeedback}/>
+                    <TouchableOpacity onPress={()=>{submitFeedback()}} style={{backgroundColor:'#fab20a',borderRadius:50,marginTop:20,marginBottom:50}}>
+                        <View style={{paddingHorizontal:10,paddingVertical:10,alignItems:'center'}}> 
+                          <Text style={{color:'#ffff',fontSize:17}}>Tạo đơn</Text>
+                        </View>
+               </TouchableOpacity>
                 </View>
 
               <Modal_SubmitLoading submitLoading={submitLoading} />

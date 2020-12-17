@@ -44,7 +44,6 @@ async function createToken(token,data_hocsinh,data_user,data_all_hs) {
     await AsyncStorage.setItem('data_all_hs',JSON.stringify(data_all_hs));
     await AsyncStorage.setItem('data_token',token);
     await AsyncStorage.setItem('data_user',JSON.stringify(data_user));
-  
     signIn();
   }catch (e){
       console.log(e)

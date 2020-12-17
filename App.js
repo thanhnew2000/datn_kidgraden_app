@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button, View, Text, StyleSheet, Alert, StatusBar } from 'react-native';
-import { NavigationContainer, useNavigation } from '@react-navigation/native';
+import {  useNavigation,NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -47,6 +47,7 @@ import Add_medicine from './screen/Medicine/Add_medicine';
 
 import DayOff from './screen/DayOff/DayOff';
 import Index_XinNghi from './screen/DayOff/Index_XinNghi';
+import ChiTietNghiHoc from './screen/DayOff/ChiTietNghiHoc';
 import ThemDonNghi from './screen/DayOff/ThemDonNghi';
 
 import HoatDong from './screen/HoatDong/HoatDong';
@@ -94,7 +95,7 @@ import { setNumberNotification, fetchDataAsyncStorage, fetchTokenAsyncStorage, g
 import TabNumberNoti from './screen/TabNumberNoti';
 
 import  color_app  from './screen/color_app';
-import { color } from 'react-native-reanimated';
+import { color, floor } from 'react-native-reanimated';
 
 
 
@@ -107,42 +108,20 @@ const store = createStore(myReducer, applyMiddleware(thunk));
 
 function App() {
   const [route_notifi, setRouteNotifi] = useState('Home');
-  const [id_don_thuoc, setIdDonThuoc] = useState(undefined);
+  const [id_param_form_notifi, setId_param_form_notifi] = useState({
+    id_don_thuoc : null,
+    id_hoc_phi : null,
+    id_noi_dung_thong_bao : null,
+    id_ct_nghi_hoc:null,
+    id_diem_danh_ve:null
+  });
+  const [so_thang_hoc_phi, set_so_thang_hoc_phi] = useState(null);
 
   const [showLoading, setShowLoading] = useState(true);
   const [checkHaveUserToken, setCheckHaveUserToken] = useState(false);
 
 
-  const [id_hs_set_home, setId_hs_set_home] = useState(null);
-
-
-
-  // useEffect(() => {
-  // start lấy thông báo của học sinh
-  // async function onValueChangeNumberNoti () { 
-  //   var hs = await AsyncStorage.getItem('data_hs');
-  //   let data_HocSinh = JSON.parse(hs)
-  //   database()
-  //   .ref('notification')
-  //    .orderByChild('user_id').equalTo(data_HocSinh.id)
-  //     .on('value', function(snapshot) { 
-  //       var so_luong_thong_bao = 0
-  //       var data_thong_bao = snapshot.val();
-  //       console.log(data_thong_bao);
-  //       for (const key in data_thong_bao) {
-  //         if (data_thong_bao.hasOwnProperty(key)) {
-  //           const element = data_thong_bao[key];
-  //           if(element.role == 2){
-  //               if (element.bell == 1) {
-  //                 so_luong_thong_bao++;
-  //               }
-  //           }
-  //         }
-  //       }
-  //       store.dispatch(setNumberNotification(415,so_luong_thong_bao));
-  //   },
-  //  );
-  // }
+  // const [id_hs_set_home, setId_hs_set_home] = useState(null);
 
 
   const Stack = createStackNavigator();
@@ -185,7 +164,7 @@ function App() {
           title: "Dặn thuốc"
         }} />
         <HomeStack.Screen name="detail_medicine" component={Detail_medicine}
-          initialParams={{ id_don_thuoc: id_don_thuoc, route_notifi: route_notifi }}
+          initialParams={{ id_: id_param_form_notifi.id_don_thuoc , route_notifi: route_notifi }}
           options={{
             headerStyle: { backgroundColor: color_app },
             headerTintColor: '#fff',
@@ -260,6 +239,7 @@ function App() {
           }} />
 
         <HomeStack.Screen name="DotCuaThang" component={DotCuaThang}
+          initialParams={{ id_thang_thu_tien : id_param_form_notifi.id_hoc_phi , thang_thu: so_thang_hoc_phi }}
           options={{
             headerStyle: { backgroundColor: color_app },
             headerTintColor: '#fff',
@@ -300,8 +280,6 @@ function App() {
             headerTintColor: '#fff',
           }} />
 
-
-
         <HomeStack.Screen name="detail_diem_danh_ve" component={DetailDiemDanhVe}
           initialParams={{ itemId: 42 }}
           options={{
@@ -314,6 +292,18 @@ function App() {
           headerStyle: { backgroundColor: color_app },
             headerTintColor: '#fff',
             title: "Đổi mật khẩu"}} />
+
+        <HomeStack.Screen name="ChiTietNghiHoc" component={ChiTietNghiHoc} options={{  
+                  headerStyle: { backgroundColor: color_app },
+                    headerTintColor: '#fff',
+                    title: "Chi tiết nghỉ học"}} />
+
+        <HomeStack.Screen name="ShowThongBao" component={ShowThongBao}
+          initialParams={{ id_noi_dung_tb : id_param_form_notifi.id_noi_dung_thong_bao , route_notifi: route_notifi }}
+          options={{  
+            headerStyle: { backgroundColor: color_app },
+              headerTintColor: '#fff',
+              title: "Thông báo"}} />
 
       </HomeStack.Navigator>
     </>
@@ -398,18 +388,16 @@ function App() {
     var hs = await AsyncStorage.getItem('data_hs');
     var token = await AsyncStorage.getItem('data_token');
     const data_hs = JSON.parse(hs);
-    if (store.getState().notification !== 0) {
-      ApiNotification.updateBellHs(token, data_hs.id)
+    console.log('data_hs',data_hs);
+      ApiNotification.updateBellHs(token,data_hs.id)
         .then(function (response) {
           let data = response.data;
           console.log('update_bell', data)
-        })
+        })  
         .catch(function (error) {
           console.log('update_bell_err', error);
         });
-    }
   };
-
 
   // let number_Noti_Show = 0;
   // store.subscribe(function () {
@@ -451,17 +439,19 @@ function App() {
       }}
     >
       <Tabs.Screen name="Kids" component={HomeStackScreen}
-  
+          listeners={{
+            tabPress: e => {
+              setRouteNotifi('Home');
+            },
+          }}
        />
       <Tabs.Screen name="Account" component={AccountScreen} />
-      {/* <Tabs.Screen name="DanhBa" component={DanhBaScreen}   options={{title : "Danh bạ"}} /> */}
+      
       <Tabs.Screen name="Thông báo" component={NotificationScreen}
         options={{  tabBarBadge: <TabNumberNoti /> }}
         listeners={{
           tabPress: e => {
             updateBellNotification();
-            // console.log('noti_app',store.getState.notification)
-            // console.log(TabNumberNoti());
           },
         }}
       />
@@ -470,85 +460,23 @@ function App() {
     </Tabs.Navigator>
   )
 
-  useEffect(() => {
-
-    // Assume a message-notification contains a "type" property in the data payload of the screen to open
-    messaging().onNotificationOpenedApp(remoteMessage => {
-      console.log(
-        'Notification caused app to open from background state:',
-        remoteMessage.notification,
-      );
-      // console.log('app_conso',remoteMessage.data.route);
-    });
-    // Check whether an initial notification is available
-    messaging()
-      .getInitialNotification()
-      .then(remoteMessage => {
-        if (remoteMessage) {
-          console.log(remoteMessage.data.type)
-          console.log(
-            'Notification caused app to open from quit state:',
-            remoteMessage.notification,
-          );
-          // var route_get = JSON.parse(remoteMessage.data.route);
-          // console.log('route',route_get.name_route);
-          // if(route_get.name_route == 'detail_medicine'){
-          //   setIdDonThuoc(route_get.id)
-          // }
-          // setRouteNotifi(route_get.name_route);
-          setRouteNotifi('detail_medicine');
-          setIdDonThuoc(135)
-
-          // setInitialRoute(remoteMessage.data.type);
-          // e.g. "Settings"
-        }
-      });
-  }, []);
-
- 
-
-  async function dangXuat() {
-    var token = await AsyncStorage.getItem('data_token');
-    var data_user = await AsyncStorage.getItem('data_user');
-    let user = JSON.parse(data_user);
 
 
-    ApiUser.update_device_user(user.id)
+  const getHsIdUserCheckTokenUse = (token, id_user,id_hs) => {
+    ApiHocSinh.checkHaveHsByIdUser(token, id_user)
       .then(async function (response) {
-        console.log(response.data)
-        await AsyncStorage.removeItem('data_user');
-        await AsyncStorage.removeItem('data_hs');
-        await AsyncStorage.removeItem('data_token');
-        setCheckHaveUserToken(false);
-        setId_hs_set_home(null);
-
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-  };
-
-
-
-
-  const getHsIdUser = (token, id_hs) => {
-    ApiHocSinh.getHocSinhIdUser(token, id_hs)
-      .then(function (response) {
-        console.log('token su dung');
-        if (id_hs_set_home == null) {
+        if(response.data == 'have'){
           store.dispatch(fetchDataAsyncStorage());
-        } else {
-          data_all_hs.forEach(
-            async (item) => {
-              if (item.id == id_hs_set_home) {
-                await AsyncStorage.setItem('data_hs', JSON.stringify(item));
-                store.dispatch(fetchDataAsyncStorage());
-              }
-            })
+          store.dispatch(fetchTokenAsyncStorage());
+          // await selectedHsWithNotification(id_hs)
+          setShowLoading(false);
+          setCheckHaveUserToken(true);
+        }else{
+          Alert.alert('Tài khoản này hiện chưa có học sinh')
+          // setCheckHaveUserToken(false);
+          // setShowLoading(false);
+          dangXuat();
         }
-        store.dispatch(fetchTokenAsyncStorage());
-        setShowLoading(false);
-        setCheckHaveUserToken(true);
       })
       .catch(function (error) {
         console.log(error);
@@ -557,45 +485,216 @@ function App() {
       });
   };
 
-  // useEffect(() => {
-  //   // Get the device token
-  //   messaging()
-  //     .getToken()
-  //     .then(token => {
-  //       console.log('device',token)
-  //       Alert.alert(token)
-  //       // return saveTokenToDatabase(token);
-  //     });
+  async function fetchData() {
+        try {
+          var token = await AsyncStorage.getItem('data_token');
+          var hs_json = await AsyncStorage.getItem('data_hs');
+          var data_user = await AsyncStorage.getItem('data_user');
+          let user = JSON.parse(data_user);
+          let hs = JSON.parse(hs_json);
+          console.log('app_hs',hs)
+          // check token dùng được hay khonong qua function getHsIdUser
+          console.log('app_user',user)
+          
+          if(user !== null){
+            getHsIdUserCheckTokenUse(token,user.id,hs.id);
+          }else{
+            setCheckHaveUserToken(false);
+            setShowLoading(false);
+          }
 
-  //   // If using other push notification providers (ie Amazon SNS, etc)
-  //   // you may need to get the APNs token instead for iOS:
-  //   // if(Platform.OS == 'ios') { messaging().getAPNSToken().then(token => { return saveTokenToDatabase(token); }); }
+        } catch (e) {
+          console.log(e);
+        }
+      }
 
-  //   // Listen to whether the token changes
-  //   // return messaging().onTokenRefresh(token => {
-  //   //   saveTokenToDatabase(token);
-  //   // });
-  // }, []);
+    
+
+     async function selectedHsWithNotification(id_hs){
+        let data_all_hs_json = await AsyncStorage.getItem('data_all_hs');
+        let data_all_hs = JSON.parse(data_all_hs_json);
+
+        let arr_all_hs_user_new = [];
+        let arr_no_id_chose = [];
+        data_all_hs.forEach(
+          async (item) => {
+            if (item.id == id_hs) {
+              console.log('item_selectdddddddddddddđ',item)
+              // push hoc sinh chon vào đầu array 
+              arr_all_hs_user_new.push(item);
+              await AsyncStorage.removeItem('data_hs');
+              await AsyncStorage.setItem('data_hs', JSON.stringify(item));
+              store.dispatch(fetchDataAsyncStorage());
+            }else{
+              arr_no_id_chose.push(item);
+            }
+          })
+          let arr_new = arr_all_hs_user_new.concat(arr_no_id_chose);
+          // nối arr có hoc sinh chọn với arr ko  có học đó để cho học sinh chọn lên đầu array
+          await  AsyncStorage.removeItem('data_all_hs');
+          await  AsyncStorage.setItem('data_all_hs',JSON.stringify(arr_new));
+           console.log('đã chuyển học sinh',arr_new );
+      }
 
 
+
+      function paramRouteNotifition(route_get){
+        if(route_get.name_route == 'detail_medicine'){
+            setId_param_form_notifi({
+              id_don_thuoc : route_get.id,
+              id_hoc_phi : null,
+              id_noi_dung_thong_bao : null,
+              id_ct_nghi_hoc:null,
+            });
+        }else if (route_get.name_route == 'ShowThongBao'){
+            setId_param_form_notifi({
+              id_don_thuoc : null,
+              id_hoc_phi : null,
+              id_noi_dung_thong_bao :route_get.id,
+              id_ct_nghi_hoc:null,
+            });
+        }else if (route_get.name_route == 'ChiTietNghiHoc'){
+            setId_param_form_notifi({
+              id_don_thuoc : null,
+              id_hoc_phi : null,
+              id_noi_dung_thong_bao :route_get.id,
+              id_ct_nghi_hoc:null,
+            });
+        }else if (route_get.name_route == 'DotCuaThang'){
+              set_so_thang_hoc_phi(route_get.so_thang)
+              setId_param_form_notifi({
+                id_don_thuoc : null,
+                id_hoc_phi : route_get.id,
+                id_noi_dung_thong_bao : null,
+                id_ct_nghi_hoc:null
+              });
+         }
+      }
 
 
   useEffect(() => {
-    async function fetchData() {
-      try {
-        var token = await AsyncStorage.getItem('data_token');
-        var data_user = await AsyncStorage.getItem('data_user');
-        var json_all_hs = await AsyncStorage.getItem('data_all_hs');
-        let user = JSON.parse(data_user);
-        let data_all_hs = JSON.parse(json_all_hs);
-        // check token dùng được hay khonong qua function getHsIdUser
-        getHsIdUser(token, user.id);
-      } catch (e) {
-        console.log(e);
-      }
-    }
-    fetchData();
+    // Assume a message-notification contains a "type" property in the data payload of the screen to open
+
+    // Khi còn để app nhưng thoát màn hình
+    messaging().onNotificationOpenedApp(remoteMessage => {
+      console.log(
+        'Notification caused app to open from background state:',
+        remoteMessage.notification,
+      );
+      // console.log('app_conso',remoteMessage.data.route);
+      var route_get = JSON.parse(remoteMessage.data.route);
+      console.log('route',route_get);
+      // selectedHsWithNotification(route_get.id_hs);
+      selectedHsWithNotification(1);
+
+      // setId_hs_set_home(route_get.id_hs);
+      setRouteNotifi(route_get.name_route);
+      paramRouteNotifition(route_get);
+      // if(route_get.name_route == 'detail_medicine'){
+      //       setId_param_form_notifi({
+      //         id_don_thuoc : route_get.id,
+      //         id_hoc_phi : null,
+      //         id_noi_dung_thong_bao : null
+      //       });
+      // }else if (route_get.name_route == 'ShowThongBao'){
+      //       setId_param_form_notifi({
+      //         id_don_thuoc : null,
+      //         id_hoc_phi : null,
+      //         id_noi_dung_thong_bao :route_get.id
+      //       });
+      // }else if (route_get.name_route == 'DotCuaThang'){
+      //       set_so_thang_hoc_phi(route_get.so_thang)
+      //       setId_param_form_notifi({
+      //         id_don_thuoc : null,
+      //         id_hoc_phi : route_get.id,
+      //         id_noi_dung_thong_bao : null,
+      //       });
+      //     }
+      });
+    // Check whether an initial notification is available
+
+    // Khi đã tắt app 
+    messaging()
+      .getInitialNotification()
+      .then(async (remoteMessage) => {
+        if (remoteMessage) {
+          console.log(remoteMessage.data.type)
+          console.log(
+            'Notification caused app to open from quit state:',
+            remoteMessage.notification,
+          );
+          console.log('route',remoteMessage);
+
+          // var route_get = JSON.parse(remoteMessage.data.route);
+          var route_get = JSON.parse(remoteMessage.data.route);
+          console.log('route',route_get.id_hs);
+          
+          // await selectedHsWithNotification(route_get.id_hs);
+          await selectedHsWithNotification(1);
+          // setId_hs_set_home(route_get.id_hs);
+          setRouteNotifi(route_get.name_route);
+          paramRouteNotifition(route_get);
+
+          // if(route_get.name_route == 'detail_medicine'){
+          //   setId_param_form_notifi({
+          //     id_don_thuoc : route_get.id,
+          //     id_hoc_phi : null,
+          //     id_noi_dung_thong_bao : null
+          //   });
+          //   }else if (route_get.name_route == 'ShowThongBao'){
+          //         setId_param_form_notifi({
+          //           id_don_thuoc : null,
+          //           id_hoc_phi : null,
+          //           id_noi_dung_thong_bao :route_get.id
+          //         });
+          //   }else if (route_get.name_route == 'DotCuaThang'){
+          //     set_so_thang_hoc_phi(route_get.so_thang)
+          //     setId_param_form_notifi({
+          //       id_don_thuoc : null,
+          //       id_hoc_phi : route_get.id,
+          //       id_noi_dung_thong_bao :null
+          //     });
+          //   }
+
+
+          // setInitialRoute(remoteMessage.data.type);
+          // e.g. "Settings"
+        }
+      });
+      fetchData();
   }, []);
+
+ 
+
+  async function dangXuat() {
+    var data_user = await AsyncStorage.getItem('data_user');
+    let user = JSON.parse(data_user);
+
+    if(user !== null){
+      ApiUser.update_device_user(user.id)
+        .then(async function (response) {
+          console.log(response.data)
+          await AsyncStorage.removeItem('data_user');
+          await AsyncStorage.removeItem('data_hs');
+          await AsyncStorage.removeItem('data_token');
+          setCheckHaveUserToken(false);
+          // setId_hs_set_home(null);
+          setShowLoading(false);
+
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    }else{
+      await AsyncStorage.removeItem('data_user');
+      await AsyncStorage.removeItem('data_hs');
+      await AsyncStorage.removeItem('data_token');
+      setCheckHaveUserToken(false);
+      setShowLoading(false);
+      // setId_hs_set_home(null);
+    }
+  };
+
 
 
   async function getTokenHaveSignIn() {
@@ -613,9 +712,6 @@ function App() {
 
 
 
-
-
-
   const authContext = React.useMemo(() => {
     return {
       signIn: () => {
@@ -626,6 +722,11 @@ function App() {
       },
       changeRoute: () => {
         setRouteNotifi('Home');
+        setId_param_form_notifi({
+            id_don_thuoc : null,
+            id_hoc_phi : null,
+            id_noi_dung_thong_bao : null
+        })
       }
     }
   })
@@ -638,7 +739,7 @@ function App() {
     <Provider store={store}>
       <AuthContext.Provider value={authContext}>
 
-    {showLoading  == true ? 
+    {showLoading ? 
               (   <Modal_Start_App showLoading={showLoading} />  )
      :
         <NavigationContainer>

@@ -46,8 +46,28 @@ export const setArrNotification = (arr) =>{
 }
 
 
+export const setIdParamThongBao = (id) =>{
+  return {
+      type: types.SET_ID_PARAM_THONG_BAO,
+      id
+  }
+}
+
+export const setIdParamDetailMedicien = (id) =>{
+  return {
+      type: types.SET_ID_PARAM_DETAIL_MEDICINE,
+      id
+  }
+}
 
 
+
+export function setRouteNotifition(route_notifi) {
+  return {
+    type: types.SET_ROUTE,
+    route_notifi,
+  }
+}
 
 export function fetchDataAsyncStorage() {
     return (dispatch) => {
@@ -115,9 +135,3 @@ export function fetchTokenAsyncStorage() {
 }
 
 
-export function setRouteNotifi(route_notifi) {
-  return {
-    type: types.SET_ROUTE,
-    route_notifi,
-  }
-}

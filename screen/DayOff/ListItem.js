@@ -6,8 +6,18 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import moment from "moment";
 
 const ListItem =  ({ navigation , item }) => {
+    function limit10character(string){
+       let text =  string.slice(0,39);
+       if(string.length > 20){
+           return text+' ...';
+       }else{
+           return text;
+       }
+    }
   return (
                          <View  style={styles.contain}>
+                             <TouchableOpacity onPress={()=> navigation.navigate('ChiTietNghiHoc', {item : item})}>
+
                             <View style={{flexDirection: 'row'}}>
                                 <View style={{width:'25%',marginLeft:10}}>
                                     <Text  style={{fontWeight:'bold'}}>Ngày gửi: </Text>
@@ -20,7 +30,7 @@ const ListItem =  ({ navigation , item }) => {
                                  </View>
                                  <View style={{width:'20%'}}>
                                           <Text style={item['trang_thai'] == 0 ? styles.statusChuaXacNhan : styles.statusDaXacNhan}> 
-                                            {item['trang_thai'] == 0 ? 'Chờ xác nhận' : 'Đã xác nhận'}
+                                            {item['trang_thai'] == 0 ? 'Chưa xác nhận' : 'Đã xác nhận'}
                                             </Text>
                                  </View>
 
@@ -28,8 +38,11 @@ const ListItem =  ({ navigation , item }) => {
                             </View>
                             <View style={{flexDirection: 'row',marginLeft:10}}>
                                 <Text style={{fontWeight:'bold'}} >Lý do :</Text>
-                                 <Text> {item['noi_dung']}</Text>
+                                 <Text> {limit10character(item['noi_dung'])}</Text>
                             </View>
+
+                            </TouchableOpacity>
+
                           </View>
   );
 };

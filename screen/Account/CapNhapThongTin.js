@@ -1,7 +1,7 @@
 
 import React ,{ useState, useEffect,useRef  }from 'react';
 import axios from 'axios';
-import { View, Text, Image, TouchableOpacity, FlatList, Modal, Alert,StyleSheet, Button,ImageBackground} from 'react-native'
+import { View, Text, Image, TouchableOpacity, FlatList, Modal, Alert,StyleSheet, Button,ImageBackground,Animated} from 'react-native'
 import Loading from '../Loading';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -17,6 +17,7 @@ import Collapsible from 'react-native-collapsible';
 import { fetchDataAsyncStorage } from '../../src/redux/action/index';
 import { useSelector,useDispatch,useStore  } from 'react-redux'
 import linkWeb from '../../android/app/src/api/linkWeb/index';
+import { Easing } from 'react-native-reanimated';
 
 const CapNhapThongTin =  ({ navigation ,route}) => {
     // const scrollViewRef = useRef();
@@ -27,39 +28,58 @@ const CapNhapThongTin =  ({ navigation ,route}) => {
 
     const [user, setUser] = useState({});
 
+    const [scaleAnim, setScaleAnim] = useState(new Animated.Value(0));
+    const [marginLeftNameAnim, setmarginLeftNameAnim] = useState(new Animated.Value(120));
 
     useEffect(() => {
      async function fetchData() {
         var json_user = await AsyncStorage.getItem('data_user');
         let data_user = JSON.parse(json_user);
         setUser(data_user);
+
+        Animated.timing(
+            scaleAnim,
+            {
+                duration:2000,
+                toValue:1,
+                useNativeDriver:true
+            }
+          ).start();
+
+        //   Animated.timing(
+        //     marginLeftNameAnim,
+        //     {
+        //         duration:2000,
+        //         toValue:15,
+        //     }
+        //   ).start();
+
       }
       fetchData();
       },[]);
 
-//   const [userToken, setUserToken] = useState(null);
-//   const [du_lieu_hs, setDuLieuHS] = useState([]);
-//   const [lop_hs, setLopHS] = useState([]);
-  
+      
+    //   function clicktest(){
+       
+    //     }
+
   return (
       <ScrollView>
           
         <View style={{flex:1}}>
             <ImageBackground style={{width: '100%' }}   source={require('../../android/app/src/nen.png')}>
                 <View >
-
-                {/* <View style={{backgroundColor:'#fff',
-                shadowColor: "#000",
-                shadowColor: '#000',
-                shadowOffset: { width: 1, height: 5 },
-                shadowOpacity:  0.4,
-                shadowRadius: 10,
-                elevation: 5,
-                    }}> */}
                 <View style={styles.sectionAvatar}>
                     <View style={{height:130,justifyContent:'center',paddingLeft:10}}>
-                        <Image style={styles.showAvatar}  source={require('../../android/app/src/asset/img/home_image_slide.jpg')} />
+                        <Animated.Image style={{
+                                borderRadius:100,
+                                width:100,
+                                height:100,
+                                transform: [{scale:scaleAnim}]
+                        }}  
+                        source={require('../../android/app/src/asset/img/home_image_slide.jpg')} />
                     </View>
+                    {/* <View style={{width:'50%',alignSelf:'center',marginLeft:15,paddingTop:20}}> */}
                     <View style={{width:'50%',alignSelf:'center',marginLeft:15,paddingTop:20}}>
                         <Text style={{fontSize:18,color:'#fcfafa',fontWeight:"bold"}}>{du_lieu_hs.ten}</Text>
                     </View>
@@ -84,7 +104,9 @@ const CapNhapThongTin =  ({ navigation ,route}) => {
                         
                 <View style={{flexDirection:'row',paddingTop:10}}>
                     <FontAwesome name="child" size={20} color={du_lieu_hs.gioi_tinh == 0 ? '#006699' : "#ff6699" }/>
-                    <Text style={{paddingLeft:15}}> Tên: {du_lieu_hs.ten}</Text>
+                    {/* <TouchableOpacity onPress={()=> clicktest()}> */}
+                      <Text style={{paddingLeft:15}}> Tên: {du_lieu_hs.ten}</Text>
+                    {/* </TouchableOpacity> */}
                 </View>
                 
                 <View style={{flexDirection:'row',paddingTop:10}}>

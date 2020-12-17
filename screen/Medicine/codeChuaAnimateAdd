@@ -1,7 +1,7 @@
 
 import React ,{ useState,useEffect }from 'react';
 import { View, Text, Image,
-    TouchableOpacity, ScrollView,StyleSheet,TextInput,  Modal,FlatList, Alert,Animated
+    TouchableOpacity, ScrollView,StyleSheet,TextInput,  Modal,FlatList, Alert
  } from 'react-native'
  import HTMLView from 'react-native-htmlview';
  import DateTimePicker from '@react-native-community/datetimepicker';
@@ -54,43 +54,18 @@ const Add_medicine =  ({ navigation , route }) => {
           image:''
    });
 
-  //  const [listAddMedicine, setListAddMedicine] = useState([]);
+   const [listAddMedicine, setListAddMedicine] = useState([]);
 
-
-
-   const [scaleModelAddAnim, setscaleModelAddAnim] = useState(new Animated.Value(0));
-
-    const [listAddMedicine, setListAddMedicine] = useState([
-        {
-            name:'Sino',
-            lieu:'300',
-            donvi:'ml',
-            note:'Uống sau bữa ăn',
-            image:''
-        },
-        {
-          name:'Sino',
-          lieu:'300',
-          donvi:'ml',
-          note:'Uống sau bữa ăn',
-          image:''
-      },
-      {
-        name:'Sino',
-        lieu:'300',
-        donvi:'ml',
-        note:'Uống sau bữa ăn',
-        image:''
-    },
-    {
-      name:'Sino',
-      lieu:'300',
-      donvi:'ml',
-      note:'Uống sau bữa ăn',
-      image:''
-  },
+    // const [listAddMedicine, setListAddMedicine] = useState([
+    //     {
+    //         name:'Sino',
+    //         lieu:'300',
+    //         donvi:'ml',
+    //         note:'Uống sau bữa ăn',
+    //         image:''
+    //     },
       
-    ]);
+    // ]);
 
 
     const [dateFrom, setDateFrom] = useState(new Date());
@@ -135,20 +110,6 @@ const Add_medicine =  ({ navigation , route }) => {
 
       function modelShow(value){
         setViewModel(value)
-      }
-
-      
-      function modelShowAnimated(){
-        setViewModel(true);
-        Animated.spring(
-          scaleModelAddAnim,
-          {
-              toValue:1,
-              bounciness:15,
-              speed:5,
-              useNativeDriver:true
-          }
-        ).start();
       }
 
       function removeMedicineAdd(indexR){
@@ -207,11 +168,9 @@ const Add_medicine =  ({ navigation , route }) => {
     const [imageThuoc , setImageThuoc] =  useState(null)
 
     const options = {
-        title: 'Ảnh', 
+        title: 'Select Avatar', 
         cameraType: 'front',
-        mediaType: 'photo',
-        takePhotoButtonTitle: "Chụp ảnh",
-        chooseFromLibraryButtonTitle: "Chọn ảnh thư viện",
+        mediaType: 'photo' ,
         storageOptions: {
         skipBackup: true,
         path: 'images',
@@ -303,7 +262,6 @@ function submitAdd(){
 
 
   return (
-    <ScrollView>
             <View style={styles.containers}>
                 {/* <View style={{flexDirection:'row'}}>
                   <View style={{width:'70%'}}>
@@ -332,7 +290,7 @@ function submitAdd(){
                                                     is24Hour={true}
                                                     display="default"
                                                     onChange={onChangeDateFrom}
-                                             />
+                                                    />
                                             )}
                                             <Entypo  style={{marginLeft:40,marginTop:-10}} name="arrow-bold-right" size={35} color={color_app}  />
 
@@ -377,7 +335,7 @@ function submitAdd(){
 
                 <View style={{flexDirection:'row'}}>
                     <Text style={{fontSize:17,fontWeight:'bold',paddingVertical:15,width:'80%',color:'#706f6e'}}>Danh sách thuốc</Text>
-                    <TouchableOpacity onPress={() => modelShowAnimated()} >
+                    <TouchableOpacity onPress={() =>modelShow(true)} >
                     <AntDesign name="pluscircleo" size={30} color={color_app} style={{paddingTop:12}} />
                     </TouchableOpacity>
                 </View>
@@ -390,17 +348,16 @@ function submitAdd(){
                     Alert.alert("Modal has been closed.");
                     }} >
 
-                    <View style={{backgroundColor:'#000000aa',flex:1,justifyContent:'center',alignContent:'center'}}>
-                        <Animated.View style={{backgroundColor:'#ffffff',margin:20,padding:10,
-                        transform:[{scale:scaleModelAddAnim}],borderRadius:10}}>
+                    <View style={{backgroundColor:'#000000aa',flex:1}}>
+                        <View style={{backgroundColor:'#ffffff',margin:20,padding:10,borderRadius:10}}>
 
                         <View style={styles.headerModel}>
                             <View style={{width:'90%',alignSelf:'center',padding:5}}>
-                                 <Text style={{fontWeight:'bold',fontSize:17,color:'#0a9ff5'}}>THÊM THUỐC</Text>
+                                 <Text style={{fontWeight:'bold',fontSize:17,color:'#706f6e'}}>Thêm thuốc</Text>
                             </View>
                             <View style={{width:'10%'}}>
                                 <TouchableOpacity onPress={() =>modelShow(false)} >
-                                     <AntDesign name="closesquare" size={30}  style={{paddingTop:5,color:'#727475'}} />
+                                     <AntDesign name="closesquare" size={30}  style={{paddingTop:5,color:'#ECF0F2'}} />
                                 </TouchableOpacity>
                                 
                             </View>
@@ -408,8 +365,9 @@ function submitAdd(){
 
                           <View style={{paddingVertical:5}}>
                               {/* <Text style={styles.nameTitleModel}>Tên thuốc :</Text> */}
+
                               <Input 
-                                placeholder="Tên thuốc"
+                                label="Tên thuốc :"
                                 onChangeText={text  => {setOneMedicineAdd({...oneMedicineAdd,name:text})}}
                                 style={styles.inputModel}   />
                           </View>
@@ -419,7 +377,7 @@ function submitAdd(){
                                 {/* <Text style={styles.nameTitleModel}>Liều dùng:</Text> */}
 
                                 <Input  style={styles.inputModel} 
-                                placeholder="Liều dùng "
+                                label="Liều dùng: "
                                  onChangeText={text  => {setOneMedicineAdd({...oneMedicineAdd,lieu:text})}}
                                 />
                             </View>
@@ -427,7 +385,7 @@ function submitAdd(){
                             <View style={{width:'45%'}}>
                                 {/* <Text style={styles.nameTitleModel}>Đơn vị tính:</Text> */}
                                 <Input
-                                placeholder="Đơn vị tính"
+                                label="Đơn vị tính: "
                                 style={styles.inputModel}
                                  onChangeText={text  => {setOneMedicineAdd({...oneMedicineAdd,donvi:text})}}
                                    />
@@ -438,7 +396,7 @@ function submitAdd(){
                             <View>
                                 {/* <Text style={styles.nameTitleModel}>Chỉ dẫn:</Text> */}
                                 <Input  style={styles.inputModel}  
-                                placeholder="Chỉ dẫn "
+                                label="Chỉ dẫn:"
                                  onChangeText={text  => {setOneMedicineAdd({...oneMedicineAdd,note:text})}}
                                  />
 
@@ -455,11 +413,9 @@ function submitAdd(){
                             </View>
 
                         <View style={{width:'30%',paddingTop:10,marginLeft:'60%'}}>
-                           <Button title="Thêm" onPress={()=> addMedicinetoList() }/>
+                        <Button title="Thêm" onPress={()=> addMedicinetoList() }/>
                         </View>
-
-
-                      </Animated.View>
+                        </View>
                     </View>
 
                 </Modal>
@@ -474,15 +430,10 @@ function submitAdd(){
             />
 
 
-              {/* <View style={{width:'100%',alignItems:'flex-end'}}>
+              <View style={{width:'100%',alignItems:'flex-end'}}>
                     <Button title="Tạo đơn" onPress={submitAdd}/>
-              </View> */}
+              </View>
 
-              <TouchableOpacity onPress={()=>{submitAdd()}} style={{backgroundColor:'#fab20a',borderRadius:50,marginTop:20}}>
-                  <View style={{paddingHorizontal:10,paddingVertical:15,alignItems:'center'}}> 
-                    <Text style={{color:'#ffff',fontSize:17}}>Tạo đơn</Text>
-                  </View>
-              </TouchableOpacity>
 
                 {/* <Modal
                     animationType="slide"
@@ -498,7 +449,7 @@ function submitAdd(){
               <Modal_SubmitLoading submitLoading={submitLoading} />
 
      </View>
-     </ScrollView>  
+               
   
   );
 };
@@ -539,7 +490,7 @@ const styles = StyleSheet.create({
         fontSize:16
     },
     inputModel:{
-     fontSize:16
+     
     },
     headerModel:{
         flexDirection:'row',

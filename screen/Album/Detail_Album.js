@@ -2,7 +2,7 @@
 import React ,{ useState,useEffect }from 'react';
 import { View, Text, Image,
     TouchableOpacity, ScrollView,StyleSheet, Button,FlatList,Modal,
-    Dimensions
+    Dimensions,Animated
  } from 'react-native'
 
  import ApiBieuDoSucKhoe from '../../android/app/src/api/BieuDoSucKhoeApi';
@@ -22,11 +22,22 @@ const Album =  ({ navigation,route }) => {
     const [showModal, setShowModal] = useState(false); 
     const [imageModal, setImageModal] = useState(''); 
     
+
+    const [scaleAnim, setScaleAnim] = useState(new Animated.Value(0));
+
     function  visitionModal(){
         setShowModal(!showModal)
     }
     function setValueModal(item){
         setImageModal(item)
+        Animated.timing(
+            scaleAnim,
+            {
+                duration:1000,
+                toValue:1,
+                useNativeDriver:true
+            }
+          ).start();
         visitionModal();
     }
     
@@ -74,7 +85,12 @@ const Album =  ({ navigation,route }) => {
                                 <AntDesign name="closesquareo" size={30} color="#ddd" />
                             </TouchableOpacity>
 
-                           <Image style={styles.image}  source={{ uri: linkGiaoVien + imageModal}}/>
+                           <Animated.Image style={{  
+                                flex: 1,
+                                maxWidth: width,
+                                maxHeight:height,
+                                transform: [{scale:scaleAnim}],
+                                resizeMode: 'contain'}}  source={{ uri: linkGiaoVien + imageModal}}/>
 
                           </View>
                 
