@@ -30,7 +30,9 @@ const Header =  ({navigation}) => {
                 </TouchableOpacity>
               </View>
               <View style={{width:'15%'}}>
-                 <Image style={{width:45,height:45,borderRadius:10}}  source={require('../android/app/src/hoat-dong.jpg')}/>
+                 <Image style={{width:45,height:45,borderRadius:10}}  source={{
+                    uri: hs.avatar,
+                  }}/>
               </View>
 
             </View>

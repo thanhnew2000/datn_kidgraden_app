@@ -28,6 +28,7 @@ const Notification = ({navigation}) => {
   const data_redux = useSelector(state => state)
   const du_lieu_hs = data_redux.hocsinh.data;
   const data_token = data_redux.token;
+  const check_value_call_again = data_redux.check_value_call_again;
 
   const [dataNotification, setDataNotification] = useState([]);
   const [isFetching, setisFetching] = useState(false);
@@ -44,42 +45,34 @@ const Notification = ({navigation}) => {
     // console.log('current',time);
     if(day_fromNow < 1){
       thoi_gian = moment(change_format).fromNow();
-      console.log('day_fromNow',1)
+      // console.log('day_fromNow',1)
     }else if(day_fromNow >= 1 && day_fromNow <2){
       thoi_gian = moment(change_format).calendar();
-      console.log('day_fromNow',2)
+      // console.log('day_fromNow',2)
     }else{
       thoi_gian =  moment(change_format).format("Do MMM YY, h:mm");
-      console.log('day_fromNow',3)
+      // console.log('day_fromNow',3)
     }
     return thoi_gian;
   }
 
-   function onValueChangeNumberNoti (){ 
-        // var hs = await AsyncStorage.getItem('data_hs');
-        // let data_HocSinh = JSON.parse(hs);
+   async function onValueChangeNumberNoti (){ 
+        var hs = await AsyncStorage.getItem('data_hs');
+        let data_HocSinh = JSON.parse(hs);
+      console.log('onValueChangeNumberNoti_notification_runnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn')
         database()
         .ref('notification')
-        .orderByChild('id_hs').equalTo(du_lieu_hs.id)
-          .on('value', async function(snapshot) { 
+        .orderByChild('id_hs').equalTo(data_HocSinh.id).off('child_added')
 
+        database()
+        .ref('notification')
+        .orderByChild('id_hs').equalTo(data_HocSinh.id)
+          .on('value', async function(snapshot) { 
             var data_thong_bao = snapshot.val();
              var new_data = Object.values(data_thong_bao);
-            //  new_data.push(data_thong_bao)
              console.log('data_thong_baosd',new_data);
-            //   new_data.sort(function(a, b){
-            //     var keyA = new Date(a.created_at),
-            //         keyB = new Date(b.created_at);
-            //     // Compare the 2 dates
-            //     if(keyA > keyB) return -1;
-            //     if(keyA < keyB) return 1;
-            //     return 0;
-            // });
-
-           await new_data.sort((a,b) => b.id - a.id )
-          setDataNotification(new_data);
-
-
+              await new_data.sort((a,b) => b.id - a.id )
+              setDataNotification(new_data);
             // getNotification();
               // for (const key in data_thong_bao) {
               //   if (data_thong_bao.hasOwnProperty(key)) {
@@ -102,21 +95,48 @@ const Notification = ({navigation}) => {
       );
    }
 
-   function getNotification()  {
-      // setshowLoadingWait(true);
-      ApiNotification.getNofiByIdUser(data_token.token,du_lieu_hs.id)
+  async function getNotification()  {
+       setshowLoadingWait(true);
+      var hs = await AsyncStorage.getItem('data_hs');
+      let data_HocSinh = JSON.parse(hs);
+      ApiNotification.getNofiByIdUser(data_token.token,data_HocSinh.id)
       .then(function (response) {
           let data = response.data;
-          // setDataNotification(data);
-          // setshowLoadingWait(false);
+          setDataNotification(data);
+          setshowLoadingWait(false);
           console.log('data_noti',data)
         })
         .catch(function (error) {
+          setshowLoadingWait(false);
           console.log('err-data_noti',error);
         });
   };
 
- useEffect(() => {onValueChangeNumberNoti()}, [du_lieu_hs.id]);
+  function clickTest(){
+    console.log('notifincationnnnnnnnnnnnnn__________________________________________')
+  }
+ useEffect(() => {getNotification()}, [check_value_call_again]);
+ useEffect(() => {
+  async  function abLister(){
+    var data_user = await AsyncStorage.getItem('data_user');
+    let dt_user = JSON.parse(data_user);
+    const firebaseRuniing =  database().ref('notification').orderByChild('user_id').equalTo(dt_user.id).limitToLast(1);
+    const onListerning = firebaseRuniing.on('child_added',async function(snapshot) { 
+    var hsinh = await AsyncStorage.getItem('data_hs');
+    let dt_hs = JSON.parse(hsinh);
+      console.log('thong_bao_firebase_hs',dt_hs.id)
+      let value_Get = snapshot.val();
+      if(value_Get.id_hs == dt_hs.id){
+        console.log('call notificaltion')
+        getNotification();
+      }
+    });
+    return () => {
+      firebaseRuniing.off('child_added',onListerning);            
+    }
+  }
+  abLister()
+ }, []);
 
   
 
@@ -143,6 +163,7 @@ const Notification = ({navigation}) => {
     .then(function (response) {
         let data = response.data;
         console.log('update_Type',data)
+        getNotification()
       })
       .catch(function (error) {
       console.log('update_Type_err',error);
@@ -156,7 +177,6 @@ const Notification = ({navigation}) => {
 //  }
 //  useEffect(() => {fetchData()}, []);
 function clickNotifi(item){
-
   // nhà trường 
   // chung
   // hoc phi (route_chi_tiet)
@@ -168,12 +188,19 @@ function clickNotifi(item){
   // don nghi hoc (xác nhận) ( route_chi_tiet)
   updateTypeOneNoti(item.id);
   let route_get = JSON.parse(item.route);
+
+  console.log('route_get',route_get);
+
   if(route_get.name_route == 'DotCuaThang'){
-    navigation.navigate('DotCuaThang',{ id_thang_thu_tien : route_get.id , thang_thu : route_get.so_thang });
+    navigation.navigate('DotCuaThang',{ id_thang_thu_tien : route_get.id , thang_thu : route_get.so_thang, thong_bao: true  });
   }else if(route_get.name_route == 'detail_medicine'){
-    navigation.navigate('detail_medicine',{ id_ : route_get.id });
+    navigation.navigate('detail_medicine',{ id_ : route_get.id, thong_bao: true  });
   }else if(route_get.name_route == 'ShowThongBao'){
-    navigation.navigate('ShowThongBao',{ id_noi_dung_tb : route_get.id });
+    navigation.navigate('ShowThongBao',{ id_noi_dung_tb : route_get.id , thong_bao: true });
+  }else if(route_get.name_route == 'ChiTietNghiHoc'){
+    navigation.navigate('ChiTietNghiHoc',{ id_ct_nghi_hoc : route_get.id, thong_bao: true  });
+  }else if(route_get.name_route == 'ChiTietNhanXet'){
+    navigation.navigate('ChiTietNhanXet',{ id_chi_tiet_nhan_xet : route_get.id, thong_bao: true  });
   }
 }
 
@@ -191,7 +218,7 @@ function clickNotifi(item){
                   renderItem={({item,index}) =>
                   {
                   //  let route_this = JSON.parse(item.route);
-                  console.log('item_notifi',item)
+                  // console.log('item_notifi',item)
                    
                   //  return( <TouchableOpacity onPress={()=> clickNotifi(route_this.name_route , route_this.id ,item)}  >
                    return( <TouchableOpacity onPress={()=> clickNotifi(item)}  >
@@ -218,13 +245,8 @@ function clickNotifi(item){
          /> 
 
 
-
-        
-
-         
-
             <TouchableOpacity style={styles.buttonSeeAll} onPress={()=> navigation.navigate('HistoryNotification')}>
-              <Text style={{fontSize:16,color:'#00ace6'}}>Xem tất cả</Text>
+              <Text style={{fontSize:16,color:'#00ace6'}}>Xem thêm</Text>
             </TouchableOpacity>
 
 

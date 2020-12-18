@@ -5,6 +5,8 @@ import { View, Text, Image, TouchableOpacity, FlatList,StyleSheet, Button,Modal,
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import ListItem from './ListItem';
 import ApiXinNghi from '../../android/app/src/api/XinNghiHocApi';
+import AsyncStorage from '@react-native-community/async-storage';
+
 import { useSelector,useDispatch } from 'react-redux'
 import moment from "moment";
 
@@ -13,18 +15,18 @@ import moment from "moment";
 
 const ChiTietNghiHoc =  ({ navigation, route }) => {
     
-  const data_redux = useSelector(state => state)
-  const data_token = data_redux.token;
+  // const data_redux = useSelector(state => state)
+  // const data_token = data_redux.token;
 
   const [data, setData] =  useState({});
   const [showLoading, setShowLoading] = useState(false);
 
-    const { item } = route.params;
+  const { id_ct_nghi_hoc } = route.params;
+  const { item } = route.params;
 
-
-    const getOneChiTiet = (id_don) => {
-      setShowLoading(true);
-      ApiXinNghi.getOne(data_token.token,id_don)
+   const getOneChiTiet = async (id_don) => {
+      var token = await AsyncStorage.getItem('data_token');
+      ApiXinNghi.getOne(token,id_don)
       .then(function (response) {
           let data = response.data;
           setData(data);
@@ -38,43 +40,54 @@ const ChiTietNghiHoc =  ({ navigation, route }) => {
 
 
     useEffect(() => {
-        if(item == null){
-          const { id_ct_nghi_hoc } = route.params;
-          getOneChiTiet(id_ct_nghi_hoc);
-        }else{
-          setData(item);
-        }
+      const fetchData = () => {
+        const { thong_bao } = route.params;
+        if(thong_bao == true){
+            navigation.setOptions({
+              headerLeft: null
+            })
+         }
+          console.log('running___________')
+          if(item == undefined || item == null){
+            console.log('running___________1')
+            getOneChiTiet(id_ct_nghi_hoc);
+          }else{
+            setData(item);
+          }
+      };
+
+      
+      fetchData();
     }, []);
 
   return (
 
   <View style={styles.containers}>
+    
+     <View style={showLoading ? {display:'flex'} : {display:'none'}}>
+            <Image style={{width: 57 , height:57,alignSelf:'center'}}   source={require('../../android/app/src/tenor.gif')}/>
+      </View>
+
       <View style={{flexDirection:"row"}}>
-
-      <View style={showLoading ? {display:'flex'} : {display:'none'}}>
-            <Image style={{width: 70 , height:70,alignSelf:'center'}}   source={require('../../android/app/src/tenor.gif')}/>
-          </View>
-
-
         <View style={{flexDirection:"row",width:'60%'}}>
             <Text style={styles.title}>Ngày gửi:</Text>
-            <Text style={styles.textNormal}> {moment(data['created_at']).format("YYYY-MM-DD") }</Text>
+            <Text style={styles.textNormal}> {moment(data.created_at).format("YYYY-MM-DD") }</Text>
         </View>
 
         <View style={{}}>
-                               <Text style={data['trang_thai'] == 0 ? {color:'',fontSize:16} :{color:'green',fontSize:16}}> 
-                                            {data['trang_thai'] == 0 ? 'Chưa xác nhận' : 'Đã xác nhận'}
+                               <Text style={data.trang_thai == 0 ? {color:'gray',fontSize:16} : {color:'green',fontSize:16}}> 
+                                            {data.trang_thai == 0 ? 'Chưa xác nhận' : 'Đã xác nhận'}
                                 </Text>
         </View>
       </View>
       <View style={{flexDirection:"row",paddingVertical:15}}>
         <Text style={styles.title}>Thời gian nghỉ:</Text>
-        <Text style={styles.textNormal}> {data['ngay_bat_dau']} - {data['ngay_ket_thuc']}</Text> 
+        <Text style={styles.textNormal}> {data.ngay_bat_dau} - {data.ngay_ket_thuc}</Text> 
 
       </View>
       <View style={{flexDirection:"row"}}>
         <Text style={styles.title}>Lý do:</Text>
-        <Text style={styles.textNormal}> {data['noi_dung']}</Text>
+        <Text style={styles.textNormal}> {data.noi_dung}</Text>
       </View>
   </View>
 

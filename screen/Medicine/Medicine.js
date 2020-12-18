@@ -91,7 +91,7 @@ const Medicine =  ({ navigation }) => {
                             
                             <Text style={{width:'50%'}}  numberOfLines={1}>{
                                  item.ghi_chu != null ?
-                                  item.ghi_chu.length < 25 ? item.ghi_chu : item.ghi_chu.substring(0, 25)+'...'
+                                  item.ghi_chu.length < 25 ? item.noi_dung : item.ghi_chu.substring(0, 25)+'...'
                                   : null 
                             }</Text>
     
@@ -124,6 +124,7 @@ const Medicine =  ({ navigation }) => {
                       }
                       onRefresh={() => functionOnRefresh()}
                       refreshing={isFetching}
+                      keyExtractor={(item,index) => 'key'+index.toString()} 
                     />
                 
             {/* <Modal_Loading showLoading = {showLoading} /> */}

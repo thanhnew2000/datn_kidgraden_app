@@ -77,6 +77,10 @@ import HocPhi from './screen/HocPhi/HocPhi';
 import ChiTietHocPhi from './screen/HocPhi/ChiTietHocPhi';
 import   DotCuaThang from './screen/HocPhi/DotCuaThang';
 
+import NhanXet from './screen/NhanXet/NhanXet';
+import ChiTietNhanXet from './screen/NhanXet/ChiTietNhanXet';
+
+
 import Feedback from './screen/Feedback/Feedback';
 
 // Redux
@@ -90,7 +94,7 @@ import messaging from '@react-native-firebase/messaging';
 import database from '@react-native-firebase/database';
 
 
-import { setNumberNotification, fetchDataAsyncStorage, fetchTokenAsyncStorage, getDataSuccess } from './src/redux/action/index';
+import { setNumberNotification, fetchDataAsyncStorage, fetchTokenAsyncStorage, setcheckValueCallAgain,getDataSuccess } from './src/redux/action/index';
 
 import TabNumberNoti from './screen/TabNumberNoti';
 
@@ -113,7 +117,8 @@ function App() {
     id_hoc_phi : null,
     id_noi_dung_thong_bao : null,
     id_ct_nghi_hoc:null,
-    id_diem_danh_ve:null
+    id_diem_danh_ve:null,
+    id_chi_tiet_nhan_xet: null
   });
   const [so_thang_hoc_phi, set_so_thang_hoc_phi] = useState(null);
 
@@ -136,8 +141,7 @@ function App() {
   const Drawer = createDrawerNavigator();
 
   const HomeStackScreen = () => (
-    <>
-      <StatusBar backgroundColor={color_app} color="black" />
+
       <HomeStack.Navigator initialRouteName={route_notifi}>
 
 
@@ -293,10 +297,25 @@ function App() {
             headerTintColor: '#fff',
             title: "Đổi mật khẩu"}} />
 
-        <HomeStack.Screen name="ChiTietNghiHoc" component={ChiTietNghiHoc} options={{  
+        <HomeStack.Screen name="ChiTietNghiHoc" component={ChiTietNghiHoc} 
+          initialParams={{ id_ct_nghi_hoc : id_param_form_notifi.id_ct_nghi_hoc  }}
+        options={{  
                   headerStyle: { backgroundColor: color_app },
                     headerTintColor: '#fff',
                     title: "Chi tiết nghỉ học"}} />
+
+        <HomeStack.Screen name="NhanXet" component={NhanXet} 
+          options={{  
+              headerStyle: { backgroundColor: color_app },
+                headerTintColor: '#fff',
+                title: "Nhận xét"}} />
+
+        <HomeStack.Screen name="ChiTietNhanXet" component={ChiTietNhanXet} 
+          initialParams={{ id_chi_tiet_nhan_xet : id_param_form_notifi.id_chi_tiet_nhan_xet  }}
+                    options={{  
+                          headerStyle: { backgroundColor: color_app },
+                            headerTintColor: '#fff',
+                            title: "Nhận xét"}} />
 
         <HomeStack.Screen name="ShowThongBao" component={ShowThongBao}
           initialParams={{ id_noi_dung_tb : id_param_form_notifi.id_noi_dung_thong_bao , route_notifi: route_notifi }}
@@ -305,8 +324,13 @@ function App() {
               headerTintColor: '#fff',
               title: "Thông báo"}} />
 
+          <HomeStack.Screen name="HistoryNotification" component={HistoryNotification} options={{ 
+                  title: 'Tất cả thông báo',
+                  headerStyle: { backgroundColor: color_app },
+                  headerTintColor: '#fff',
+                }} />
+
       </HomeStack.Navigator>
-    </>
   )
 
   const AccountScreen = () => (
@@ -322,15 +346,14 @@ function App() {
   )
 
   const NotificationScreen = () => (
+
     <NotificationStack.Navigator initialRouteName="Notification">
       <NotificationStack.Screen name="Notification" component={Notification} options={{headerShown: false }} />
-      <NotificationStack.Screen name="ShowThongBao" component={ShowThongBao} options={{headerShown: false }} />
+      {/* <NotificationStack.Screen name="ShowThongBao" component={ShowThongBao} options={{headerShown: false }} /> */}
 
-      <NotificationStack.Screen name="HistoryNotification" component={HistoryNotification} options={{ 
-        title: 'Tất cả thông báo',
-        headerStyle: { backgroundColor: color_app }
-      }} />
+    
     </NotificationStack.Navigator>
+
   )
 
   const DanhBaScreen = () => (
@@ -393,18 +416,18 @@ function App() {
         .then(function (response) {
           let data = response.data;
           console.log('update_bell', data)
+          store.dispatch(setNumberNotification(0))
         })  
         .catch(function (error) {
           console.log('update_bell_err', error);
         });
   };
 
-  // let number_Noti_Show = 0;
-  // store.subscribe(function () {
-  //   return number_Noti_Show = store.getState().notification;
-  // });
+
 
   const UserGreeting = () => (
+    <>
+    <StatusBar backgroundColor={color_app} color="black" />
     <Tabs.Navigator style={styles.tabbutton} initialRouteName="Kids" screenOptions={({ route }) => ({
       tabBarIcon: ({ focused, color, size }) => {
         let iconName;
@@ -456,8 +479,10 @@ function App() {
         }}
       />
 
-
     </Tabs.Navigator>
+
+    </>
+
   )
 
 
@@ -522,17 +547,20 @@ function App() {
               console.log('item_selectdddddddddddddđ',item)
               // push hoc sinh chon vào đầu array 
               arr_all_hs_user_new.push(item);
-              await AsyncStorage.removeItem('data_hs');
-              await AsyncStorage.setItem('data_hs', JSON.stringify(item));
-              store.dispatch(fetchDataAsyncStorage());
+             
             }else{
               arr_no_id_chose.push(item);
             }
           })
           let arr_new = arr_all_hs_user_new.concat(arr_no_id_chose);
           // nối arr có hoc sinh chọn với arr ko  có học đó để cho học sinh chọn lên đầu array
-          await  AsyncStorage.removeItem('data_all_hs');
+           // await AsyncStorage.removeItem('data_hs');
+           await AsyncStorage.setItem('data_hs', JSON.stringify(arr_all_hs_user_new[0]));
+           await store.dispatch(fetchDataAsyncStorage());
+          // await  AsyncStorage.removeItem('data_all_hs');
           await  AsyncStorage.setItem('data_all_hs',JSON.stringify(arr_new));
+          await store.dispatch(setcheckValueCallAgain());
+
            console.log('đã chuyển học sinh',arr_new );
       }
 
@@ -545,6 +573,7 @@ function App() {
               id_hoc_phi : null,
               id_noi_dung_thong_bao : null,
               id_ct_nghi_hoc:null,
+              id_chi_tiet_nhan_xet: null,
             });
         }else if (route_get.name_route == 'ShowThongBao'){
             setId_param_form_notifi({
@@ -552,13 +581,15 @@ function App() {
               id_hoc_phi : null,
               id_noi_dung_thong_bao :route_get.id,
               id_ct_nghi_hoc:null,
+              id_chi_tiet_nhan_xet: null,
             });
         }else if (route_get.name_route == 'ChiTietNghiHoc'){
             setId_param_form_notifi({
               id_don_thuoc : null,
               id_hoc_phi : null,
-              id_noi_dung_thong_bao :route_get.id,
-              id_ct_nghi_hoc:null,
+              id_noi_dung_thong_bao :null,
+              id_ct_nghi_hoc:route_get.id,
+              id_chi_tiet_nhan_xet: null,
             });
         }else if (route_get.name_route == 'DotCuaThang'){
               set_so_thang_hoc_phi(route_get.so_thang)
@@ -566,9 +597,19 @@ function App() {
                 id_don_thuoc : null,
                 id_hoc_phi : route_get.id,
                 id_noi_dung_thong_bao : null,
-                id_ct_nghi_hoc:null
+                id_ct_nghi_hoc:null,
+                id_chi_tiet_nhan_xet: null,
+
               });
-         }
+         }else if (route_get.name_route == 'ChiTietNhanXet'){
+                setId_param_form_notifi({
+                  id_don_thuoc : null,
+                  id_hoc_phi : null,
+                  id_noi_dung_thong_bao : null,
+                  id_ct_nghi_hoc:null,
+                  id_chi_tiet_nhan_xet: route_get.id,
+                });
+        }
       }
 
 
@@ -585,31 +626,12 @@ function App() {
       var route_get = JSON.parse(remoteMessage.data.route);
       console.log('route',route_get);
       // selectedHsWithNotification(route_get.id_hs);
-      selectedHsWithNotification(1);
+      selectedHsWithNotification(route_get.id_hs);
 
       // setId_hs_set_home(route_get.id_hs);
       setRouteNotifi(route_get.name_route);
       paramRouteNotifition(route_get);
-      // if(route_get.name_route == 'detail_medicine'){
-      //       setId_param_form_notifi({
-      //         id_don_thuoc : route_get.id,
-      //         id_hoc_phi : null,
-      //         id_noi_dung_thong_bao : null
-      //       });
-      // }else if (route_get.name_route == 'ShowThongBao'){
-      //       setId_param_form_notifi({
-      //         id_don_thuoc : null,
-      //         id_hoc_phi : null,
-      //         id_noi_dung_thong_bao :route_get.id
-      //       });
-      // }else if (route_get.name_route == 'DotCuaThang'){
-      //       set_so_thang_hoc_phi(route_get.so_thang)
-      //       setId_param_form_notifi({
-      //         id_don_thuoc : null,
-      //         id_hoc_phi : route_get.id,
-      //         id_noi_dung_thong_bao : null,
-      //       });
-      //     }
+     
       });
     // Check whether an initial notification is available
 
@@ -630,32 +652,10 @@ function App() {
           console.log('route',route_get.id_hs);
           
           // await selectedHsWithNotification(route_get.id_hs);
-          await selectedHsWithNotification(1);
+          await selectedHsWithNotification(route_get.id_hs);
           // setId_hs_set_home(route_get.id_hs);
           setRouteNotifi(route_get.name_route);
           paramRouteNotifition(route_get);
-
-          // if(route_get.name_route == 'detail_medicine'){
-          //   setId_param_form_notifi({
-          //     id_don_thuoc : route_get.id,
-          //     id_hoc_phi : null,
-          //     id_noi_dung_thong_bao : null
-          //   });
-          //   }else if (route_get.name_route == 'ShowThongBao'){
-          //         setId_param_form_notifi({
-          //           id_don_thuoc : null,
-          //           id_hoc_phi : null,
-          //           id_noi_dung_thong_bao :route_get.id
-          //         });
-          //   }else if (route_get.name_route == 'DotCuaThang'){
-          //     set_so_thang_hoc_phi(route_get.so_thang)
-          //     setId_param_form_notifi({
-          //       id_don_thuoc : null,
-          //       id_hoc_phi : route_get.id,
-          //       id_noi_dung_thong_bao :null
-          //     });
-          //   }
-
 
           // setInitialRoute(remoteMessage.data.type);
           // e.g. "Settings"
@@ -674,10 +674,11 @@ function App() {
       ApiUser.update_device_user(user.id)
         .then(async function (response) {
           console.log(response.data)
-          await AsyncStorage.removeItem('data_user');
-          await AsyncStorage.removeItem('data_hs');
-          await AsyncStorage.removeItem('data_token');
-          setCheckHaveUserToken(false);
+          // await AsyncStorage.removeItem('data_user');
+          // await AsyncStorage.removeItem('data_hs');
+          // await AsyncStorage.removeItem('data_token');
+         await AsyncStorage.clear();
+         setCheckHaveUserToken(false);
           // setId_hs_set_home(null);
           setShowLoading(false);
 
@@ -686,9 +687,10 @@ function App() {
           console.log(error);
         });
     }else{
-      await AsyncStorage.removeItem('data_user');
-      await AsyncStorage.removeItem('data_hs');
-      await AsyncStorage.removeItem('data_token');
+      // await AsyncStorage.removeItem('data_user');
+      // await AsyncStorage.removeItem('data_hs');
+      // await AsyncStorage.removeItem('data_token');
+      await AsyncStorage.clear();
       setCheckHaveUserToken(false);
       setShowLoading(false);
       // setId_hs_set_home(null);
@@ -725,8 +727,12 @@ function App() {
         setId_param_form_notifi({
             id_don_thuoc : null,
             id_hoc_phi : null,
-            id_noi_dung_thong_bao : null
-        })
+            id_noi_dung_thong_bao : null,
+            id_ct_nghi_hoc:null,
+            id_diem_danh_ve:null,
+            id_chi_tiet_nhan_xet: null
+        });
+
       }
     }
   })

@@ -18,6 +18,7 @@ import moment from 'moment';
 import 'moment/locale/vi';
 
 import HeaderNotifiWhenClick from '../HeaderNotifiWhenClick';
+import HeaderClickFromThongBao from '../HeaderClickFromThongBao';
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
@@ -65,27 +66,28 @@ const Detail_medicine =  ({ route,navigation }) => {
 
 
 
-      useEffect(() => {
-            if(route_notifi == 'detail_medicine'){
-              navigation.setOptions({
-                headerTitle: () => <HeaderNotifiWhenClick navigation={navigation} name_header_tab="Chi tiết dặn thuốc"/>,
-              })
-            }
-     }, []);
+    //   useEffect(() => {
+    //         if(route_notifi == 'detail_medicine'){
+    //           navigation.setOptions({
+    //             headerTitle: () => <HeaderNotifiWhenClick navigation={navigation} name_header_tab="Chi tiết dặn thuốc"/>,
+    //           })
+    //         }
+    //  }, []);
 
      
-   async function HamGetBinhLuanDonThuoc (token,id_don_thuoc) {
+   async function HamGetBinhLuanDonThuoc (id_don_thuoc) {
       console.log('runinggggggggggggggggggggggggggggggggggggggggg ----------------------------------------------');
       setShowLoading(true);
       var data_token = await AsyncStorage.getItem('data_token');
       console.log('data_token',data_token)
         ApiPhanHoi.getBinhLuanOfDonThuoc(data_token,id_don_thuoc)
           .then(function (response) {
-            let data_json = response.data;
-            // let data = Object.values(data_json);
-            setBinhLuan(data_json);
+            let data_get = response.data;
+            if(typeof data_get == 'object'){
+              setBinhLuan(data_get);
+            }
             setShowLoading(false);
-            console.log('binh_luan',data_json)
+            console.log('binh_luan',typeof data_get)
           })
           .catch(function (error) {
             setShowLoading(false);
@@ -113,33 +115,46 @@ const Detail_medicine =  ({ route,navigation }) => {
       useEffect(() => {
          async function fetchData() {
              var token = await AsyncStorage.getItem('data_token');
-                const { donthuoc } = route.params;
-          if(dl_donthuoc == undefined){
-            getDonThuocById(id_don_thuoc)
-          }else{
-            setDonThuoc(dl_donthuoc);
-            setChiTietDon(dl_donthuoc.chi_tiet_don_dan_thuoc);
-          }
-                 
+             var data_all_js_json = await AsyncStorage.getItem('data_all_hs');
+             let  data_all = JSON.parse(data_all_js_json);
+             
+              if(dl_donthuoc == undefined){
+                getDonThuocById(id_don_thuoc)
+              }else{
+                setDonThuoc(dl_donthuoc);
+                setChiTietDon(dl_donthuoc.chi_tiet_don_dan_thuoc);
+              }
+
+              // check neu tat ap an click thong bao nen thi lay header khac
+              const { route_notifi } = route.params;
+              if(route_notifi == 'detail_medicine'){
+                  navigation.setOptions({
+                    headerTitle: () => <HeaderNotifiWhenClick navigation={navigation} name_header_tab="Chi tiết đơn thuốc"/>,
+                  })
+               }
+               else{
+                const { thong_bao } = route.params;
+                if(thong_bao == true ){
+                 navigation.setOptions({
+                  //  headerTitle: () => <HeaderClickFromThongBao navigation={navigation} name_header_tab="Chi tiết đơn thuốc"/>,
+                    headerLeft: null
+                 })
+                 }
+               }
+           
+
+
+
+              const firebaseRuniing =  database().ref('phan_hoi_don_thuoc').orderByChild('don_dan_thuoc_id').equalTo(id_don_thuoc).limitToLast(1);
+              const onListerning = firebaseRuniing.on('child_added', function(snapshot) { 
+                console.log('arrun_detail_don______________________________________________',id_don_thuoc)
+                HamGetBinhLuanDonThuoc(id_don_thuoc);
+              });
+              return () => {
+                firebaseRuniing.off('child_added',onListerning);            
+              }
           }
           fetchData();
-
-          // check neu tat ap an click thong bao nen thi lay header khac
-          const { route_notifi } = route.params;
-          if(route_notifi == 'detail_medicine'){
-              navigation.setOptions({
-                headerTitle: () => <HeaderNotifiWhenClick navigation={navigation}/>,
-              })
-            }
-
-            // firebase get 1 gia tri khi co ban ghi moi 
-            database()
-            .ref('phan_hoi_don_thuoc')
-            .orderByChild('don_dan_thuoc_id').equalTo(id_don_thuoc).limitToLast(1)
-            .on('child_added', snapshot => {
-                console.log('arr_data_firebase', snapshot.val())
-               HamGetBinhLuanDonThuoc(data_token.token,id_don_thuoc)
-            });
 
         },[]);
     
@@ -213,7 +228,7 @@ const BinhLuanCuaGiaoVien = ({item}) => (
         </View>
 
         <View style={{width:'50%'}}>
-        <Text style={{color:'gray'}}> GV: {item.user.giao_vien.ten} </Text>
+        <Text style={{color:'gray'}}> GV: {item.user == undefined ? ' ' : item.user.giao_vien.ten} </Text>
            <TouchableOpacity onPress={()=> {setIdShowTime(item.id)}}>
               <View style={{paddingLeft:10,backgroundColor:'#e6e5e3',paddingRight:10,borderBottomRightRadius:10,borderTopRightRadius:10,paddingVertical:5}}>
                 <Text style={{}}>{item.noi_dung}</Text>
@@ -334,7 +349,7 @@ function checkValueLenght(){
                             renderItem={({item,index})=>
                             <DetailMedicine  item={item} index={index} />
                             } 
-                            keyExtractor={(item,index) => `${index}`} 
+                            keyExtractor={(item,index) => index.toString()} 
                         />
 
                         <View style={{paddingVertical:5,flexDirection:'row'}}>
@@ -358,7 +373,7 @@ function checkValueLenght(){
                            item.type == 1 ? <BinhLuanCuaHocSinh item={item} /> : <BinhLuanCuaGiaoVien item={item}/> 
                            )
                             } 
-                            keyExtractor={(item,index) => `${index}`} 
+                            keyExtractor={(item,index) => index.toString()} 
                             
                         /> 
                   </View>

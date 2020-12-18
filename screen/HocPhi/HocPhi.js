@@ -72,7 +72,7 @@ const HocPhi =  ({ navigation }) => {
                                        </View>
                                     </TouchableOpacity>
                         }}
-                        keyExtractor={(item,index) => index}
+                        keyExtractor={(item,index) => index.toString()}
                     />
                 
                    </View>

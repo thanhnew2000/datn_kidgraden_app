@@ -470,7 +470,7 @@ function submitAdd(){
                 renderItem={({item,index})=>
                 <BoxThuoc item={item} index={index} />
                 } 
-                keyExtractor={(item,index) => `${index}`} 
+                keyExtractor={(item,index) => index.toString()} 
             />
 
 

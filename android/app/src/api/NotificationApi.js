@@ -24,11 +24,17 @@ const getArrNotifiNumberHs = (token,data) => {
 const getNumberNotifiNumberOneHs = (token,id_hs) => {
     return http.axiosAPItoken(token).get('/get-number-notifition-hs/'+id_hs);
 };
+
+
+const getMoreThongBao = (token,id_hs) => {
+    return http.axiosAPItoken(token).get('/get-more-thong-bao-by-id-hs/'+id_hs);
+};
 export default {
     getNofiByIdUser,
     allNofiByIdUser,
     updateBellHs,
     updateTypeOneNoti,
     getArrNotifiNumberHs,
-    getNumberNotifiNumberOneHs
+    getNumberNotifiNumberOneHs,
+    getMoreThongBao
 };

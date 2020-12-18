@@ -33,7 +33,7 @@ const ShowThongBao = ({navigation,route}) => {
 
     const [thongBao, setThongBao] = useState({});
 
-    const [showLoading, setShowLoading] = useState(true);
+    const [showLoading, setShowLoading] = useState(false);
 
   const getNoiDung = () => {
     setShowLoading(true);
@@ -50,7 +50,14 @@ const ShowThongBao = ({navigation,route}) => {
           console.log(error);
         });
     };
-    useEffect(() => getNoiDung(),[id_noi_dung_tb])
+    useEffect(() => {
+      navigation.setOptions({
+        headerLeft: null
+      });
+      getNoiDung()
+    }
+    
+    ,[id_noi_dung_tb])
     
       return (
         <View style={styles.containers}>

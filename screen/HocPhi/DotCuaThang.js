@@ -46,7 +46,16 @@ const DotCuaThang =  ({ navigation,route }) => {
           console.log(error);
         });
     };
-    useEffect(() => {getDot()}, []);
+    useEffect(() => {
+      const { thong_bao } = route.params;
+      if(thong_bao == true){
+          navigation.setOptions({
+            headerLeft: null
+          })
+       }
+
+      getDot();
+    }, []);
 
 
     // function onClick2(nam){
@@ -95,7 +104,7 @@ const DotCuaThang =  ({ navigation,route }) => {
                                         </View>
                                  </TouchableOpacity>
                         }}
-                        keyExtractor={(item,index) => index}
+                        keyExtractor={(item,index) => index.toString()}
                     />
                      
                     

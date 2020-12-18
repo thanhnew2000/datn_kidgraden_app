@@ -59,7 +59,11 @@ export const setIdParamDetailMedicien = (id) =>{
       id
   }
 }
-
+export const setcheckValueCallAgain = () =>{
+  return {
+      type: types.CHECK_CALL_AGAIN_VALUE,
+  }
+}
 
 
 export function setRouteNotifition(route_notifi) {
