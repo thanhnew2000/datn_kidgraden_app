@@ -308,7 +308,7 @@ function App() {
           options={{  
               headerStyle: { backgroundColor: color_app },
                 headerTintColor: '#fff',
-                title: "Nhận xét"}} />
+                title: "Nhận xét về bé" }} />
 
         <HomeStack.Screen name="ChiTietNhanXet" component={ChiTietNhanXet} 
           initialParams={{ id_chi_tiet_nhan_xet : id_param_form_notifi.id_chi_tiet_nhan_xet  }}
@@ -325,7 +325,7 @@ function App() {
               title: "Thông báo"}} />
 
           <HomeStack.Screen name="HistoryNotification" component={HistoryNotification} options={{ 
-                  title: 'Tất cả thông báo',
+                  title: 'Xem thêm thông báo',
                   headerStyle: { backgroundColor: color_app },
                   headerTintColor: '#fff',
                 }} />
@@ -350,8 +350,6 @@ function App() {
     <NotificationStack.Navigator initialRouteName="Notification">
       <NotificationStack.Screen name="Notification" component={Notification} options={{headerShown: false }} />
       {/* <NotificationStack.Screen name="ShowThongBao" component={ShowThongBao} options={{headerShown: false }} /> */}
-
-    
     </NotificationStack.Navigator>
 
   )
@@ -406,7 +404,6 @@ function App() {
     </Stack.Navigator>
   )
 
-
   async function updateBellNotification() {
     var hs = await AsyncStorage.getItem('data_hs');
     var token = await AsyncStorage.getItem('data_token');
@@ -422,7 +419,6 @@ function App() {
           console.log('update_bell_err', error);
         });
   };
-
 
 
   const UserGreeting = () => (
@@ -465,6 +461,14 @@ function App() {
           listeners={{
             tabPress: e => {
               setRouteNotifi('Home');
+              setId_param_form_notifi({
+                id_don_thuoc : null,
+                id_hoc_phi : null,
+                id_noi_dung_thong_bao : null,
+                id_ct_nghi_hoc:null,
+                id_diem_danh_ve:null,
+                id_chi_tiet_nhan_xet: null
+            });
             },
           }}
        />
@@ -480,9 +484,7 @@ function App() {
       />
 
     </Tabs.Navigator>
-
     </>
-
   )
 
 

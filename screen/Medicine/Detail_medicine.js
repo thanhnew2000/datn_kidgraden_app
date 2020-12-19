@@ -295,13 +295,15 @@ function scrolltoendBinhLuan(){
 
 function checkValueLenght(){
   // let regSpace= new RegExp(/\s/);
+  var patter_regex = new RegExp("\[[^\s]*\s");
+  var regex_check = patter_regex.test(Hscomment);
   if(Hscomment == null){
     return false;
-  }else if(Hscomment == ' '){
+  }else if(regex_check == false){
     return false;
-  }else if(Hscomment == ''){
-    return false;
-  }else{return true}
+  }else{
+    return true
+  }
 }
 
   return (

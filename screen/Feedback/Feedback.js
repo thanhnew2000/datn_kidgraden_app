@@ -66,9 +66,12 @@ const Feedback = ({navigation}) => {
             <View style={styles.container}>
                 <View style={{paddingTop:10}}>
                     <Input label="Nội dung đánh giá"
-                       multiline
+                       multiline={true}
                        onChangeText={text  => {setNoiDung(text)}}
-                       numberOfLines={4} />
+                       numberOfLines={4}
+                       blurOnSubmit={true}
+                       
+                       />
                 </View>
                 <View style={{width:'40%',alignSelf:'flex-end'}}>
                     <TouchableOpacity onPress={()=>{submitFeedback()}} style={{backgroundColor:'#fab20a',borderRadius:50,marginTop:20,marginBottom:50}}>

@@ -130,7 +130,7 @@ const DonHo =  ({ navigation }) => {
               <View style={styles.chia2thanh}>
 
                   <View style={{width:'25%'}}>
-                    <Image style={{width:50,height:50}} source={{uri : ipApi +'storage/'+itemDonHo.anh_nguoi_don_ho}}/>
+                    <Image style={{width:50,height:50}} source={{uri : itemDonHo.anh_nguoi_don_ho}}/>
                   </View>
                   <View style={{width:'70%'}}>
                       <Text style={{fontWeight:'bold',fontSize:15}}>{itemDonHo.ten_nguoi_don_ho} </Text>
@@ -170,7 +170,7 @@ const DonHo =  ({ navigation }) => {
 
                         <View style={{alignItems:'center',paddingTop:10}}>
                           {/* <Image source={IconKidsStudy} style={{width:150,height:140}} /> */}
-                          <Image source={{uri : ipApi +'storage/'+detailNguoiDon.anh_nguoi_don_ho}} style={{width:150,height:140}} />
+                          <Image source={{uri : detailNguoiDon.anh_nguoi_don_ho}} style={{width:150,height:140}} />
 
                         </View>
                         <View style={{flexDirection:'row',padding:10}}>

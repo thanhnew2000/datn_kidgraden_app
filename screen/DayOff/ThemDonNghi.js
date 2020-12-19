@@ -65,10 +65,13 @@ const ThemDonNghi =  ({ navigation , route}) => {
 
 
       function Checkvalidation(dateFrom,dateTo,lyDoXinNghi){
-           if(dateFrom > dateTo){
+        var patter_regex_null = new RegExp("\[[^\s]*\s");
+          // check khoảng trống trước cho tới khi có ký tự thì được
+
+          if(dateFrom > dateTo){
             return 'Ngày bắt đầu không lớn hơn ngày kết thúc';
-          }else if(lyDoXinNghi == null){
-            return 'Hãy viết lý do xin nghỉ';
+          }else if(patter_regex_null.test(lyDoXinNghi) == false){
+            return 'Hãy nhập lý do xin nghỉ';
           }else{
             return true
           }
@@ -103,8 +106,8 @@ const ThemDonNghi =  ({ navigation , route}) => {
                     });
 
                   }
-
         }else{
+          setSubmitLoading(false)
           Alert.alert('Không thể thực hiện thao tác','Do học sinh hiện chưa có lớp lên không thể thực hiện thao tác này!')
         }
 
@@ -174,9 +177,11 @@ const ThemDonNghi =  ({ navigation , route}) => {
                             multiline={true}
                             numberOfLines={7}
                             textAlignVertical = "top"
+                            blurOnSubmit={true}
                             style={{ width:'100%', borderColor: 'gray', backgroundColor:'white',borderRadius:10,
                                     paddingHorizontal:10,paddingVertical:10,borderWidth:1
                             }}
+
                         />
 
                       

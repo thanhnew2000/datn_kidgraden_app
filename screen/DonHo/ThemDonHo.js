@@ -109,23 +109,32 @@ const ThemDonHo =  ({ navigation , route}) => {
 
 
 
-    function Checkvalidation(dateFrom,dateTo,valueInput){
+    function Checkvalidation(dateFrom,dateTo,valueInput,avatar){
+          var check_regex_specfi = new RegExp(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/);
+
+          var patter_regex_null = new RegExp("\[[^\s]*\s");
+          // check khoảng trống trước cho tới khi có ký tự thì được
+
           if(dateFrom > dateTo){
            return 'Ngày bắt đầu không lớn hơn ngày kết thúc';
-         }else if(valueInput.name == null || valueInput.cmnd == null || valueInput.phone == null){
+         }else if(check_regex_specfi.test(valueInput.name)){
+           return 'Không nhập kí tự đặc biệt';
+         }else if(patter_regex_null.test(valueInput.name) == false || patter_regex_null.test(valueInput.cmnd) == false || patter_regex_null.test(valueInput.phone) == false){
            return 'Hãy nhập đầy đủ !';
+         }else if(avatar.uri == undefined){
+           return 'Hãy nhập ảnh!';
          }else{
            return true
          }
      }
 
    function submitFrom (){
-    if(lop_hs !== null){
-         setSubmitLoading(true)
-          let checkEd = Checkvalidation(dateFrom,dateTo,valueInput);
-          if(checkEd !== true){
-            setSubmitLoading(false)
-            Alert.alert(checkEd)
+         if(lop_hs !== null){
+            setSubmitLoading(true)
+              let checkEd = Checkvalidation(dateFrom,dateTo,valueInput,avatarSource);
+              if(checkEd !== true){
+                setSubmitLoading(false)
+                Alert.alert(checkEd)
           }else{
                   const formData = new FormData();
                     formData.append("ngay_bat_dau",dateFrom.getDate()+ '-' + parseInt(dateFrom.getMonth() + 1) +'-'+ dateFrom.getFullYear());
@@ -139,7 +148,8 @@ const ThemDonHo =  ({ navigation , route}) => {
                       .then(res => {
                           console.log(res.data);
                           setSubmitLoading(false)
-                          navigation.navigate('Đón hộ');
+                          Alert.alert('Đã gửi đơn đón hộ thành công ')
+                          navigation.navigate('Home');
                       })
                       .catch(err => {
                           console.log(err);
@@ -246,6 +256,7 @@ const ThemDonHo =  ({ navigation , route}) => {
                       multiline={true}
                       numberOfLines={3}
                       textAlignVertical = "top"
+                      blurOnSubmit={true}
                       />
 
 

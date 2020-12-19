@@ -160,11 +160,13 @@ const Add_medicine =  ({ navigation , route }) => {
 
     //   NÚT THÊM THUỐC VÀO ĐƠN
       function addMedicinetoList(){
-        if(oneMedicineAdd.name == ''){
+        var patter_regex = new RegExp("\[[^\s]*\s");
+
+        if(patter_regex.test(oneMedicineAdd.name) == false){
           Alert.alert('Hãy nhập tên thuốc')
-        }else if(oneMedicineAdd.lieu == ''){
+        }else if(patter_regex.test(oneMedicineAdd.lieu) == false){
           Alert.alert('Hãy nhập liều thuốc')
-        }else if(oneMedicineAdd.lieu == ''){
+        }else if(patter_regex.test(oneMedicineAdd.donvi) == false){
           Alert.alert('Hãy nhập đơn vị thuốc')
         }else{
             setListAddMedicine([...listAddMedicine,oneMedicineAdd])
@@ -368,6 +370,7 @@ function submitAdd(){
                             onChangeText={text  => {setLoiNhan(text)}}
                             placeholder="Lời nhắn tới giáo viên"
                             multiline={true}
+                            blurOnSubmit={true}
                             numberOfLines={4}
                             textAlignVertical = "top"
                         />

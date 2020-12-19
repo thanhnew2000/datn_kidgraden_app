@@ -77,7 +77,8 @@ const CapNhapThongTin =  ({ navigation ,route}) => {
                                 height:100,
                                 transform: [{scale:scaleAnim}]
                         }}  
-                        source={require('../../android/app/src/asset/img/home_image_slide.jpg')} />
+                        // source={require('../../android/app/src/asset/img/home_image_slide.jpg')} />
+                        source={{uri : du_lieu_hs.avatar}} />
                     </View>
                     {/* <View style={{width:'50%',alignSelf:'center',marginLeft:15,paddingTop:20}}> */}
                     <View style={{width:'50%',alignSelf:'center',marginLeft:15,paddingTop:20}}>
