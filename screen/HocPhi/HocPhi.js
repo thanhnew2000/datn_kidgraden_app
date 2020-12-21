@@ -19,6 +19,7 @@ const HocPhi =  ({ navigation }) => {
     const data_redux = useSelector(state => state)
     const du_lieu_hs = data_redux.hocsinh.data;
     const data_token = data_redux.token;
+    // console.log(data_token.token)
 
     const [data_hp, setDataHp] = useState([]);
     const [arr_nam, setArrNam] =  useState([]);

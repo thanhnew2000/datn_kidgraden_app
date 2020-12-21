@@ -9,8 +9,7 @@ import IconKidsOutSide from '../../android/app/src/asset/img/icon-kids-outside.j
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import ApiHocPhi from '../../android/app/src/api/HocPhiApi';
 import { useSelector,useDispatch } from 'react-redux'
-
-
+import NumberFormat from 'react-number-format';
 LogBox.ignoreAllLogs();
 
 
@@ -61,7 +60,7 @@ const ChiTietHocPhi =  ({ navigation ,route}) => {
     useEffect(() => {getDot()}, []);
 
     function formatNumberMoney(number){
-       return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(number)
+      return <NumberFormat value={number} displayType={'text'} thousandSeparator={true} renderText={value => <Text>{value} VNĐ</Text>} />
     }
   return (
 <ScrollView>

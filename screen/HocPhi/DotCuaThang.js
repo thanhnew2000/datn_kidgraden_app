@@ -8,8 +8,8 @@ import IconKidsStudy from '../../android/app/src/asset/img/icon-kids-study.jpg';
 import IconKidsOutSide from '../../android/app/src/asset/img/icon-kids-outside.jpg';
 import { ScrollView } from 'react-native-gesture-handler';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-
 import { useSelector,useDispatch } from 'react-redux'
+import NumberFormat from 'react-number-format';
 
 import ApiHocPhi from '../../android/app/src/api/HocPhiApi';
 import HeaderNotifiWhenClick from '../HeaderNotifiWhenClick'
@@ -76,7 +76,7 @@ const DotCuaThang =  ({ navigation,route }) => {
     //  }
 
     function formatNumberMoney(number){
-      return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(number)
+      return <NumberFormat value={number} displayType={'text'} thousandSeparator={true}  renderText={value => <Text>{value} VNĐ</Text>} />
    }
 
   return (
