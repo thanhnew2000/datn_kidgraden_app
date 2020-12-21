@@ -94,7 +94,7 @@ import messaging from '@react-native-firebase/messaging';
 import database from '@react-native-firebase/database';
 
 
-import { setNumberNotification, fetchDataAsyncStorage, fetchTokenAsyncStorage, setcheckValueCallAgain,getDataSuccess } from './src/redux/action/index';
+import { setNumberNotification, fetchDataAsyncStorage, fetchTokenAsyncStorage, setcheckValueCallAgain, getDataSuccess,setRouteNotifition } from './src/redux/action/index';
 
 import TabNumberNoti from './screen/TabNumberNoti';
 
@@ -282,6 +282,7 @@ function App() {
           options={{
             headerStyle: { backgroundColor: color_app },
             headerTintColor: '#fff',
+            title: "Ảnh ablum"
           }} />
 
         <HomeStack.Screen name="detail_diem_danh_ve" component={DetailDiemDanhVe}
@@ -450,28 +451,15 @@ function App() {
       },
     })}
       tabBarOptions={{
-        labelStyle: {
-          fontSize: 13,
-        },
+        // labelStyle: {
+        //   fontSize: 15,
+        // },
          showLabel: false,
+       
         //  showIcon:true,
       }}
     >
-      <Tabs.Screen name="Kids" component={HomeStackScreen}
-          listeners={{
-            tabPress: e => {
-              setRouteNotifi('Home');
-              setId_param_form_notifi({
-                id_don_thuoc : null,
-                id_hoc_phi : null,
-                id_noi_dung_thong_bao : null,
-                id_ct_nghi_hoc:null,
-                id_diem_danh_ve:null,
-                id_chi_tiet_nhan_xet: null
-            });
-            },
-          }}
-       />
+      <Tabs.Screen name="Kids" component={HomeStackScreen} />
       <Tabs.Screen name="Account" component={AccountScreen} />
       
       <Tabs.Screen name="Thông báo" component={NotificationScreen}
@@ -527,11 +515,11 @@ function App() {
             getHsIdUserCheckTokenUse(token,user.id,hs.id);
           }else{
             setCheckHaveUserToken(false);
-            setShowLoading(false);
           }
-
+          setShowLoading(false);
         } catch (e) {
           console.log(e);
+         setShowLoading(false);
         }
       }
 
@@ -615,6 +603,52 @@ function App() {
       }
 
 
+
+
+
+      // lay thong bao
+      const getNumberNotifiNumberHs = async () => {
+        var hsinh = await AsyncStorage.getItem('data_hs');
+        var data_token = await AsyncStorage.getItem('data_token');
+        let data_HocSinh = JSON.parse(hsinh)
+        console.log('getNumberNotifiNumberHs đang chạy____________________________',data_HocSinh.id);
+        ApiNotification.getNumberNotifiNumberOneHs(data_token.token,data_HocSinh.id)
+        .then(function (response) {
+            let data = response.data;
+            console.log('number',data);
+            // dispatch(setcheckValueCallAgain());
+            store.dispatch(setNumberNotification(data));
+          })
+          .catch(function (error) {
+          console.log('number_bell_err',error);
+          });
+      };
+      async  function abLister(){
+        var data_user = await AsyncStorage.getItem('data_user');
+        let dt_user = JSON.parse(data_user);
+        if(dt_user.id !== undefined){
+              const firebaseRuniing =  database().ref('notification').orderByChild('user_id').equalTo(dt_user.id).limitToLast(1);
+              const onListerning = firebaseRuniing.on('child_added', async function(snapshot) { 
+                console.log('hs_id______________________________________________')
+                var hsinh = await AsyncStorage.getItem('data_hs');
+                let dt_hs = JSON.parse(hsinh);
+                let value_Get = snapshot.val();
+                console.log('hs_id______________________________________________',dt_hs.id)
+                if(value_Get.id_hs == dt_hs.id){
+                  console.log('call notificaltion')
+                  getNumberNotifiNumberHs();
+                  store.dispatch(setcheckValueCallAgain());
+                }
+              });
+              
+              return () => {
+                firebaseRuniing.off('child_added',onListerning);            
+              }
+       }
+    }
+
+      //  end lay thong bao
+
   useEffect(() => {
     // Assume a message-notification contains a "type" property in the data payload of the screen to open
 
@@ -629,8 +663,7 @@ function App() {
       console.log('route',route_get);
       // selectedHsWithNotification(route_get.id_hs);
       selectedHsWithNotification(route_get.id_hs);
-
-      // setId_hs_set_home(route_get.id_hs);
+      store.dispatch(setRouteNotifition(route_get.name_route))
       setRouteNotifi(route_get.name_route);
       paramRouteNotifition(route_get);
      
@@ -651,19 +684,23 @@ function App() {
 
           // var route_get = JSON.parse(remoteMessage.data.route);
           var route_get = JSON.parse(remoteMessage.data.route);
-          console.log('route',route_get.id_hs);
+          console.log('route',route_get);
           
           // await selectedHsWithNotification(route_get.id_hs);
           await selectedHsWithNotification(route_get.id_hs);
           // setId_hs_set_home(route_get.id_hs);
           setRouteNotifi(route_get.name_route);
+          store.dispatch(setRouteNotifition(route_get.name_route))
           paramRouteNotifition(route_get);
 
           // setInitialRoute(remoteMessage.data.type);
           // e.g. "Settings"
         }
       });
+      abLister();
       fetchData();
+      setShowLoading(false);
+
   }, []);
 
  
@@ -675,23 +712,24 @@ function App() {
     if(user !== null){
       ApiUser.update_device_user(user.id)
         .then(async function (response) {
-          console.log(response.data)
-          // await AsyncStorage.removeItem('data_user');
-          // await AsyncStorage.removeItem('data_hs');
-          // await AsyncStorage.removeItem('data_token');
-         await AsyncStorage.clear();
-         setCheckHaveUserToken(false);
+          console.log(response.data);
+          console.log('dangxuat__1')
+          await AsyncStorage.clear();
+          setCheckHaveUserToken(false);
           // setId_hs_set_home(null);
           setShowLoading(false);
 
         })
-        .catch(function (error) {
+        .catch(   async  function (error) {
           console.log(error);
+          console.log('dangxuat__2')
+          await AsyncStorage.clear();
+          setCheckHaveUserToken(false);
+          setShowLoading(false);
+
         });
     }else{
-      // await AsyncStorage.removeItem('data_user');
-      // await AsyncStorage.removeItem('data_hs');
-      // await AsyncStorage.removeItem('data_token');
+      console.log('dangxuat__3')
       await AsyncStorage.clear();
       setCheckHaveUserToken(false);
       setShowLoading(false);
@@ -708,6 +746,7 @@ function App() {
         setCheckHaveUserToken(true)
         store.dispatch(fetchTokenAsyncStorage());
         store.dispatch(fetchDataAsyncStorage());
+        abLister();
       }
     } catch (e) {
       console.log(e);
@@ -734,7 +773,8 @@ function App() {
             id_diem_danh_ve:null,
             id_chi_tiet_nhan_xet: null
         });
-
+        set_so_thang_hoc_phi(null)
+        store.dispatch(setRouteNotifition('Home'))
       }
     }
   })

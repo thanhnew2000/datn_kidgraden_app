@@ -1,7 +1,7 @@
 
 import React ,{ useState, useEffect,useRef  }from 'react';
 import axios from 'axios';
-import { View, Text, Image, TouchableOpacity, FlatList, Modal, Alert,StyleSheet, Button,ImageBackground,Animated} from 'react-native'
+import { View, Text, Image, TouchableOpacity, FlatList, Modal, Alert,StyleSheet, Button,ImageBackground,Animated,LogBox} from 'react-native'
 import Loading from '../Loading';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -18,6 +18,9 @@ import { fetchDataAsyncStorage } from '../../src/redux/action/index';
 import { useSelector,useDispatch,useStore  } from 'react-redux'
 import linkWeb from '../../android/app/src/api/linkWeb/index';
 import { Easing } from 'react-native-reanimated';
+
+LogBox.ignoreAllLogs();
+
 
 const CapNhapThongTin =  ({ navigation ,route}) => {
     // const scrollViewRef = useRef();
@@ -167,7 +170,7 @@ const CapNhapThongTin =  ({ navigation ,route}) => {
             {/*      */}
             {/* Thông tin mẹ */}
 
-            <View style={{flexDirection:'row',paddingTop:10}}>
+                 <View style={{flexDirection:'row',paddingTop:10}}>
                     <FontAwesome name="female" size={20} color="green" />
                     <Text style={{fontSize:16,fontWeight:'bold'}}> Mẹ</Text>
                 </View>
@@ -187,8 +190,37 @@ const CapNhapThongTin =  ({ navigation ,route}) => {
                     <Text style={{paddingLeft:15}}> CMND: {du_lieu_hs.cmtnd_me}</Text>
                 </View>
 
+
+
+                {/*  Thông tin cha  */}
+                <View style={du_lieu_hs.ten_nguoi_giam_ho ==  '' ? {display:'none'} : {display:'flex'}}>
+                        <View style={{flexDirection:'row',paddingTop:10}}>
+                            <FontAwesome name="male" size={20} color="green" />
+                            <Text style={{fontSize:16,fontWeight:'bold'}}> Người giám hộ</Text>
+                        </View>
+
+                        <View style={{flexDirection:'row',paddingTop:10}}>
+                            <AntDesign name="user" size={20} color="#0066cc" />
+                            <Text style={{paddingLeft:15}}> {du_lieu_hs.ten_nguoi_giam_ho}</Text>
+                        </View>
+
+                        <View style={{flexDirection:'row',paddingTop:10}}>
+                            <AntDesign name="phone" size={20} color="#00cc00" />
+                            <Text style={{paddingLeft:15}}> {du_lieu_hs.dien_thoai_nguoi_giam_ho}</Text>
+                        </View>
+
+                        <View style={{flexDirection:'row',paddingTop:10}}>
+                            <AntDesign name="creditcard" size={20} color="#339933" />
+                            <Text style={{paddingLeft:15}}> CMND: {du_lieu_hs.cmtnd_nguoi_giam_ho}</Text>
+                        </View>
+                </View>
+
+            {/*      */}
+
               </View>    
             </View>
+
+
 
         
         </ScrollView>

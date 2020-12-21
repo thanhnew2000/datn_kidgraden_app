@@ -1,7 +1,7 @@
 
 import React ,{ useState,useEffect }from 'react';
 import { View, Text, Image,
-    TouchableOpacity, ScrollView,StyleSheet, Button,FlatList
+    TouchableOpacity, ScrollView,StyleSheet, Button,FlatList,LogBox
  } from 'react-native'
  import HTMLView from 'react-native-htmlview';
 
@@ -9,6 +9,9 @@ import { View, Text, Image,
  import ApiBieuDoSucKhoe from '../../android/app/src/api/BieuDoSucKhoeApi';
  import AsyncStorage from '@react-native-community/async-storage';
  import { useSelector,useDispatch } from 'react-redux'
+
+
+ LogBox.ignoreAllLogs();
 
 const BieuDo =  ({ navigation }) => {
 
@@ -100,8 +103,9 @@ async function getYear () {
         console.log('dataShi',data)
         data.forEach((element,index) => {
           var date = new Date(element.thoi_gian)
+          console.log('data_get_Date',date)
           var ngay = date.getDate();
-          var thang = date.getMonth();
+          var thang = date.getMonth() + 1;
           arrChieu_Cao.push({x: ngay+'/'+thang,y: Number(element.chieu_cao),label:element.chieu_cao})
           arrCan_Nang.push({x: ngay+'/'+thang,y: Number(element.can_nang),label:element.can_nang})
         });

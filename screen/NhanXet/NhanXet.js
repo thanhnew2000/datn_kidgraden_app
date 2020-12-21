@@ -58,15 +58,16 @@ const NhanXet = ({navigation,route}) => {
 
 
         function ListItem(item){
+          console.log('item',item)
         return    <View  style={styles.contain}>
             <TouchableOpacity onPress={()=> navigation.navigate('ChiTietNhanXet', {item : item})}>
                         <View style={{flexDirection: 'row'}}>
                                 <Text  style={{fontWeight:'bold'}}>Ngày : </Text>
-                                <Text>{moment(item.create_at).format("YYYY-MM-DD") }</Text>
+                                <Text>{moment(item.item.create_at).format("YYYY-MM-DD") }</Text>
                         </View>
                         <View style={{flexDirection: 'row'}}>
                             <Text style={{fontWeight:'bold'}} >Giáo viên :</Text>
-                            <Text> {item.giao_vien == undefined ? '' : item.giao_vien.ten  }</Text>
+                            <Text> {item.item.giao_vien == undefined ? '' : item.item.giao_vien.ten  }</Text>
                         </View>
 
                         </TouchableOpacity>

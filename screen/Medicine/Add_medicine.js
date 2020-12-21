@@ -1,7 +1,7 @@
 
 import React ,{ useState,useEffect }from 'react';
 import { View, Text, Image,
-    TouchableOpacity, ScrollView,StyleSheet,TextInput,  Modal,FlatList, Alert,Animated
+    TouchableOpacity, ScrollView,StyleSheet,TextInput,  Modal,FlatList, Alert,Animated,LogBox
  } from 'react-native'
  import HTMLView from 'react-native-htmlview';
  import DateTimePicker from '@react-native-community/datetimepicker';
@@ -19,6 +19,8 @@ import { useSelector,useDispatch } from 'react-redux'
 import HeaderNotifiWhenClick from '../HeaderNotifiWhenClick';
 
 import color_app from '../color_app'
+
+LogBox.ignoreAllLogs();
 
 const Add_medicine =  ({ navigation , route }) => {
   // const { reloadAgain } = route.params;
@@ -61,34 +63,34 @@ const Add_medicine =  ({ navigation , route }) => {
    const [scaleModelAddAnim, setscaleModelAddAnim] = useState(new Animated.Value(0));
 
     const [listAddMedicine, setListAddMedicine] = useState([
-        {
-            name:'Sino',
-            lieu:'300',
-            donvi:'ml',
-            note:'Uống sau bữa ăn',
-            image:''
-        },
-        {
-          name:'Sino',
-          lieu:'300',
-          donvi:'ml',
-          note:'Uống sau bữa ăn',
-          image:''
-      },
-      {
-        name:'Sino',
-        lieu:'300',
-        donvi:'ml',
-        note:'Uống sau bữa ăn',
-        image:''
-    },
-    {
-      name:'Sino',
-      lieu:'300',
-      donvi:'ml',
-      note:'Uống sau bữa ăn',
-      image:''
-  },
+  //       {
+  //           name:'Sino',
+  //           lieu:'300',
+  //           donvi:'ml',
+  //           note:'Uống sau bữa ăn',
+  //           image:''
+  //       },
+  //       {
+  //         name:'Sino',
+  //         lieu:'300',
+  //         donvi:'ml',
+  //         note:'Uống sau bữa ăn',
+  //         image:''
+  //     },
+  //     {
+  //       name:'Sino',
+  //       lieu:'300',
+  //       donvi:'ml',
+  //       note:'Uống sau bữa ăn',
+  //       image:''
+  //   },
+  //   {
+  //     name:'Sino',
+  //     lieu:'300',
+  //     donvi:'ml',
+  //     note:'Uống sau bữa ăn',
+  //     image:''
+  // },
       
     ]);
 
@@ -160,13 +162,12 @@ const Add_medicine =  ({ navigation , route }) => {
 
     //   NÚT THÊM THUỐC VÀO ĐƠN
       function addMedicinetoList(){
-        var patter_regex = new RegExp("\[[^\s]*\s");
-
-        if(patter_regex.test(oneMedicineAdd.name) == false){
+        // var patter_regex = new RegExp("\[[^\s]*\s");
+        if(oneMedicineAdd.name == '' || oneMedicineAdd.name == ' ' ||  oneMedicineAdd.name == '  '){
           Alert.alert('Hãy nhập tên thuốc')
-        }else if(patter_regex.test(oneMedicineAdd.lieu) == false){
+        }else if(oneMedicineAdd.lieu == '' || oneMedicineAdd.lieu == ' ' ||  oneMedicineAdd.lieu == '  '){
           Alert.alert('Hãy nhập liều thuốc')
-        }else if(patter_regex.test(oneMedicineAdd.donvi) == false){
+        }else if(oneMedicineAdd.donvi == '' || oneMedicineAdd.donvi == ' ' ||  oneMedicineAdd.donvi == '  '){
           Alert.alert('Hãy nhập đơn vị thuốc')
         }else{
             setListAddMedicine([...listAddMedicine,oneMedicineAdd])
@@ -175,7 +176,6 @@ const Add_medicine =  ({ navigation , route }) => {
             setOneMedicineAdd({ name: '',lieu: '',   donvi:'',note: '', image:'' })
         }
       }
-
 
     const BoxThuoc = ({item,index}) => (
         <View style={styles.listMedicine}>
@@ -297,7 +297,7 @@ function submitAdd(){
 
           }
      }else{
-       Alert.alert('Không thể thực hiện thao tác','Do học sinh hiện chưa có lớp lên không thể thực hiện thao tác này!')
+         Alert.alert('Không thể thực hiện thao tác','Do học sinh hiện chưa có lớp lên không thể thực hiện thao tác này!')
      }
  
 }

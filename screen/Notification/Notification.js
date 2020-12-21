@@ -8,6 +8,7 @@ import {
     TouchableOpacity,
     Alert,
     Button,
+    LogBox,
     FlatList
   } from 'react-native';
   import IconKidsStudy from '../../android/app/src/kids_student.jpg';
@@ -23,6 +24,7 @@ import { useSelector,useDispatch } from 'react-redux'
 import { Divider } from 'react-native-elements';
 
 // import AwesomeAlert from 'react-native-awesome-alerts';
+LogBox.ignoreAllLogs();
 
 const Notification = ({navigation}) => {
   const data_redux = useSelector(state => state)
@@ -99,6 +101,7 @@ const Notification = ({navigation}) => {
        setshowLoadingWait(true);
       var hs = await AsyncStorage.getItem('data_hs');
       let data_HocSinh = JSON.parse(hs);
+        console.log('notifincationnnnnnnnnnnnnn__________________________________________')
       ApiNotification.getNofiByIdUser(data_token.token,data_HocSinh.id)
       .then(function (response) {
           let data = response.data;
@@ -112,31 +115,28 @@ const Notification = ({navigation}) => {
         });
   };
 
-  function clickTest(){
-    console.log('notifincationnnnnnnnnnnnnn__________________________________________')
-  }
  useEffect(() => {getNotification()}, [check_value_call_again]);
- useEffect(() => {
-  async  function abLister(){
-    var data_user = await AsyncStorage.getItem('data_user');
-    let dt_user = JSON.parse(data_user);
-    const firebaseRuniing =  database().ref('notification').orderByChild('user_id').equalTo(dt_user.id).limitToLast(1);
-    const onListerning = firebaseRuniing.on('child_added',async function(snapshot) { 
-    var hsinh = await AsyncStorage.getItem('data_hs');
-    let dt_hs = JSON.parse(hsinh);
-      console.log('thong_bao_firebase_hs',dt_hs.id)
-      let value_Get = snapshot.val();
-      if(value_Get.id_hs == dt_hs.id){
-        console.log('call notificaltion')
-        getNotification();
-      }
-    });
-    return () => {
-      firebaseRuniing.off('child_added',onListerning);            
-    }
-  }
-  abLister()
- }, []);
+//  useEffect(() => {
+//   async  function abLister(){
+//     var data_user = await AsyncStorage.getItem('data_user');
+//     let dt_user = JSON.parse(data_user);
+//     const firebaseRuniing =  database().ref('notification').orderByChild('user_id').equalTo(dt_user.id).limitToLast(1);
+//     const onListerning = firebaseRuniing.on('child_added',async function(snapshot) { 
+//     var hsinh = await AsyncStorage.getItem('data_hs');
+//     let dt_hs = JSON.parse(hsinh);
+//       console.log('thong_bao_firebase_hs',dt_hs.id)
+//       let value_Get = snapshot.val();
+//       if(value_Get.id_hs == dt_hs.id){
+//         console.log('call notificaltion')
+//         getNotification();
+//       }
+//     });
+//     return () => {
+//       firebaseRuniing.off('child_added',onListerning);            
+//     }
+//   }
+//   abLister()
+//  }, []);
 
   
 
@@ -241,7 +241,7 @@ function clickNotifi(item){
                   }
                   onRefresh={() => functionOnRefresh()}
                   refreshing={isFetching}
-                  keyExtractor={(value, index) => index}
+                  keyExtractor={(item, index) => index}
          /> 
 
 

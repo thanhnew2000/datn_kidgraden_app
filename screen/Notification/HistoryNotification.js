@@ -8,6 +8,7 @@ import {
     TouchableOpacity,
     Alert,
     Button,
+    LogBox,
     FlatList
   } from 'react-native';
   import IconKidsStudy from '../../android/app/src/kids_student.jpg';
@@ -17,6 +18,8 @@ import AsyncStorage from '@react-native-community/async-storage';
 import moment from 'moment';
 import 'moment/locale/vi';
 import { useSelector,useDispatch } from 'react-redux'
+
+LogBox.ignoreAllLogs();
 
 const Notification = ({navigation}) => {
 
@@ -118,7 +121,8 @@ const Notification = ({navigation}) => {
                 }
 
                 }
-                keyExtractor={(value, index) => index}
+                            keyExtractor={(item,index) => index.toString()}
+
        /> 
 
       </View>

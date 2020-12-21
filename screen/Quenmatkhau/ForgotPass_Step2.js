@@ -3,7 +3,7 @@ import React ,{ useState,useEffect, useRef }from 'react';
 import {
     StyleSheet,
     View,
-    FlatList,Text,Image, TouchableOpacity,Alert
+    FlatList,Text,Image, TouchableOpacity,Alert,LogBox
   } from 'react-native';
 
 
@@ -14,6 +14,7 @@ import ApiUser from '../../android/app/src/api/users';
 
 
 import Modal_SubmitLoading from '../component/reuse/Modal_SubmitLoading';
+LogBox.ignoreAllLogs();
 
 
 const ForgotPass_Step2 =  ({navigation,route}) => {

@@ -1,7 +1,7 @@
 
 import React ,{ useState, useEffect }from 'react';
 import axios from 'axios';
-import { View, Text, Image, TouchableOpacity, FlatList, StyleSheet,Alert,Modal } from 'react-native'
+import { View, Text, Image, TouchableOpacity, FlatList, StyleSheet,Alert,Modal,LogBox } from 'react-native'
 import IconNews from '../../android/app/src/asset/img/icon-news.png';
 import IconKidsExercise from '../../android/app/src/asset/img/icon-kids-exercise.jpg';
 import IconKidsStudy from '../../android/app/src/asset/img/icon-kids-study.jpg';
@@ -15,6 +15,9 @@ import AsyncStorage from '@react-native-community/async-storage';
 import Modal_Loading from '../component/reuse/Modal_Loading';
 
 import { useSelector,useDispatch } from 'react-redux'
+
+
+LogBox.ignoreAllLogs();
 
 const Medicine =  ({ navigation }) => {
 
@@ -98,7 +101,8 @@ const Medicine =  ({ navigation }) => {
                             <Text style={{width:'10%'}}>{ itemDon.chi_tiet_don_dan_thuoc.length  > 1 ? '...' : null }</Text>
                           </View> : null
                       }
-                        keyExtractor={(value, index) => index}
+                      keyExtractor={(item,index) => index.toString()}
+
                  />
       </TouchableOpacity>
     </View>

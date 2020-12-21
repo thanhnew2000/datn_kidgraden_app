@@ -1,7 +1,7 @@
 
 import React ,{ useState, useEffect }from 'react';
 import axios from 'axios';
-import { View, Text, Image, TouchableOpacity, FlatList, StyleSheet,Button,Modal ,Alert} from 'react-native'
+import { View, Text, Image, TouchableOpacity, FlatList, StyleSheet,Button,Modal ,Alert,LogBox} from 'react-native'
 import IconNews from '../../android/app/src/asset/img/icon-news.png';
 import IconKidsExercise from '../../android/app/src/asset/img/icon-kids-exercise.jpg';
 import IconKidsStudy from '../../android/app/src/asset/img/icon-kids-study.jpg';
@@ -16,6 +16,9 @@ import ApiDonHo from '../../android/app/src/api/DonHoApi';
 import AsyncStorage from '@react-native-community/async-storage';
 import Modal_Loading from '../component/reuse/Modal_Loading'
 import { useSelector,useDispatch } from 'react-redux'
+
+LogBox.ignoreAllLogs();
+
 
 const DonHo =  ({ navigation }) => {
 
@@ -124,7 +127,7 @@ const DonHo =  ({ navigation }) => {
         <View style={styles.oBox}>
               <View style={{flexDirection:'row',borderBottomWidth:1,paddingVertical:5}}>
                 <Text style={{fontWeight:'bold'}}>Ngày : </Text>
-                <Text style={{fontSize:15,fontWeight:'bold',color:'green'}}> {itemDonHo.date_start} -- {itemDonHo.date_end}</Text>
+                <Text style={{fontSize:15,fontWeight:'bold',color:'green'}}> {itemDonHo.date_start} - {itemDonHo.date_end}</Text>
               </View>
               {/* <Text style={{fontSize:15,color:'blue',paddingVertical:2}}>Người đón</Text> */}
               <View style={styles.chia2thanh}>
@@ -189,13 +192,13 @@ const DonHo =  ({ navigation }) => {
                                 <Text>{detailNguoiDon.phone_number}</Text>
                           </View>
 
-                          <View style={{width:'50%'}}>
+                          {/* <View style={{width:'50%'}}>
                                 <Text style={{fontWeight:'bold',fontSize:15}}>Đón bé : </Text>
                                 <Text>Phạm Trung Hiếu</Text>
-                          </View>
+                          </View> */}
                          </View>
 
-                         <View style={{width:'50%',padding:10,flexDirection:'row'}}>
+                         <View style={{width:'100%',padding:10,flexDirection:'row'}}>
                                 <Text style={{fontWeight:'bold',fontSize:15}}>Ngày đón: </Text>
                                 <Text> {detailNguoiDon.date_start} - {detailNguoiDon.date_end}</Text>
                           </View>
@@ -219,6 +222,8 @@ const DonHo =  ({ navigation }) => {
                       }
                       onRefresh={() => functionOnRefresh()}
                       refreshing={isFetching}
+                      keyExtractor={(item,index) => index.toString()}
+
                     />
 
 

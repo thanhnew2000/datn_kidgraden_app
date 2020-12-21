@@ -3,7 +3,7 @@ import React ,{ useState,useEffect }from 'react';
 import {
     StyleSheet,
     View,
-    FlatList,Text,Image,Button,Dimensions, ImageBackground,Modal,TouchableOpacity, Alert, ScrollView
+    FlatList,Text,Image,Button,Dimensions, ImageBackground,Modal,TouchableOpacity, Alert, ScrollView,LogBox
     
   } from 'react-native';
   import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -14,6 +14,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import { useSelector,useDispatch } from 'react-redux'
 import WaitLoading from '../Wait_Loading';
 
+LogBox.ignoreAllLogs();
 
 const DiemDanh =  ({navigation}) => {
     
@@ -21,7 +22,8 @@ const DiemDanh =  ({navigation}) => {
   const du_lieu_hs = data_redux.hocsinh.data;
   const data_token = data_redux.token;
  
-  console.log('id_hs',du_lieu_hs.id)
+  console.log('id_hs',du_lieu_hs.id);
+  console.log('data_token',data_token.token);
   const [submitLoading, setsubmitLoading] = useState(true);
   
   const [SangChieu, setSangChieu] = useState(false);
@@ -85,12 +87,15 @@ const DiemDanh =  ({navigation}) => {
 
 
     function choseDateShow(date){
+        console.log(date)
         setsubmitLoading(true);
         const formData = new FormData();
         formData.append("date",date);
         formData.append("id_hs",du_lieu_hs.id);
         HamGetDataByThangNam(data_token.token,formData,date)
-        setShowModal(false)
+        setShowModal(false);
+        setsubmitLoading(false);
+
     }
 
     function showStatusDiemDanh(status){
@@ -101,6 +106,8 @@ const DiemDanh =  ({navigation}) => {
             return  'Đón hộ'
         }else if(status == 3 ) {
             return 'Nghỉ học'
+        }else if(status ==4 ){
+            return 'Trả muộn'
         }else{
             return null
         }
@@ -112,29 +119,42 @@ const DiemDanh =  ({navigation}) => {
         return  styles.colorGreen
     }else if(status == 3 ) {
         return styles.colorRed
+    }else if(status == 4){
+        return  styles.colorBlue
+
     }else{
         return null
     }
    }
 
+   function limit15character(string){
+       let convertoString = JSON.stringify(string)
+        console.log('test_',typeof convertoString);
+        if(typeof convertoString == 'string'){
+            if(convertoString !== 'null'){
+                    if(convertoString.length > 15){
+                        let text =  convertoString.slice(0,15);
+                        return text+' ...';
+                    }else{
+                        return convertoString;
+                    }
+             }
+
+         }else{
+             return ' ';
+         }
+
+
+ }
 
   
   return (
       <ScrollView>
             <View style={styles.container}>
                  <View style={styles.calender}>
-                    <ImageBackground  style={{width:'100%' ,height:'100%',flexDirection:'row'}} source={require('../../android/app/src/asset/img/hoa-dao.gif')}>
-
-                        <View style={{width:'70%',alignItems:'flex-end',justifyContent:'flex-end'}}>
-                            <Text style={{fontSize:17}}>Tháng {thangNam}</Text>
-                        </View>
-                        <View style={{width:'25%',alignItems:'flex-end'}}>
-
-                        <AntDesign name="calendar" size={30} color="green" onPress={()=>{ setShowModal(true)} } />
 
 
-                {/*  bắt đầu model */}
-                <Modal
+                 <Modal
                     animationType="slide"
                     transparent={true}
                     visible={showModal}
@@ -162,11 +182,11 @@ const DiemDanh =  ({navigation}) => {
                                         <FlatList
                                             data={arrDate}
                                             renderItem={({item}) =>
-                                                <TouchableOpacity onPress={()=> choseDateShow(item)} >
                                                     <View style={{borderBottomWidth:1,borderColor:'#737272',height:37,width:130,alignItems:'center',justifyContent:'center'}}>
+                                                <TouchableOpacity onPress={()=> choseDateShow(item)} >
                                                         <Text style={thangNam == item ? styles.choseDate : styles.datePickerNormal}>{item}</Text>
-                                                    </View>
                                                 </TouchableOpacity>
+                                                    </View>
                                             }
                                             keyExtractor={(value, index) => index}
                                          />
@@ -174,6 +194,20 @@ const DiemDanh =  ({navigation}) => {
                             </View>
 
                      </Modal>
+
+
+                    <ImageBackground  style={{width:'100%' ,height:'100%',flexDirection:'row'}} source={require('../../android/app/src/asset/img/hoa-dao.gif')}>
+
+                        <View style={{width:'70%',alignItems:'flex-end',justifyContent:'flex-end'}}>
+                            <Text style={{fontSize:17}}>Tháng {thangNam}</Text>
+                        </View>
+                        <View style={{width:'25%',alignItems:'flex-end'}}>
+
+                        <AntDesign name="calendar" size={30} color="green" onPress={()=>{ setShowModal(true)} } />
+
+
+                {/*  bắt đầu model */}
+              
                     {/*  kết thúc model */}
 
 
@@ -232,15 +266,15 @@ const DiemDanh =  ({navigation}) => {
                                                 </View>
                                                 <View style={styles.viewTextOSang}>
                                                     <Text style={item.sang  == 1 ? {color:'green'} : {color:'red'}}
-                                                    >{item.sang  == 1 ? 'Đi học' :  item.sang == 2 ? 'Vắng' : null }</Text>
+                                                    >{ item.sang  == 1 ? 'Đi học' :  item.sang == 2 ? 'Vắng' : null }</Text>
                                                 </View> 
                                                 <View style={styles.viewTextOSang}>
-                                                    <Text  style={item.sang  == 1 ? {color:'green'} : {color:'red'}}>
+                                                    <Text  style={item.chieu  == 1 ? {color:'green'} : {color:'red'}}>
                                                         {item.chieu  == 1 ? 'Có' :  item.chieu ==  2 ? 'Vắng'  : null }
                                                      </Text>
                                                 </View>
                                                 <View style={styles.viewTextOSang}>
-                                                    <Text >{item.an == 1 ? 'Ăn' :   item.an ==  2 ? 'Không ăn'  : null}</Text>
+                                                    <Text >{item.an == 1 ? 'Ăn' : item.an ==  2 ? 'Không ăn'  : null}</Text>
                                                 </View>
                                         </View> 
                                         }
@@ -280,7 +314,7 @@ const DiemDanh =  ({navigation}) => {
                                                                 <Text style={textColorTrangThai(item.data.trang_thai)}>{item.data  == 0 ? '' : showStatusDiemDanh(item.data.trang_thai)}</Text>
                                                             </View> 
                                                             <View style={{width:'45%',paddingLeft:5,borderColor: '#F7C261',borderWidth:1}}>
-                                                                <Text>{item.chu_thich}</Text>
+                                                                <Text>{limit15character(item.data.chu_thich)}</Text>
                                                             </View>
                                                     
                                                     </View>
@@ -330,6 +364,9 @@ const styles = StyleSheet.create({
     },
     colorGreen:{
         color:'green'
+    },
+    colorBlue:{
+        color:'#3b3bf5'
     },
     colorRed:{
         color:'red'

@@ -18,9 +18,7 @@ const HeaderNotifiWhenClick =  ({navigation,name_header_tab}) => {
                  <TouchableOpacity onPress={()=> changeRoute()}>
                        <AntDesign name="arrowleft" size={25} color="#ffff" />
                  </TouchableOpacity>      
-
-                 <Text style={{fontSize:17,color:'#ffff'}}> {name_header_tab}</Text>
-
+                 <Text style={{fontSize:19,color:'#ffff',paddingLeft:10}}> {name_header_tab}</Text>
               </View>
             </View>
   );

@@ -1,7 +1,7 @@
 
 import React ,{ useState,useEffect }from 'react';
 import { View, Text, Image,
-    TouchableOpacity, ScrollView,StyleSheet, Button,FlatList,Modal,
+    TouchableOpacity, ScrollView,StyleSheet, Button,FlatList,Modal,LogBox,
     Dimensions,Animated
  } from 'react-native'
 
@@ -10,6 +10,11 @@ import { View, Text, Image,
  import AntDesign from 'react-native-vector-icons/AntDesign';
  import linkGiaoVien from '../../android/app/src/api/linkWeb/linkGiaoVien';
  import moment from 'moment';
+
+ LogBox.ignoreAllLogs();
+
+
+
  const { width } = Dimensions.get('window');
  const { height } = Dimensions.get('window');
 

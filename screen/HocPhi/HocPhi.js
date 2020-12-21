@@ -1,7 +1,7 @@
 
 import React ,{ useState, useEffect }from 'react';
 import axios from 'axios';
-import { View, Text, Image, TouchableOpacity, FlatList, StyleSheet, Button } from 'react-native'
+import { View, Text, Image, TouchableOpacity, FlatList, StyleSheet, Button,LogBox } from 'react-native'
 import IconNews from '../../android/app/src/asset/img/icon-news.png';
 import IconKidsExercise from '../../android/app/src/asset/img/icon-kids-exercise.jpg';
 import IconKidsStudy from '../../android/app/src/asset/img/icon-kids-study.jpg';
@@ -12,11 +12,13 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 
 import ApiHocPhi from '../../android/app/src/api/HocPhiApi';
 import { useSelector,useDispatch } from 'react-redux'
+LogBox.ignoreAllLogs();
 
 const HocPhi =  ({ navigation }) => {
 
     const data_redux = useSelector(state => state)
     const du_lieu_hs = data_redux.hocsinh.data;
+    const data_token = data_redux.token;
 
     const [data_hp, setDataHp] = useState([]);
     const [arr_nam, setArrNam] =  useState([]);
@@ -27,7 +29,7 @@ const HocPhi =  ({ navigation }) => {
 
 
     const getHoatDong = () => {
-        ApiHocPhi.getNamThangOfHocPhiHs('data_token',du_lieu_hs.id)
+        ApiHocPhi.getNamThangOfHocPhiHs(data_token.token,du_lieu_hs.id)
         .then(function (response) {
           let data = response.data;
           setDataHp(data);
@@ -105,7 +107,8 @@ const HocPhi =  ({ navigation }) => {
                                         </View>
                                  </TouchableOpacity>
                         }}
-                        keyExtractor={(item,index) => index}
+                        keyExtractor={(item,index) => index.toString()}
+
                     />
                      
                 

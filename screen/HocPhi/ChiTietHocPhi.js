@@ -1,7 +1,7 @@
 
 import React ,{ useState, useEffect }from 'react';
 import axios from 'axios';
-import { View, Text, Image, TouchableOpacity, FlatList, StyleSheet, Button,ScrollView } from 'react-native'
+import { View, Text, Image, TouchableOpacity, FlatList, StyleSheet, Button,ScrollView ,LogBox} from 'react-native'
 import IconNews from '../../android/app/src/asset/img/icon-news.png';
 import IconKidsExercise from '../../android/app/src/asset/img/icon-kids-exercise.jpg';
 import IconKidsStudy from '../../android/app/src/asset/img/icon-kids-study.jpg';
@@ -9,6 +9,10 @@ import IconKidsOutSide from '../../android/app/src/asset/img/icon-kids-outside.j
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import ApiHocPhi from '../../android/app/src/api/HocPhiApi';
 import { useSelector,useDispatch } from 'react-redux'
+
+
+LogBox.ignoreAllLogs();
+
 
 const ChiTietHocPhi =  ({ navigation ,route}) => {
 
@@ -20,6 +24,8 @@ const ChiTietHocPhi =  ({ navigation ,route}) => {
 
     const data_redux = useSelector(state => state)
     const du_lieu_hs = data_redux.hocsinh.data;
+    const data_token = data_redux.token;
+
     console.log('id_chi_tiet_dot_thu',id_chi_tiet_dot_thu)
     
     
@@ -33,7 +39,7 @@ const ChiTietHocPhi =  ({ navigation ,route}) => {
 
     const getDot = () => {
         setshowLoading(true);
-        ApiHocPhi.getChiTietDot('data_token',id_chi_tiet_dot_thu,du_lieu_hs.id)
+        ApiHocPhi.getChiTietDot(data_token.token,id_chi_tiet_dot_thu,du_lieu_hs.id)
         .then(function (response) {
           let data = response.data;
           setlistData(data);
@@ -90,7 +96,8 @@ const ChiTietHocPhi =  ({ navigation ,route}) => {
                               </View>
 
                         }}
-                        keyExtractor={(item,index) => index}
+                        keyExtractor={(item,index) => index.toString()}
+
                     />
 
                         <View style={showLoading ? {display:'flex'} : {display:'none'}}>
@@ -118,7 +125,8 @@ const ChiTietHocPhi =  ({ navigation ,route}) => {
                             </View>
 
                         }}
-                        keyExtractor={(item,index) => index}
+                        keyExtractor={(item,index) => index.toString()}
+
                     />
                    
                   {/* loading */}

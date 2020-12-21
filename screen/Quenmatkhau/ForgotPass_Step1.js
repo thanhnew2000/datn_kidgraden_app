@@ -3,7 +3,7 @@ import React ,{ useState,useEffect }from 'react';
 import {
     StyleSheet,
     View,
-    FlatList,Text,Image, Alert
+    FlatList,Text,Image, Alert,LogBox
   } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
@@ -14,6 +14,7 @@ import  AntDesign from 'react-native-vector-icons/AntDesign';
 import Modal_SubmitLoading from '../component/reuse/Modal_SubmitLoading';
 import ApiUser from '../../android/app/src/api/users';
 
+LogBox.ignoreAllLogs();
 
 const ForgotPass_Step1 =  ({navigation}) => {
 

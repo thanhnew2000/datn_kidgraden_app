@@ -1,7 +1,7 @@
 
 import React ,{ useState, useEffect }from 'react';
 import axios from 'axios';
-import { View, Text, Image, TouchableOpacity, FlatList, StyleSheet, Alert,Modal} from 'react-native'
+import { View, Text, Image, TouchableOpacity, FlatList, StyleSheet, Alert,Modal,LogBox} from 'react-native'
 import IconNews from '../../android/app/src/asset/img/icon-news.png';
 import IconKidsExercise from '../../android/app/src/asset/img/icon-kids-exercise.jpg';
 import IconKidsStudy from '../../android/app/src/asset/img/icon-kids-study.jpg';
@@ -20,6 +20,9 @@ import Modal_SubmitLoading from '../component/reuse/Modal_SubmitLoading';
 import { useSelector,useDispatch } from 'react-redux'
 
 import color_app from '../color_app'
+
+LogBox.ignoreAllLogs();
+
 const ThemDonHo =  ({ navigation , route}) => {
 
   const data_redux = useSelector(state => state)
@@ -110,17 +113,17 @@ const ThemDonHo =  ({ navigation , route}) => {
 
 
     function Checkvalidation(dateFrom,dateTo,valueInput,avatar){
-          var check_regex_specfi = new RegExp(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/);
-
-          var patter_regex_null = new RegExp("\[[^\s]*\s");
-          // check khoảng trống trước cho tới khi có ký tự thì được
-
-          if(dateFrom > dateTo){
+        // var check_regex_specfi = new RegExp(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/);
+        // var patter_regex_null = new RegExp("/^[^\s].*/");
+        
+         if(dateFrom > dateTo){
            return 'Ngày bắt đầu không lớn hơn ngày kết thúc';
-         }else if(check_regex_specfi.test(valueInput.name)){
-           return 'Không nhập kí tự đặc biệt';
-         }else if(patter_regex_null.test(valueInput.name) == false || patter_regex_null.test(valueInput.cmnd) == false || patter_regex_null.test(valueInput.phone) == false){
+         }else if(valueInput.name == '' || valueInput.cmnd == '' || valueInput.phone == ''){
            return 'Hãy nhập đầy đủ !';
+         }else if(valueInput.name == ' ' || valueInput.cmnd == ' ' || valueInput.phone == ' '){
+          return 'Hãy nhập đầy đủ !';
+         }else if(valueInput.name == '  ' || valueInput.cmnd == '  ' || valueInput.phone == '  '){
+          return 'Hãy nhập đầy đủ !';
          }else if(avatar.uri == undefined){
            return 'Hãy nhập ảnh!';
          }else{

@@ -1,7 +1,7 @@
 
 import React ,{ useState, useEffect }from 'react';
 import axios from 'axios';
-import { View, Text, Image,TextInput, TouchableOpacity, FlatList,StyleSheet, Button,Modal,Alert } from 'react-native';
+import { View, Text, Image,TextInput, TouchableOpacity, FlatList,StyleSheet, Button,Modal,Alert ,LogBox} from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -14,6 +14,7 @@ import { useSelector,useDispatch } from 'react-redux'
 
 import  color_app  from '../color_app';
 
+LogBox.ignoreAllLogs();
 
 const ThemDonNghi =  ({ navigation , route}) => {
   
@@ -65,14 +66,14 @@ const ThemDonNghi =  ({ navigation , route}) => {
 
 
       function Checkvalidation(dateFrom,dateTo,lyDoXinNghi){
-        var patter_regex_null = new RegExp("\[[^\s]*\s");
+        // var patter_regex_null = new RegExp("\[[^\s]*\s");
           // check khoảng trống trước cho tới khi có ký tự thì được
 
           if(dateFrom > dateTo){
             return 'Ngày bắt đầu không lớn hơn ngày kết thúc';
-          }else if(patter_regex_null.test(lyDoXinNghi) == false){
+          }else if(lyDoXinNghi == null || lyDoXinNghi == ' ' || lyDoXinNghi == '  ' || lyDoXinNghi == '  '){
             return 'Hãy nhập lý do xin nghỉ';
-          }else{
+           }else{
             return true
           }
       }
@@ -100,6 +101,7 @@ const ThemDonNghi =  ({ navigation , route}) => {
                         setSubmitLoading(false);
                         // reloadAgain();
                         Alert.alert('Đã gửi đơn lên giáo viên');
+                        navigation.navigate('Home');
                     })
                     .catch(err => {
                         console.log(err);

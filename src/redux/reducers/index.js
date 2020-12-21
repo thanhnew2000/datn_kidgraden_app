@@ -15,6 +15,7 @@ var myReducer = combineReducers({
     id_param_thong_bao:id_param_thong_bao,
     id_param_detail_medicine:id_param_detail_medicine,
     check_value_call_again:check_value_call_again,
+    route_notifi:route_notifi
 
 })
 

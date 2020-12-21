@@ -3,7 +3,7 @@ import React ,{ useState,useEffect }from 'react';
 import {
     StyleSheet,
     View,
-    FlatList,Text,Image,Button,Dimensions, ImageBackground,Modal,TouchableOpacity
+    FlatList,Text,Image,Button,Dimensions, ImageBackground,Modal,TouchableOpacity,LogBox
     
   } from 'react-native';
   import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -14,9 +14,29 @@ import AsyncStorage from '@react-native-community/async-storage';
 import { useSelector,useDispatch } from 'react-redux'
 import IconChart from '../../android/app/src/asset/img/icon-chart.png';
 
+
+LogBox.ignoreAllLogs();
+
 const DetailDiemDanhVe =  ({navigation, route}) => {
     const { item } = route.params ;
+    const data = item.data;
     const nguoidonho = item.data.nguoi_don_ho;  
+    console.log('item',item)
+
+    function showStatusDiemDanh(status){
+        // console.log(status);  
+        if(status == 1){
+            return 'Đã đón'
+        }else if( status == 2 ){
+            return  'Đón hộ'
+        }else if(status == 3 ) {
+            return 'Nghỉ học'
+        }else if(status ==4 ){
+            return 'Trả muộn'
+        }else{
+            return null
+        }
+    }
   return (
             <View style={styles.container}>
                 <View style={{flexDirection:'row'}}>
@@ -25,7 +45,7 @@ const DetailDiemDanhVe =  ({navigation, route}) => {
                 </View>
                 <View style={{flexDirection:'row'}}>
                     <Text style={{fontWeight:'bold'}}>Trạng thái  : </Text>
-                    <Text> Đã được đón</Text>
+                    <Text>{showStatusDiemDanh(data.trang_thai)}</Text>
                 </View>
                 <View style={{flexDirection:'row'}}>
                     <Text style={{fontWeight:'bold'}}>Ghi chú  : </Text>

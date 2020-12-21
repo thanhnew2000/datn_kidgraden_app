@@ -17,8 +17,13 @@ import 'moment/locale/vi';
 import ApiNoiDungThongBao from '../../android/app/src/api/NoiDungThongBao';
 import { useSelector,useDispatch } from 'react-redux'
 import HTMLView from 'react-native-htmlview';
+import { AuthContext } from '../context';
+import HeaderNotifiWhenClick from '../HeaderNotifiWhenClick'
 
 const ShowThongBao = ({navigation,route}) => {
+
+  const { changeRoute } = React.useContext(AuthContext);
+
    const { id_noi_dung_tb } = route.params;
     // const id_noi_dung_tb = 18;
     console.log('id_noi_dung_tb',id_noi_dung_tb)
@@ -35,6 +40,7 @@ const ShowThongBao = ({navigation,route}) => {
 
     const [showLoading, setShowLoading] = useState(false);
 
+
   const getNoiDung = () => {
     setShowLoading(true);
     ApiNoiDungThongBao.getNoiDungThongBaoId(data_token.token,id_noi_dung_tb)
@@ -50,11 +56,15 @@ const ShowThongBao = ({navigation,route}) => {
           console.log(error);
         });
     };
+
+
     useEffect(() => {
       navigation.setOptions({
-        headerLeft: null
-      });
-      getNoiDung()
+        headerTitle: () => <HeaderNotifiWhenClick navigation={navigation} name_header_tab="Thông báo"/>,
+         headerLeft: null
+      })
+      getNoiDung();
+        
     }
     
     ,[id_noi_dung_tb])

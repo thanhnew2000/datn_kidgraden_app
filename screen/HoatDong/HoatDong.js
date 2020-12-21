@@ -81,7 +81,7 @@ const HoatDong =  ({ navigation }) => {
                     <FlatList
                     data={data_hd}
                     renderItem={({item})=>
-                    <TouchableOpacity onPress={() => Linking.openURL('http://34.122.241.19:2000/'+item.link_file_hd)}> 
+                    <TouchableOpacity onPress={() => Linking.openURL(item.link_file_hd)}> 
                           <View style={{backgroundColor:'#6699ff',marginLeft:8,marginTop:5}}>
                               <Text style={{padding:10,color:'#fff'}}>Tuần {item.tuan}</Text>
                           </View>

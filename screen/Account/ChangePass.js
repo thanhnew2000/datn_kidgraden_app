@@ -8,6 +8,7 @@ import {
     TextInput,
     TouchableOpacity,
     Alert,
+    LogBox,
     Button
   } from 'react-native';
   import IconKidsStudy from '../../android/app/src/asset/img/icon-kids-study.jpg';
@@ -16,6 +17,7 @@ import {
   import { useSelector,useDispatch } from 'react-redux'
   import AsyncStorage from '@react-native-community/async-storage';
 
+LogBox.ignoreAllLogs();
   
 
 const ChangePass = ({navigation}) => {

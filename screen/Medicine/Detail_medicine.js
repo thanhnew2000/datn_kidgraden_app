@@ -2,7 +2,7 @@
 import React ,{ useState,useRef,useEffect }from 'react';
 import { View, Text, Image, StyleSheet, 
     TextInput,
-    TouchableOpacity, ScrollView,Button,FlatList,Alert
+    TouchableOpacity, ScrollView,Button,FlatList,Alert,LogBox
  } from 'react-native'
  import HTMLView from 'react-native-htmlview';
 import IconKidsStudy from '../../android/app/src/asset/img/icon-kids-study.jpg';
@@ -25,6 +25,9 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 //quang add database firebase
 import database from '@react-native-firebase/database';
 
+
+LogBox.ignoreAllLogs();
+
 const Detail_medicine =  ({ route,navigation }) => {
 
     //quang add get database firebase start
@@ -33,7 +36,10 @@ const Detail_medicine =  ({ route,navigation }) => {
     const data_redux = useSelector(state => state)
     const du_lieu_hs = data_redux.hocsinh.data;
     const data_token = data_redux.token;
-  console.log('token_data',data_token.token)
+    const route_notifi = data_redux.route_notifi;
+  console.log('token_data',data_token.token);
+      console.log('dt',route_notifi)
+
     const [chitietdon, setChiTietDon] = useState({});
     const [donthuoc, setDonThuoc] = useState({});
 
@@ -45,13 +51,7 @@ const Detail_medicine =  ({ route,navigation }) => {
       const { dl_donthuoc } = route.params;
 
       const { id_ } = route.params;
-      const { route_notifi } = route.params;
-
       const id_don_thuoc = id_;
-      // console.log('dt',donthuoc)
-      // // const { data_HS } = route.params;
-      // const chitietdon = donthuoc.chi_tiet_don_dan_thuoc;
-
 
     const [binhLuan,setBinhLuan] = useState([]);
     // const [data_HS, setData_HS] = useState({});
@@ -64,16 +64,6 @@ const Detail_medicine =  ({ route,navigation }) => {
 
     const [idShowTime, setIdShowTime] = useState(0);
 
-
-
-    //   useEffect(() => {
-    //         if(route_notifi == 'detail_medicine'){
-    //           navigation.setOptions({
-    //             headerTitle: () => <HeaderNotifiWhenClick navigation={navigation} name_header_tab="Chi tiết dặn thuốc"/>,
-    //           })
-    //         }
-    //  }, []);
-
      
    async function HamGetBinhLuanDonThuoc (id_don_thuoc) {
       console.log('runinggggggggggggggggggggggggggggggggggggggggg ----------------------------------------------');
@@ -83,6 +73,7 @@ const Detail_medicine =  ({ route,navigation }) => {
         ApiPhanHoi.getBinhLuanOfDonThuoc(data_token,id_don_thuoc)
           .then(function (response) {
             let data_get = response.data;
+
             if(typeof data_get == 'object'){
               setBinhLuan(data_get);
             }
@@ -126,22 +117,13 @@ const Detail_medicine =  ({ route,navigation }) => {
               }
 
               // check neu tat ap an click thong bao nen thi lay header khac
-              const { route_notifi } = route.params;
-              if(route_notifi == 'detail_medicine'){
+              const { thong_bao } = route.params;
+              if(thong_bao == true || route_notifi == 'detail_medicine'){
                   navigation.setOptions({
-                    headerTitle: () => <HeaderNotifiWhenClick navigation={navigation} name_header_tab="Chi tiết đơn thuốc"/>,
+                    headerTitle: () => <HeaderNotifiWhenClick navigation={navigation} name_header_tab="Chi tiết đơn dặn thuốc"/>,
+                    headerLeft: null
                   })
                }
-               else{
-                const { thong_bao } = route.params;
-                if(thong_bao == true ){
-                 navigation.setOptions({
-                  //  headerTitle: () => <HeaderClickFromThongBao navigation={navigation} name_header_tab="Chi tiết đơn thuốc"/>,
-                    headerLeft: null
-                 })
-                 }
-               }
-           
 
 
 
@@ -295,11 +277,9 @@ function scrolltoendBinhLuan(){
 
 function checkValueLenght(){
   // let regSpace= new RegExp(/\s/);
-  var patter_regex = new RegExp("\[[^\s]*\s");
-  var regex_check = patter_regex.test(Hscomment);
-  if(Hscomment == null){
-    return false;
-  }else if(regex_check == false){
+  // var patter_regex = new RegExp("\[[^\s]*\s");
+  // var regex_check = patter_regex.test(Hscomment);
+  if(Hscomment == null ||  Hscomment == '' || Hscomment == ' ' || Hscomment == '  ' || Hscomment == '   '){
     return false;
   }else{
     return true
@@ -313,38 +293,14 @@ function checkValueLenght(){
                 //   set_scrollToBottomY(contentHeight)
                 //   }}
                   >
-                        {/* <View style={{flexDirection:'row'}}>
-                            <View>
-                            <Image style={{width:70,height:70}} source={{uri : ipApi+'storage/'+data_HS.avatar}}/>
-
-                            </View>
-                            <View style={{paddingLeft:10,paddingTop:10}}>
-                                <Text style={{fontSize:19,fontWeight:'bold'}}>{data_HS.ten}</Text>
-                                <Text style={{}}>17/9/2020</Text>
-                            </View>
-                        </View> */}
+                    
                  <TouchableOpacity onPress={()=> clickTest()}>
                         <View style={{paddingVertical:5}}>
                             <Text style={{fontWeight:'bold',backgroundColor:'green',width:'20%',color:'white',textAlign:'center'}}>Lời nhắn</Text>
                                 <Text>"{donthuoc.noi_dung}"</Text>
                         </View>
-                        </TouchableOpacity>
-                      {/* <View style={styles.listMedicine}>
-                            <View style={{flexDirection:'row'}}> 
-                                    <View style={{width:'70%'}}>
-                                        <Text style={{fontWeight:'bold',fontSize:15}}> Sino </Text>
-                                        <View style={{flexDirection:'row'}}>
-                                               <Text style={{fontWeight:'bold',fontSize:15}}> Liều : </Text>
-                                               <Text>(300ml)</Text>
-                                        </View>
-                                        <Text style={{fontWeight:'bold',fontSize:15}}> Ghi chú : </Text>
-                                        <Text> Uống sau bữa ăn trưa  ăn trưa ăn trưa ăn trưa ăn trưa ăn trưa ăn trưa ăn trưa</Text>
-                                    </View>
-                                    <View style={{width:'30%',alignItems:'center',alignSelf:'center'}}>
-                                       <Image style={{width:60,height:60}} source={IconKidsStudy}/>
-                                    </View>
-                            </View>
-                        </View>  */}
+                 </TouchableOpacity>
+                   
                         
                        <FlatList
                             data={chitietdon}
@@ -354,9 +310,11 @@ function checkValueLenght(){
                             keyExtractor={(item,index) => index.toString()} 
                         />
 
-                        <View style={{paddingVertical:5,flexDirection:'row'}}>
-                            <AntDesign name="check" size={20} color="green" />
-                            <Text  style={{color:'green',fontSize:16}}>Đã cho con uống</Text>
+                        <View style={{paddingVertical:5}}>
+                          <View style={donthuoc.trang_thai == 1 ? {display:'flex',flexDirection:'row'} : {display:'none'}}>
+                             <AntDesign name="check" size={20} color="green" />
+                            <Text  style={{color:'green',fontSize:16}}> Giáo viên đã xác nhận</Text>
+                          </View>
                         </View>
 
                           {/* <Button title="check" onPress={()=> clickCheck()}/> */}

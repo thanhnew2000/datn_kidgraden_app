@@ -1,7 +1,7 @@
 
 import React ,{ useState,useEffect }from 'react';
 import { View, Text, Image,
-    TouchableOpacity, ScrollView,StyleSheet, Button,FlatList
+    TouchableOpacity, ScrollView,StyleSheet, Button,FlatList,LogBox
  } from 'react-native'
 
  import ApiAlbum from '../../android/app/src/api/album';
@@ -14,6 +14,7 @@ import { View, Text, Image,
 
 const Album =  ({ navigation }) => {
 
+  LogBox.ignoreAllLogs();
 
   
   const data_redux = useSelector(state => state)
@@ -83,7 +84,7 @@ const Album =  ({ navigation }) => {
                   renderItem={({item,index}) => 
                   <RenderListAlbum item = {item}/>
                 }
-                  keyExtractor={(value, index) => index}
+                  keyExtractor={(item, index) => index.toString()}
                />
 
 

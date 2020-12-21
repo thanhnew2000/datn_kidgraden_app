@@ -10,6 +10,7 @@ import {
     ImageBackground,
     ScrollView,
     Button,
+    LogBox ,
     Alert
   } from 'react-native';
   import axios from 'axios';
@@ -63,6 +64,9 @@ import slide_hs_4 from '../android/app/src/silde_hs_4.jpg';
 import messaging from '@react-native-firebase/messaging';
 import database from '@react-native-firebase/database';
 import { set } from 'react-native-reanimated';
+
+LogBox.ignoreAllLogs();
+
 const Home2 = ({ navigation }) => 
 {
 
@@ -97,7 +101,6 @@ const Home2 = ({ navigation }) =>
     .then(function (response) {
         let data = response.data;
         console.log('number',data);
-        // dispatch(setcheckValueCallAgain());
         dispatch(setNumberNotification(data));
       })
       .catch(function (error) {
@@ -111,21 +114,7 @@ const Home2 = ({ navigation }) =>
 
 
   useEffect(  () => {
-    async  function abLister(){
-    var hsinh = await AsyncStorage.getItem('data_hs');
-    var data_user = await AsyncStorage.getItem('data_user');
-    let dt_user = JSON.parse(data_user);
-    let dt_hs = JSON.parse(hsinh);
-    const firebaseRuniing =  database().ref('notification').orderByChild('user_id').equalTo(dt_user.id).limitToLast(1);
-    const onListerning = firebaseRuniing.on('child_added', function(snapshot) { 
-      console.log('hs_id______________________________________________',dt_hs.id)
-      getNumberNotifiNumberHs();
-    });
-    return () => {
-      firebaseRuniing.off('child_added',onListerning);            
-    }
-  }
-  abLister()
+    console.log('hihihih_______________________________________');
    }, []);
 
   useEffect(() => {
@@ -169,7 +158,7 @@ const Home2 = ({ navigation }) =>
           //  await AsyncStorage.removeItem('data_hs');
              await AsyncStorage.setItem('data_hs',JSON.stringify(arr_all_hs_user_new[0]));
           //  await AsyncStorage.removeItem('data_all_hs');
-             await AsyncStorage.setItem('data_all_hs',JSON.stringify(data));
+             await AsyncStorage.setItem('data_all_hs',JSON.stringify(arr_new));
             dispatch(fetchDataAsyncStorage());
             // onValueChangeNumberNoti();
             dispatch(setcheckValueCallAgain());
@@ -291,11 +280,6 @@ function checkScroll(){
    }
 
 
-// function onlicktest(){
-//   console.log('da click___________________',hs)
-//   database()
-//   .ref('notification')
-// }
    
   // const getArrNotifiNumberHs = () => {
   //   ApiNotification.getArrNotifiNumberHs(data_token.token,{arr_id_hs : arr_id_hs_user})
@@ -360,7 +344,7 @@ function checkScroll(){
 
                        </View>
                     }}
-                    keyExtractor={item => item.id}
+                    keyExtractor={(item,index) => index.toString()}
                   />
               
     </ImageBackground>
@@ -424,8 +408,8 @@ function checkScroll(){
                 renderItem={({item})=>
                           <CateListItem category={item} navigation={navigation} />
                 } 
-                keyExtractor={(item,index) => `${index}`}
                 numColumns={2}
+                keyExtractor={(item,index) => index.toString()}
               />
           </View>
 
@@ -471,7 +455,7 @@ const styles = StyleSheet.create({
         backgroundColor:'#fff',
         justifyContent:'center',
         paddingHorizontal:5,
-        marginBottom:170,
+        marginBottom:15,
         marginTop:10,
       },
       wrapper:{

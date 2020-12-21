@@ -3,7 +3,7 @@ import React ,{ useState }from 'react';
 import {
     StyleSheet,
     View,
-    FlatList,Text,Image, ImageBackground, Alert
+    FlatList,Text,Image, ImageBackground, Alert,LogBox
   } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
@@ -13,6 +13,7 @@ import { Input ,Button} from 'react-native-elements';
 import  AntDesign from 'react-native-vector-icons/AntDesign';
 import Modal_SubmitLoading from '../component/reuse/Modal_SubmitLoading';
 import ApiUser from '../../android/app/src/api/users';
+LogBox.ignoreAllLogs();
 
 const ForgotPass_Step3 =  ({navigation,route}) => {
 

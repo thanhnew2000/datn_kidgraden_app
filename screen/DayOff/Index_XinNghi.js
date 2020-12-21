@@ -1,7 +1,7 @@
 
 import React ,{ useState, useEffect }from 'react';
 import axios from 'axios';
-import { View, Text, Image, TouchableOpacity, FlatList,StyleSheet, Button,Modal,Alert } from 'react-native'
+import { View, Text, Image, TouchableOpacity, FlatList,StyleSheet, Button,Modal,Alert ,LogBox} from 'react-native'
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import ListItem from './ListItem';
 import moment from "moment";
@@ -16,6 +16,9 @@ import ThemDonNghi from '../DayOff/ThemDonNghi';
 import DayOff from '../DayOff/DayOff';
 
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+
+LogBox.ignoreAllLogs();
+
 
 const Index_XinNghi =  ({ navigation,route }) => {
 

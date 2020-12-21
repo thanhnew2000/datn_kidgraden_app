@@ -1,7 +1,7 @@
 
 import React ,{ useState, useEffect }from 'react';
 import axios from 'axios';
-import { View, Text, Image, TouchableOpacity, FlatList,StyleSheet, Button,Modal,Alert } from 'react-native'
+import { View, Text, Image, TouchableOpacity, FlatList,StyleSheet, Button,Modal,Alert,LogBox } from 'react-native'
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import ListItem from './ListItem';
 import moment from "moment";
@@ -12,6 +12,9 @@ import Modal_Loading from '../component/reuse/Modal_Loading'
 import { useSelector,useDispatch } from 'react-redux'
 
 import color_app from '../color_app'
+
+LogBox.ignoreAllLogs();
+
 const DayOff =  ({ navigation,route }) => {
   const [showLoading, setShowLoading] = useState(true);
   const [listDonXinNghi, setListDonXinNghi] = useState([]);
@@ -74,8 +77,6 @@ const DayOff =  ({ navigation,route }) => {
 
                 <FlatList
                   data={listDonXinNghi}
-
-
                   onRefresh={() => functionOnRefresh()}
                   refreshing={isFetching}
                   renderItem={({item,index}) => <ListItem item = {item} navigation={navigation} />}

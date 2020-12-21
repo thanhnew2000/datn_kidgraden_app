@@ -10,12 +10,14 @@ import AsyncStorage from '@react-native-community/async-storage';
 
 
 import HeaderClickFromThongBao from '../HeaderClickFromThongBao';
+import HeaderNotifiWhenClick from '../HeaderNotifiWhenClick';
 
 
 const ChiTietNhanXet =  ({navigation, route }) => {
 
   const data_redux = useSelector(state => state)
   const data_token = data_redux.token;
+  const route_notifi = data_redux.route_notifi;
 
   const [data, setData] =  useState({});
   const [showLoading, setShowLoading] = useState(false);
@@ -38,9 +40,9 @@ const ChiTietNhanXet =  ({navigation, route }) => {
 
     useEffect(() => {
       const { thong_bao } = route.params;
-      if(thong_bao == true){
+      if(thong_bao == true || route_notifi == 'ChiTietNhanXet'){
           navigation.setOptions({
-            // headerTitle: () => <HeaderClickFromThongBao navigation={navigation} name_header_tab="Chi tiết nhận xét"/>,
+            headerTitle: () => <HeaderNotifiWhenClick navigation={navigation} name_header_tab="Chi tiết nhận xét"/>,
             headerLeft: null
           })
        }
@@ -54,7 +56,7 @@ const ChiTietNhanXet =  ({navigation, route }) => {
         }else{
           console.log('ct_nx_2');
           setData(item.item);
-          console.log('item',item.bua_an)
+          console.log('item',item.item.bua_an)
         }
     }, []);
 

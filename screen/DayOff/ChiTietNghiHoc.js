@@ -1,7 +1,7 @@
 
 import React ,{ useState, useEffect }from 'react';
 import axios from 'axios';
-import { View, Text, Image, TouchableOpacity, FlatList,StyleSheet, Button,Modal,Alert } from 'react-native'
+import { View, Text, Image, TouchableOpacity, FlatList,StyleSheet, Button,Modal,Alert,LogBox} from 'react-native'
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import ListItem from './ListItem';
 import ApiXinNghi from '../../android/app/src/api/XinNghiHocApi';
@@ -9,14 +9,16 @@ import AsyncStorage from '@react-native-community/async-storage';
 
 import { useSelector,useDispatch } from 'react-redux'
 import moment from "moment";
+import HeaderNotifiWhenClick from '../HeaderNotifiWhenClick';
 
+LogBox.ignoreAllLogs();
 
 
 
 const ChiTietNghiHoc =  ({ navigation, route }) => {
     
-  // const data_redux = useSelector(state => state)
-  // const data_token = data_redux.token;
+  const data_redux = useSelector(state => state)
+  const route_notifi = data_redux.route_notifi;
 
   const [data, setData] =  useState({});
   const [showLoading, setShowLoading] = useState(false);
@@ -42,8 +44,9 @@ const ChiTietNghiHoc =  ({ navigation, route }) => {
     useEffect(() => {
       const fetchData = () => {
         const { thong_bao } = route.params;
-        if(thong_bao == true){
+        if(thong_bao == true || route_notifi == 'ChiTietNghiHoc'){
             navigation.setOptions({
+              headerTitle: () => <HeaderNotifiWhenClick navigation={navigation} name_header_tab="Chi tiết đơn nghỉ học"/>,
               headerLeft: null
             })
          }

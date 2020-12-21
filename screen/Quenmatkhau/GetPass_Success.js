@@ -3,7 +3,7 @@ import React ,{ useState }from 'react';
 import {
     StyleSheet,
     View,
-    FlatList,Text,Image, ImageBackground, 
+    FlatList,Text,Image, ImageBackground, LogBox
   } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
@@ -11,6 +11,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Input ,Button} from 'react-native-elements';
 import  Entypo from 'react-native-vector-icons/Entypo';
+LogBox.ignoreAllLogs();
 
 const GetPass_Success =  ({navigation}) => {
 

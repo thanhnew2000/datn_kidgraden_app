@@ -1,7 +1,7 @@
 
 import React ,{ useState, useEffect }from 'react';
 import axios from 'axios';
-import { View, Text, Image, TouchableOpacity, FlatList, StyleSheet, Button } from 'react-native'
+import { View, Text, Image, TouchableOpacity, FlatList, StyleSheet, Button ,LogBox } from 'react-native'
 import IconNews from '../../android/app/src/asset/img/icon-news.png';
 import IconKidsExercise from '../../android/app/src/asset/img/icon-kids-exercise.jpg';
 import IconKidsStudy from '../../android/app/src/asset/img/icon-kids-study.jpg';
@@ -12,6 +12,8 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import { useSelector,useDispatch } from 'react-redux'
 
 import ApiHocPhi from '../../android/app/src/api/HocPhiApi';
+import HeaderNotifiWhenClick from '../HeaderNotifiWhenClick'
+LogBox.ignoreAllLogs();
 
 const DotCuaThang =  ({ navigation,route }) => {
 
@@ -21,6 +23,8 @@ const DotCuaThang =  ({ navigation,route }) => {
 
     const data_redux = useSelector(state => state)
     const du_lieu_hs = data_redux.hocsinh.data;
+    const route_notifi = data_redux.route_notifi;
+    const data_token = data_redux.token;
 
     // const [data_hp, setDataHp] = useState([]);
     // const [arr_nam, setArrNam] =  useState([]);
@@ -32,7 +36,7 @@ const DotCuaThang =  ({ navigation,route }) => {
 
     const getDot = () => {
       setshowLoading(true);
-        ApiHocPhi.getAllDanhSachThuTienFromIdThangThuHs('data_token',id_thang_thu_tien,du_lieu_hs.id)
+        ApiHocPhi.getAllDanhSachThuTienFromIdThangThuHs(data_token.token,id_thang_thu_tien,du_lieu_hs.id)
         .then(function (response) {
           let data = response.data;
           setlistData(data);
@@ -48,8 +52,9 @@ const DotCuaThang =  ({ navigation,route }) => {
     };
     useEffect(() => {
       const { thong_bao } = route.params;
-      if(thong_bao == true){
+      if(thong_bao == true || route_notifi == 'DotCuaThang'){
           navigation.setOptions({
+            headerTitle: () => <HeaderNotifiWhenClick navigation={navigation} name_header_tab="Đợt của tháng"/>,
             headerLeft: null
           })
        }
