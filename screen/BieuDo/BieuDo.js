@@ -176,7 +176,7 @@ async function getYear () {
                         <VictoryBar   style={{
                             data: {stroke: "tomato",fill:'#48D2FE',width:10},
                           }}
-                            data = {data_chieu_cao}
+                            data = {data_can_nang}
                   
                           >
                         </VictoryBar>
@@ -204,7 +204,7 @@ async function getYear () {
                         <VictoryBar   style={{
                             data: {stroke: "tomato",fill:'#FCCF5F',width:10},
                           }}
-                            data =  {data_can_nang}
+                            data =  {data_chieu_cao}
                           
                           >
                         </VictoryBar>

@@ -270,7 +270,7 @@ const DiemDanh =  ({navigation}) => {
                                                 </View> 
                                                 <View style={styles.viewTextOSang}>
                                                     <Text  style={item.chieu  == 1 ? {color:'green'} : {color:'red'}}>
-                                                        {item.chieu  == 1 ? 'Có' :  item.chieu ==  2 ? 'Vắng'  : null }
+                                                        {item.chieu  == 1 ? 'Đi học' :  item.chieu ==  2 ? 'Vắng'  : null }
                                                      </Text>
                                                 </View>
                                                 <View style={styles.viewTextOSang}>
